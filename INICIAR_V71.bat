@@ -9,26 +9,16 @@ echo ============================================================
 echo.
 
 set BASE=C:\Users\ualac\Documents\2025\Mercado\machine-pyton
-set PLANILHA=%BASE%\blackarrow_rtd.xlsm
 
 :: ============================================================
 :: [1/6] Abre a planilha Excel e inicia a macro de exportacao
-::       Roda em processo separado oculto para nao travar o bat.
-::       O PowerShell fica aberto em background enquanto a macro loop roda.
+::       Chama um .ps1 separado em processo oculto para nao travar o bat.
 :: ============================================================
 echo [1/6] Abrindo planilha BlackArrow e iniciando macro...
-
-start "" /b powershell -WindowStyle Hidden -Command ^
-  "$xl = New-Object -ComObject Excel.Application; ^
-   $xl.Visible = $true; ^
-   $xl.DisplayAlerts = $false; ^
-   $wb = $xl.Workbooks.Open('%PLANILHA%'); ^
-   Start-Sleep -Seconds 10; ^
-   try { $xl.Run('IniciarExportacaoBlackArrowCSV') } catch { }"
-
-echo       Aguardando planilha carregar (12 segundos)...
-timeout /t 12 /nobreak >NUL
-echo       Planilha aberta e macro iniciada.
+start "" powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File "%BASE%\abrir_excel_macro_v71.ps1"
+echo       Aguardando planilha carregar (15 segundos)...
+timeout /t 15 /nobreak >NUL
+echo       Pronto.
 
 :: ============================================================
 :: [2/6] Verifica se o BlackArrow esta rodando
