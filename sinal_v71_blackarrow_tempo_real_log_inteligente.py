@@ -422,29 +422,44 @@ def salvar_txt_seguro(texto, caminho):
 
 
 def salvar_json_seguro(obj, caminho):
+    conteudo = json.dumps(obj, ensure_ascii=False, indent=4, default=str)
     temp = caminho + ".tmp"
 
+    # Escreve no temp primeiro
     with open(temp, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=4, default=str)
+        f.write(conteudo)
+
+    # Tentativa 1: os.replace (atomico, nao exige remover antes)
+    try:
+        os.replace(temp, caminho)
+        return
+    except Exception:
+        pass
+
+    # Tentativa 2: escrita direta (funciona mesmo com leitores compartilhados no Windows)
+    try:
+        with open(caminho, "w", encoding="utf-8") as f:
+            f.write(conteudo)
+        try:
+            os.remove(temp)
+        except Exception:
+            pass
+        return
+    except Exception:
+        pass
+
+    # Tentativa 3: salva na reserva para nao perder o dado
+    reserva = caminho.replace(".json", "_reserva.json")
+    try:
+        with open(reserva, "w", encoding="utf-8") as f:
+            f.write(conteudo)
+    except Exception:
+        pass
 
     try:
-        if os.path.exists(caminho):
-            os.remove(caminho)
-
-        os.rename(temp, caminho)
-
-    except PermissionError:
-        # Se estiver ocupado, salva reserva.
-        reserva = caminho.replace(".json", "_reserva.json")
-
-        with open(reserva, "w", encoding="utf-8") as f:
-            json.dump(obj, f, ensure_ascii=False, indent=4, default=str)
-
-        if os.path.exists(temp):
-            try:
-                os.remove(temp)
-            except Exception:
-                pass
+        os.remove(temp)
+    except Exception:
+        pass
 
 
 def salvar_csv_seguro(df, caminho):
@@ -2297,8 +2312,25 @@ def salvar_payload_sinal(payload):
 # EXECUÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢O
 # =====================================================
 
+def _alertar_candle_travado(tick):
+    agora = pd.Timestamp.now()
+    dt_tick = pd.to_datetime(tick.get("DataHora_SP"), errors="coerce")
+    if pd.isna(dt_tick):
+        return
+    minutos_atrasado = (agora - dt_tick).total_seconds() / 60.0
+    if minutos_atrasado > 5:
+        print(
+            f"\n*** AVISO: candle travado! Ultimo dado do BlackArrow tem "
+            f"{minutos_atrasado:.0f} min de atraso "
+            f"({dt_tick.strftime('%H:%M')} vs agora {agora.strftime('%H:%M')}). "
+            f"Verifique se a macro Excel esta rodando. ***\n"
+        )
+
+
 def executar_uma_vez(config_v4, modelo_v3, features_v3, modelo_v4, features_v4, modelo_v53=None, features_v53=None):
     tick = ler_blackarrow_rtd()
+
+    _alertar_candle_travado(tick)
 
     ticks = atualizar_ticks(tick)
 
