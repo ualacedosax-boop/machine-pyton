@@ -9,31 +9,60 @@ echo ============================================================
 echo.
 
 set BASE=C:\Users\ualac\Documents\2025\Mercado\machine-pyton
+set PLANILHA=%BASE%\blackarrow_rtd.xlsm
 
-echo [1/5] Verificando BlackArrow...
+:: ============================================================
+:: [1/6] Abre a planilha Excel e inicia a macro de exportacao
+::       Roda em processo separado oculto para nao travar o bat.
+::       O PowerShell fica aberto em background enquanto a macro loop roda.
+:: ============================================================
+echo [1/6] Abrindo planilha BlackArrow e iniciando macro...
+
+start "" /b powershell -WindowStyle Hidden -Command ^
+  "$xl = New-Object -ComObject Excel.Application; ^
+   $xl.Visible = $true; ^
+   $xl.DisplayAlerts = $false; ^
+   $wb = $xl.Workbooks.Open('%PLANILHA%'); ^
+   Start-Sleep -Seconds 10; ^
+   try { $xl.Run('IniciarExportacaoBlackArrowCSV') } catch { }"
+
+echo       Aguardando planilha carregar (12 segundos)...
+timeout /t 12 /nobreak >NUL
+echo       Planilha aberta e macro iniciada.
+
+:: ============================================================
+:: [2/6] Verifica se o BlackArrow esta rodando
+:: ============================================================
+echo.
+echo [2/6] Verificando BlackArrow...
 tasklist /FI "IMAGENAME eq BlackArrow.exe" 2>NUL | find /I "BlackArrow.exe" >NUL
 if %ERRORLEVEL% NEQ 0 (
-    echo       BlackArrow NAO encontrado. Abra o BlackArrow manualmente.
-    echo       Pressione qualquer tecla quando o BlackArrow estiver aberto...
-    pause >NUL
+    echo       AVISO: BlackArrow.exe nao encontrado no sistema.
+    echo       Se o BlackArrow for parte do Excel/RTD, ignore este aviso.
 ) else (
-    echo       BlackArrow ja esta rodando. OK
+    echo       BlackArrow rodando. OK
 )
 
+:: ============================================================
+:: [3/6] Verifica se o CSV do BlackArrow esta sendo atualizado
+:: ============================================================
 echo.
-echo [2/5] Verificando CSV do BlackArrow...
+echo [3/6] Verificando CSV do BlackArrow...
 python "%BASE%\checar_csv_v71.py"
 if %ERRORLEVEL% NEQ 0 (
-    echo       AVISO: CSV pode estar desatualizado!
-    echo       Verifique se o BlackArrow esta exportando dados.
+    echo       AVISO: CSV pode estar desatualizado ou ausente.
+    echo       Verifique se a macro IniciarExportacaoBlackArrowCSV iniciou.
     echo       Pressione qualquer tecla para continuar mesmo assim...
     pause >NUL
 ) else (
     echo       CSV OK.
 )
 
+:: ============================================================
+:: [4/6] Acessa a pasta do projeto
+:: ============================================================
 echo.
-echo [3/5] Acessando pasta do projeto...
+echo [4/6] Acessando pasta do projeto...
 cd /d "%BASE%"
 if %ERRORLEVEL% NEQ 0 (
     echo       ERRO: Pasta nao encontrada: %BASE%
@@ -42,14 +71,20 @@ if %ERRORLEVEL% NEQ 0 (
 )
 echo       OK.
 
+:: ============================================================
+:: [5/6] Inicia o Robo V7.1
+:: ============================================================
 echo.
-echo [4/5] Iniciando Robo V7.1...
+echo [5/6] Iniciando Robo V7.1...
 start "ROBO V7.1" cmd /k "cd /d %BASE% && call .venv\Scripts\activate.bat && python sinal_v71_blackarrow_tempo_real_log_inteligente.py"
 timeout /t 5 /nobreak >NUL
 echo       Robo iniciado.
 
+:: ============================================================
+:: [6/6] Inicia o Monitor
+:: ============================================================
 echo.
-echo [5/5] Iniciando Monitor...
+echo [6/6] Iniciando Monitor...
 start "MONITOR V7.1" powershell -ExecutionPolicy Bypass -NoExit -File "%BASE%\monitor_alarme_v71_oficial_completo.ps1"
 echo       Monitor iniciado.
 
@@ -57,10 +92,11 @@ echo.
 echo ============================================================
 echo   TUDO INICIADO
 echo ============================================================
-echo   Robo   : janela "ROBO V7.1"
-echo   Monitor: janela "MONITOR V7.1"
-echo   Stop: 90pts  Take: 50.5pts  Max: 3 trades/dia
-echo   Janela: 02:00 - 06:00
+echo   Planilha : blackarrow_rtd.xlsm (macro rodando em background)
+echo   Robo     : janela "ROBO V7.1"
+echo   Monitor  : janela "MONITOR V7.1"
+echo   Take     : 50,5 pts   Stop: 117 pts   Max: 3 trades/dia
+echo   Janela   : 02:00 - 06:00 (bloqueio 04:30-04:45)
 echo ============================================================
 echo.
 pause
