@@ -1,0 +1,30 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+
+# Dados sensíveis / grandes
+*.zip
+*.rar
+*.csv
+*.xlsx
+*.xls
+
+# Backups e temporários
+*_BACKUP_*
+Cloaude/
+PACOTE_*/
+CAMPEOES_V4/
+OPERACIONAL_*/
+BACKUP_*/
+"Eroos dos v7.1/"
+saida*/
