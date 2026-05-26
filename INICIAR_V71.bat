@@ -41,7 +41,7 @@ echo [3/6] Verificando CSV do BlackArrow...
 python "%BASE%\checar_csv_v71.py"
 if %ERRORLEVEL% NEQ 0 (
     echo       AVISO: CSV pode estar desatualizado ou ausente.
-    echo       Verifique se a macro IniciarExportacaoBlackArrowCSV iniciou.
+    echo       Verifique se a macro IniciarExportacaoBlackArrowV71 iniciou.
     echo       Pressione qualquer tecla para continuar mesmo assim...
     pause >NUL
 ) else (

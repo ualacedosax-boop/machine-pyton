@@ -1,6 +1,6 @@
 param(
     [string]$Planilha = "C:\Users\ualac\Documents\2025\Mercado\machine-pyton\blackarrow_rtd.xlsm",
-    [string]$Macro    = "IniciarExportacaoBlackArrowCSV"
+    [string]$Macro    = "IniciarExportacaoBlackArrowV71"
 )
 
 $LogFile = "C:\Users\ualac\Documents\2025\Mercado\machine-pyton\log_abrir_excel.txt"
