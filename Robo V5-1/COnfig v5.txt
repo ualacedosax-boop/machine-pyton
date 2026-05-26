@@ -1,0 +1,10 @@
+saida_v5_1_feature_select_threshold_fino\modelo_melhor_v5_1.joblib
+saida_v5_1_feature_select_threshold_fino\features_melhor_v5_1.joblib
+saida_v5_1_feature_select_threshold_fino\02_melhor_config_v5_1.json
+
+
+
+Modelo: RandomForest
+Modo: DIRECAO_SEPARADA
+Top features: 150
+Threshold: 0.575

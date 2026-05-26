@@ -1,0 +1,16 @@
+Robo v4
+
+
+.\.venv\Scripts\Activate.ps1
+
+python sinal_v4_blackarrow_tempo_real.py
+
+
+monitor
+
+
+cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+.\monitor_alarme_v4_completo.ps1

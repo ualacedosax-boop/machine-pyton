@@ -1,0 +1,52 @@
+Robo no powershell
+
+.\.venv\Scripts\Activate.ps1
+python sinal_v4_blackarrow_tempo_real.py
+
+
+
+
+monitor
+
+cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\monitor_alarme_v4_completo.ps1
+
+
+Conferencia de candles
+
+$hoje = Get-Date -Format "yyyy-MM-dd"
+
+Import-Csv ".\operacional_v4\blackarrow_candles_2min.csv" |
+Where-Object { $_.DataHora_SP -like "$hoje*" } |
+Measure-Object
+
+
+
+Verifcar se hove entrada todas
+
+cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+
+Import-Csv ".\operacional_v4\log_sinal_v4_blackarrow.csv" |
+Where-Object {
+    $_.sinal -in @("buy","sell")
+} |
+Select-Object datahora_execucao, sinal, motivo, datahora_ultimo_candle_sp, preco_close, prob_win_v4, Direcao |
+Format-Table -AutoSize
+
+
+Verificar entrada hoje
+
+
+cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+
+$hoje = Get-Date -Format "yyyy-MM-dd"
+
+Import-Csv ".\operacional_v4\log_sinal_v4_blackarrow.csv" |
+Where-Object {
+    $_.sinal -in @("buy","sell") -and
+    $_.datahora_execucao -like "$hoje*"
+} |
+Select-Object datahora_execucao, sinal, motivo, datahora_ultimo_candle_sp, preco_close, prob_win_v4, Direcao |
+Format-Table -AutoSize
+

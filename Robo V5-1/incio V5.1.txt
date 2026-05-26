@@ -1,0 +1,13 @@
+Incio Robo v5.1
+
+
+.\.venv\Scripts\python.exe .\sinal_v4_blackarrow_tempo_real.py
+
+
+
+monitor
+
+
+
+.\monitor_alarme_v4_completo.ps1
+

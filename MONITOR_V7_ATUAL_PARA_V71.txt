@@ -1,0 +1,260 @@
+﻿# monitor_alarme_v7_oficial_completo.ps1
+# Monitor completo V7 OFICIAL:
+# - Le ultimo_sinal_v4_blackarrow.json gerado pelo robo V7
+# - Mostra Prob V5.1, Prob V5.5, Gap, BUY, SELL, checklist e melhores scores
+# - Monitora entrada real no CSV
+# - Toca alarme diferente com voz para COMPRA e VENDA
+
+# ============================================================
+# CAMINHOS
+# ============================================================
+
+$basePath = "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+
+$jsonPath1 = Join-Path $basePath "ultimo_sinal_v4_blackarrow.json"
+$jsonPath2 = Join-Path $basePath "operacional_v4\ultimo_sinal_v4_blackarrow.json"
+
+$csvPath = Join-Path $basePath "operacional_v4\log_sinal_v4_blackarrow.csv"
+$csvAprendizadoPath = Join-Path $basePath "operacional_v4\aprendizado_v7\eventos\eventos_v7_inteligente.csv"
+$resultadosAprendizadoPath = Join-Path $basePath "operacional_v4\aprendizado_v7\resultados\resultados_v7_inteligente.csv"
+
+# Usa o JSON que existir
+if (Test-Path $jsonPath1) {
+    $jsonPath = $jsonPath1
+}
+elseif (Test-Path $jsonPath2) {
+    $jsonPath = $jsonPath2
+}
+else {
+    $jsonPath = $jsonPath2
+}
+
+# ============================================================
+# LIMITES OFICIAIS DA V7
+# ============================================================
+
+$minProbV51 = 0.590
+$minProbV55 = 0.425
+$minBuy     = 0.74
+$minSell    = 0.50
+$minGap     = -999.0   # V7 oficial nao usa corte minimo de gap; exibe apenas diagnostico
+
+# ============================================================
+# VOZ DO WINDOWS
+# ============================================================
+
+try {
+    Add-Type -AssemblyName System.Speech
+    $voz = New-Object System.Speech.Synthesis.SpeechSynthesizer
+    $voz.Volume = 100
+    $voz.Rate = 2
+}
+catch {
+    $voz = $null
+}
+
+# ============================================================
+# VARIAVEIS DE CONTROLE
+# ============================================================
+
+$ultimoSinalProcessadoCSV = ""
+
+$melhorBuy = -999
+$melhorSell = -999
+$melhorV51 = -999
+$melhorV55 = -999
+$melhorGap = -999
+
+$melhorBuyHora = ""
+$melhorSellHora = ""
+$melhorV51Hora = ""
+$melhorV55Hora = ""
+$melhorGapHora = ""
+
+$melhorBuyPreco = ""
+$melhorSellPreco = ""
+$melhorV51Preco = ""
+$melhorV55Preco = ""
+$melhorGapPreco = ""
+
+# ============================================================
+# FUNCOES
+# ============================================================
+
+function To-Double {
+    param ($valor)
+
+    if ($null -eq $valor) {
+        return 0.0
+    }
+
+    $txt = "$valor".Trim()
+    if ($txt -eq "") { return 0.0 }
+
+    # Remove separador de milhar brasileiro quando existir formato 29.520,00
+    if ($txt.Contains(",")) {
+        $txt = $txt.Replace(".", "")
+        $txt = $txt.Replace(",", ".")
+    }
+    else {
+        $txt = $txt.Replace(",", "")
+    }
+
+    try {
+        return [double]::Parse($txt, [System.Globalization.CultureInfo]::InvariantCulture)
+    }
+    catch {
+        return 0.0
+    }
+}
+
+function Format-Num {
+    param (
+        $valor,
+        $casas = 6
+    )
+
+    try {
+        $v = To-Double $valor
+        return $v.ToString("N$casas")
+    }
+    catch {
+        return "$valor"
+    }
+}
+
+function Barra-Progresso {
+    param (
+        [double]$valor,
+        [double]$minimo
+    )
+
+    $tamanho = 24
+
+    if ($minimo -le 0) {
+        $perc = 0
+    }
+    else {
+        $perc = $valor / $minimo
+    }
+
+    if ($perc -lt 0) { $perc = 0 }
+    if ($perc -gt 1) { $perc = 1 }
+
+    $cheio = [int]($perc * $tamanho)
+    $vazio = $tamanho - $cheio
+
+    $barra = ("#" * $cheio) + ("-" * $vazio)
+    $percentual = "{0:N1}%" -f ($perc * 100)
+
+    return "[$barra] $percentual"
+}
+
+function Faltando {
+    param (
+        [double]$valor,
+        [double]$minimo
+    )
+
+    $falta = $minimo - $valor
+
+    if ($falta -le 0) {
+        return "0,000000"
+    }
+
+    return $falta.ToString("N6")
+}
+
+function Get-Prop {
+    param (
+        $obj,
+        [string[]]$nomes
+    )
+
+    foreach ($nome in $nomes) {
+        if ($null -ne $obj.PSObject.Properties[$nome]) {
+            return $obj.$nome
+        }
+    }
+
+    return $null
+}
+
+function Read-LastCsvRowSafe {
+    param ($path)
+
+    if (!(Test-Path $path)) {
+        return $null
+    }
+
+    try {
+        $dadosCsv = Import-Csv $path
+        if ($dadosCsv.Count -le 0) {
+            return $null
+        }
+        return ($dadosCsv | Select-Object -Last 1)
+    }
+    catch {
+        return $null
+    }
+}
+
+function Count-CsvRowsSafe {
+    param ($path)
+
+    if (!(Test-Path $path)) {
+        return 0
+    }
+
+    try {
+        $dadosCsv = Import-Csv $path
+        return $dadosCsv.Count
+    }
+    catch {
+        return 0
+    }
+}
+
+function Tocar-AlarmeCompra {
+    param ($voz)
+
+    Write-Host ""
+    Write-Host "ALERTA: COMPRA DETECTADA - BUY" -ForegroundColor Green
+
+    for ($i = 0; $i -lt 3; $i++) {
+        [console]::beep(1400, 150)
+        Start-Sleep -Milliseconds 50
+        [console]::beep(1800, 150)
+
+        if ($null -ne $voz) {
+            $voz.Speak("Compra detectada")
+        }
+
+        Start-Sleep -Milliseconds 250
+    }
+}
+
+function Tocar-AlarmeVenda {
+    param ($voz)
+
+    Write-Host ""
+    Write-Host "ALERTA: VENDA DETECTADA - SELL" -ForegroundColor Red
+
+    for ($i = 0; $i -lt 3; $i++) {
+        [console]::beep(700, 250)
+        Start-Sleep -Milliseconds 80
+        [console]::beep(500, 250)
+
+        if ($null -ne $voz) {
+            $voz.Speak("Venda detectada")
+        }
+
+        Start-Sleep -Milliseconds 250
+    }
+}
+
+function Verificar-Alarme-CSV {
+    param (
+        $csvPath,
+        $voz
+    )

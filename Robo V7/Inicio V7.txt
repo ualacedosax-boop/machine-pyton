@@ -1,0 +1,15 @@
+Robo V7
+
+
+cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+
+.\.venv\Scripts\python.exe .\sinal_v7_blackarrow_tempo_real_log_inteligente.py
+
+
+
+
+monitor 
+
+
+
+.\monitor_alarme_v4_completo.ps1

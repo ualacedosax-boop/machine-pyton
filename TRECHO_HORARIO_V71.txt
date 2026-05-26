@@ -1,0 +1,81 @@
+﻿  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:501:            "preco_take": payload.get("preco_take", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:502:            "preco_stop": payload.get("preco_stop", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:503:            "take_pontos": payload.get("take_pontos", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:504:            "stop_pontos": payload.get("stop_pontos", np.nan),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:505:            "hora_decimal_sp": payload.get("hora_decimal_sp", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:506:            "Direcao": direcao,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:507:            "prob_v51": payload.get("prob_v51", payload.get("prob_win_v4", np.nan)),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:508:            "prob_v55": payload.get("prob_v55", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:509:            "gap_v51_v55": payload.get("gap_v51_v55", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:510:            "prob_v51_min": payload.get("prob_v51_min", payload.get("prob_win_min", np.nan)),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:511:            "prob_v55_min": payload.get("prob_v55_min", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:517:            "score_diff": payload.get("score_diff", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:518:            "score_buy_min": payload.get("score_buy_min", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:519:            "score_sell_min": payload.get("score_sell_min", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:520:            "diferenca_minima": payload.get("diferenca_minima", np.nan),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:521:            "dentro_horario_v7": payload.get("dentro_horario_v7", payload.get("dentro_horario_v4", None)),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:522:            "bloqueio_0430_0444": payload.get("bloqueio_0430_0444", None),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:523:            "horario_operacional_valido": payload.get("horario_operacional_valido", None),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:524:            "trades_hoje": payload.get("trades_hoje", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:525:            "max_trades_dia": payload.get("max_trades_dia", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:526:            "loss_no_dia": payload.get("loss_no_dia", None),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:527:            "parar_apos_loss": payload.get("parar_apos_loss", None),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:528:            "candles_disponiveis": payload.get("candles_disponiveis", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:529:        }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1940:    prob_v53_min = float(probs_v53.get("prob_v53_min", PROB_V53_MIN_OFICIAL))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1941:    v53_aprovou_modelo = bool(probs_v53.get("v53_aprovou_modelo", False))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1942:    erro_v53 = str(probs_v53.get("erro_v53", ""))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1943:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1944:    hora_decimal = float(ultima["Hora_SP_Decimal"])
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1945:    dentro_horario = config_v4["hora_inicio"] <= hora_decimal <= config_v4["hora_fim"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1946:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1947:    bloqueio_0430 = (
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1948:        bool(config_v4.get("bloquear_0430_0444", False))
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1949:        and hora_decimal >= float(config_v4.get("hora_bloqueio_inicio", 999.0))
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1950:        and hora_decimal < float(config_v4.get("hora_bloqueio_fim", -999.0))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1951:    )
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1952:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1953:    horario_operacional_valido = dentro_horario and not bloqueio_0430
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1954:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1955:    data_atual = ultima["Data"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1956:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1957:    estado = carregar_estado_operacional()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1958:    estado = atualizar_estado_para_data(estado, data_atual)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1959:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1981:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1982:    direcao = score_v3["Direcao"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1983:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1984:    cond_base = (
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1985:        horario_operacional_valido and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1986:        pode_operar_dia and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1987:        not ja_enviou_nesse_candle and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1988:        prob_v51 >= config_v4["prob_win_min"] and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1989:        (pd.isna(prob_v55) or prob_v55 >= float(config_v4.get("prob_v55_min", 0.0))) and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1990:        score_v3["score_diff"] >= config_v4["diferenca_minima"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:1991:    )
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2046:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2047:    motivo = "sem_sinal"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2048:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2049:    if not dentro_horario:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2050:        motivo = "fora_do_horario_v4"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2051:    elif ja_enviou_nesse_candle:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2052:        motivo = "sinal_ja_enviado_neste_candle"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2053:    elif not pode_operar_dia:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2054:        motivo = "limite_diario_ou_loss_no_dia"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2055:    elif prob_v51 < config_v4["prob_win_min"]:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2056:        motivo = "prob_v51_abaixo_minimo"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2084:        "preco_take": None if pd.isna(preco_take) else float(preco_take),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2085:        "preco_stop": None if pd.isna(preco_stop) else float(preco_stop),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2086:        "take_pontos": config_v4["take_pontos"],
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2087:        "stop_pontos": config_v4["stop_pontos"],
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2088:        "hora_decimal_sp": hora_decimal,
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2089:        "dentro_horario_v4": bool(dentro_horario),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2090:        "dentro_horario_v7": bool(dentro_horario),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2091:        "bloqueio_0430_0444": bool(bloqueio_0430),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2092:        "horario_operacional_valido": bool(horario_operacional_valido),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2093:        "bloquear_0430_0444": bool(config_v4.get("bloquear_0430_0444", False)),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2094:        "hora_bloqueio_inicio": float(config_v4.get("hora_bloqueio_inicio", 999.0)),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2095:        "hora_bloqueio_fim": float(config_v4.get("hora_bloqueio_fim", -999.0)),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2096:        "prob_win_v4": float(prob_win_v4),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2097:        "prob_v51": float(prob_v51),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v71_blackarrow_tempo_real_log_inteligente.py:2098:        "prob_v55": None if pd.isna(prob_v55) else float(prob_v55),

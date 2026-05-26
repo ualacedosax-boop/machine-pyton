@@ -1,0 +1,865 @@
+﻿  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2:import json
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:3:import time
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:4:import warnings
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:5:import joblib
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:6:import numpy as np
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:7:import pandas as pd
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:8:from datetime import datetime
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:9:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:10:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:27:ARQUIVO_CANDLES = os.path.join(PASTA_OPERACIONAL, "blackarrow_candles_2min.csv")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:28:ARQUIVO_FEATURES_TEMPO_REAL = os.path.join(PASTA_OPERACIONAL, "features_blackarrow_tempo_real.csv")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:29:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:30:ARQUIVO_SINAL_TXT = os.path.join(PASTA_OPERACIONAL, "sinal.txt")
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:31:ARQUIVO_ULTIMO_SINAL_JSON = os.path.join(PASTA_OPERACIONAL, "ultimo_sinal_v4_blackarrow.json")
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:32:ARQUIVO_LOG = os.path.join(PASTA_OPERACIONAL, "log_sinal_v4_blackarrow.csv")
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:33:ARQUIVO_LOG_RESERVA = os.path.join(PASTA_OPERACIONAL, "log_sinal_v4_blackarrow_reserva.csv")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:34:ARQUIVO_ESTADO = os.path.join(PASTA_OPERACIONAL, "estado_operacional_v4_blackarrow.json")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:35:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:36:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:37:# APRENDIZADO INTELIGENTE V7
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:38:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:52:]:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:53:    os.makedirs(_pasta, exist_ok=True)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:54:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:55:ARQUIVO_APRENDIZADO_EVENTOS = os.path.join(PASTA_APRENDIZADO_EVENTOS, "eventos_v7_inteligente.csv")
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:56:ARQUIVO_APRENDIZADO_PENDENTES = os.path.join(PASTA_APRENDIZADO_RESULTADOS, "operacoes_pendentes_v7.csv")
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:57:ARQUIVO_APRENDIZADO_RESULTADOS = os.path.join(PASTA_APRENDIZADO_RESULTADOS, "resultados_v7_inteligente.csv")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:58:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:59:ARQUIVO_MODELO_V3 = os.path.join(PASTA_V3, "modelo_v3_score.joblib")
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:60:ARQUIVO_FEATURES_V3 = os.path.join(PASTA_V3, "features_v3_score.joblib")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:61:ARQUIVO_CONFIG_V3 = os.path.join(PASTA_V3, "config_modelo_v3_score.json")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:62:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:63:ARQUIVO_CONFIG_V4 = os.path.join(PASTA_V4, "config_melhor_v4.json")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:64:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:65:ARQUIVO_CONFIG_V7 = os.path.join(PASTA_V7, "config_v7_oficial.json")
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:66:ARQUIVO_MODELO_V7 = os.path.join(PASTA_V7, "modelos_final_v7_oficial.joblib")
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:67:ARQUIVO_FEATURES_V7 = os.path.join(PASTA_V7, "features_final_v7_oficial.joblib")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:68:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:69:# Mantive os nomes V4 internamente para reduzir risco de quebrar o restante do código.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:70:# A partir desta versão, eles apontam para a V7 OFICIAL.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:71:ARQUIVO_MODELO_V4 = ARQUIVO_MODELO_V7
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:72:ARQUIVO_FEATURES_V4 = ARQUIVO_FEATURES_V7
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:110:# OBTER COLUNA FLEXIVEL DO BLACKARROW
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:111:# ============================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:112:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:113:def obter_valor_coluna_flexivel(row, nomes, padrao=np.nan):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:114:    try:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:115:        # tenta nomes exatos
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:116:        for nome in nomes:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:117:            if nome in row.index:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:118:                return row.get(nome, padrao)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:161:        return padrao
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:162:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:163:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:164:def corrigir_ultima_com_df_feat(ultima, df_feat):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:165:    import pandas as pd
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:166:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:167:    try:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:168:        if ultima is None:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:169:            return ultima
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:220:        return ultima
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:221:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:222:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:223:def garantir_coluna_datahora_sp(df):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:224:    import pandas as pd
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:225:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:226:    if df is None:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:227:        return df
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:228:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:251:    return df
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:252:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:253:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:254:def limpar_inf_nan_ml(X):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:255:    import numpy as np
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:256:    import pandas as pd
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:257:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:258:    if isinstance(X, pd.DataFrame):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:259:        X = X.replace([np.inf, -np.inf], 0)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:273:        return X
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:274:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:275:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:276:def salvar_txt_seguro(texto, caminho):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:277:    temp = caminho + ".tmp"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:278:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:279:    with open(temp, "w", encoding="utf-8") as f:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:280:        f.write(str(texto).strip().lower())
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:281:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:297:                pass
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:298:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:299:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:300:def salvar_json_seguro(obj, caminho):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:301:    temp = caminho + ".tmp"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:302:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:303:    with open(temp, "w", encoding="utf-8") as f:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:304:        json.dump(obj, f, ensure_ascii=False, indent=4, default=str)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:305:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:323:                pass
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:324:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:325:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:326:def salvar_csv_seguro(df, caminho):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:327:    temp = caminho + ".tmp"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:328:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:329:    df.to_csv(temp, index=False, encoding="latin1")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:330:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:331:    try:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:345:                pass
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:346:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:347:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:348:def append_log(payload):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:349:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:350:    Salva o log sem apagar o arquivo existente.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:351:    Isso evita WinError 32 quando o monitor PowerShell estÃƒÆ’Ã‚Â¡ lendo o CSV.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:352:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:353:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:379:        print(ARQUIVO_LOG_RESERVA)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:380:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:381:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:382:def append_csv_generico(payload, caminho, encoding="utf-8-sig"):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:383:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:384:    Append seguro para CSV de aprendizado.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:385:    Nao apaga arquivo existente e usa reserva se o arquivo estiver ocupado.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:386:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:387:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:414:        print(reserva)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:415:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:416:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:417:def gerar_event_id(datahora_ultimo_candle, sinal, direcao, preco):
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:418:    texto = f"{datahora_ultimo_candle}|{sinal}|{direcao}|{preco}"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:419:    texto = texto.replace(" ", "_").replace(":", "").replace("-", "").replace(".", "_")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:420:    return texto
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:421:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:422:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:423:def ja_registrou_evento_aprendizado(event_id):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:424:    if not os.path.exists(ARQUIVO_APRENDIZADO_EVENTOS):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:425:        return False
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:426:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:427:    try:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:428:        df = pd.read_csv(
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:441:        return False
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:442:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:443:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:444:def salvar_evento_aprendizado(payload):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:445:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:446:    Salva 1 evento por candle para aprendizado futuro:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:447:    - entradas aceitas
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:448:    - entradas bloqueadas
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:449:    - motivo de nao entrada
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:451:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:452:    try:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:453:        datahora_candle = str(payload.get("datahora_ultimo_candle_sp", ""))
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:454:        sinal = str(payload.get("sinal", "none"))
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:455:        direcao = str(payload.get("Direcao", "NONE"))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:456:        preco = payload.get("preco_close", np.nan)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:457:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:458:        event_id = payload.get("event_id", "")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:459:        if not event_id:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:460:            event_id = gerar_event_id(datahora_candle, sinal, direcao, preco)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:461:            payload["event_id"] = event_id
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:462:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:463:        if ja_registrou_evento_aprendizado(event_id):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:464:            return
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:465:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:466:        evento = {
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:467:            "event_id": event_id,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:468:            "versao_robo": payload.get("versao_robo", "V7_OFICIAL"),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:469:            "tipo_evento": "entrada" if sinal in ["buy", "sell"] else "bloqueio_ou_sem_sinal",
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:470:            "sinal": sinal,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:471:            "motivo": payload.get("motivo", ""),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:472:            "modo_seguro_sem_ordem": payload.get("modo_seguro_sem_ordem", None),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:473:            "datahora_execucao": payload.get("datahora_execucao", ""),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:474:            "datahora_ultimo_candle_sp": datahora_candle,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:475:            "data": payload.get("data", ""),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:479:            "take_pontos": payload.get("take_pontos", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:480:            "stop_pontos": payload.get("stop_pontos", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:481:            "hora_decimal_sp": payload.get("hora_decimal_sp", np.nan),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:482:            "Direcao": direcao,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:483:            "prob_v51": payload.get("prob_v51", payload.get("prob_win_v4", np.nan)),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:484:            "prob_v55": payload.get("prob_v55", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:485:            "gap_v51_v55": payload.get("gap_v51_v55", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:486:            "prob_v51_min": payload.get("prob_v51_min", payload.get("prob_win_min", np.nan)),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:487:            "prob_v55_min": payload.get("prob_v55_min", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:488:            "score_NONE": payload.get("score_NONE", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:489:            "score_BUY": payload.get("score_BUY", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:490:            "score_SELL": payload.get("score_SELL", np.nan),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:491:            "score_direcao": payload.get("score_direcao", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:492:            "score_oposto": payload.get("score_oposto", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:493:            "score_diff": payload.get("score_diff", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:494:            "score_buy_min": payload.get("score_buy_min", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:495:            "score_sell_min": payload.get("score_sell_min", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:496:            "diferenca_minima": payload.get("diferenca_minima", np.nan),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:506:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:507:        append_csv_generico(evento, ARQUIVO_APRENDIZADO_EVENTOS)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:508:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:509:        if sinal in ["buy", "sell"]:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:510:            salvar_operacao_pendente_aprendizado(evento)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:511:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:512:    except Exception as e:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:513:        print("AVISO: falha ao salvar evento de aprendizado:", e)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:514:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:515:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:516:def salvar_operacao_pendente_aprendizado(evento):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:517:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:518:    Registra entrada aceita para depois descobrir se bateu take ou stop.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:519:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:520:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:521:    try:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:539:        append_csv_generico(pendente, ARQUIVO_APRENDIZADO_PENDENTES)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:540:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:541:    except Exception as e:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:542:        print("AVISO: falha ao salvar operacao pendente:", e)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:543:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:544:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:545:def atualizar_loss_no_dia_se_stop(data_operacao):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:546:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:547:    Se uma operacao pendente bater stop, marca loss_no_dia no estado.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:548:    Isso ajuda o filtro 'parar apos loss' a funcionar melhor no tempo real.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:549:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:550:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:552:        estado = carregar_estado_operacional()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:553:        estado = atualizar_estado_para_data(estado, data_operacao)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:554:        estado["loss_no_dia"] = True
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:555:        salvar_estado_operacional(estado)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:556:    except Exception as e:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:557:        print("AVISO: nao consegui atualizar loss_no_dia:", e)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:558:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:559:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:560:def atualizar_resultados_aprendizado(candles):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:561:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:562:    Usa os candles ja formados para verificar operacoes pendentes:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:563:    - take
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:564:    - stop
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:565:    - maxima a favor
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:594:        for _, op in pend.iterrows():
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:595:            try:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:596:                event_id = str(op.get("event_id", ""))
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:597:                sinal = str(op.get("sinal", "")).lower()
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:598:                direcao = str(op.get("Direcao", "")).upper()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:599:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:600:                entrada = float(op.get("preco_close", np.nan))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:601:                take = float(op.get("preco_take", np.nan))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:602:                stop = float(op.get("preco_stop", np.nan))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:603:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:619:                motivo_resultado = ""
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:620:                candles_ate_resultado = 0
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:621:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:622:                if sinal == "buy" or direcao == "BUY":
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:623:                    mfe = float((futuro["high"] - entrada).max())
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:624:                    mae = float((futuro["low"] - entrada).min())
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:625:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:626:                    for i, row in enumerate(futuro.itertuples(index=False), start=1):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:627:                        tocou_stop = float(row.low) <= stop
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:656:                    else:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:657:                        pontos_resultado = np.nan
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:658:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:659:                elif sinal == "sell" or direcao == "SELL":
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:660:                    mfe = float((entrada - futuro["low"]).max())
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:661:                    mae = float((entrada - futuro["high"]).min())
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:662:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:663:                    for i, row in enumerate(futuro.itertuples(index=False), start=1):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:664:                        tocou_stop = float(row.high) >= stop
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:745:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:746:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:747:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:748:def carregar_json(caminho):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:749:    if not os.path.exists(caminho):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:750:        return {}
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:751:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:752:    with open(caminho, "r", encoding="utf-8") as f:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:753:        return json.load(f)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:757:# CONFIG / MODELOS
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:758:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:759:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:760:def carregar_config_v4():
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:761:    if not os.path.exists(ARQUIVO_CONFIG_V4):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:762:        raise FileNotFoundError(f"NÃƒÆ’Ã‚Â£o encontrei: {ARQUIVO_CONFIG_V4}")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:763:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:764:    config = carregar_json(ARQUIVO_CONFIG_V4)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:765:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:781:    return config
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:782:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:783:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:784:def carregar_modelo_v3():
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:785:    if not os.path.exists(ARQUIVO_MODELO_V3):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:786:        raise FileNotFoundError(f"NÃƒÆ’Ã‚Â£o encontrei modelo V3: {ARQUIVO_MODELO_V3}")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:787:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:788:    if not os.path.exists(ARQUIVO_FEATURES_V3):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:789:        raise FileNotFoundError(f"NÃƒÆ’Ã‚Â£o encontrei features V3: {ARQUIVO_FEATURES_V3}")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:790:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:791:    modelo = joblib.load(ARQUIVO_MODELO_V3)
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:792:    features = joblib.load(ARQUIVO_FEATURES_V3)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:793:    config = carregar_json(ARQUIVO_CONFIG_V3)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:794:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:795:    print("Modelo V3 carregado:", ARQUIVO_MODELO_V3)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:796:    print("Features V3:", len(features))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:797:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:798:    return modelo, features, config
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:799:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:800:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:801:def carregar_modelo_v4():
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:802:    if not os.path.exists(ARQUIVO_MODELO_V4):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:803:        raise FileNotFoundError(f"Nao encontrei modelo V7: {ARQUIVO_MODELO_V4}")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:804:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:805:    if not os.path.exists(ARQUIVO_FEATURES_V4):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:806:        raise FileNotFoundError(f"Nao encontrei features V7: {ARQUIVO_FEATURES_V4}")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:807:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:808:    modelo = joblib.load(ARQUIVO_MODELO_V4)
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:809:    features = joblib.load(ARQUIVO_FEATURES_V4)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:810:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:811:    print("Modelo operacional V7 carregado:", ARQUIVO_MODELO_V4)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:812:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:813:    if isinstance(features, dict):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:814:        print("Features V7 v51:", len(features.get("v51", [])))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:823:# LEITURA BLACKARROW RTD
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:824:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:825:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:826:def parse_numero_br(valor):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:827:    if pd.isna(valor):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:828:        return np.nan
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:829:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:830:    s = str(valor).strip().replace('"', '')
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:831:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:842:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:843:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:844:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:845:def ler_blackarrow_rtd():
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:846:    if not os.path.exists(ARQUIVO_BLACKARROW_RTD):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:847:        raise FileNotFoundError(f"Nao encontrei: {ARQUIVO_BLACKARROW_RTD}")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:848:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:849:    ultimo_erro = None
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:850:    df = None
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:872:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:873:    row = df.iloc[-1]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:874:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:875:    def valor_pos(pos, padrao=np.nan):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:876:        try:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:877:            if len(row) > pos:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:878:                return row.iloc[pos]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:879:        except Exception:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:880:            pass
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:881:        return padrao
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:882:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:883:    def num(x):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:884:        try:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:885:            if x is None:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:886:                return np.nan
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:887:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:888:            s = str(x).strip()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:949:    }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:950:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:951:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:952:def atualizar_ticks(tick):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:953:    df_tick = pd.DataFrame([tick])
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:954:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:955:    if os.path.exists(ARQUIVO_TICKS):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:956:        ticks = pd.read_csv(ARQUIVO_TICKS, low_memory=False)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:957:        ticks["DataHora_SP"] = pd.to_datetime(ticks["DataHora_SP"], errors="coerce")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:970:        if len(ticks) > 30000:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:971:            ticks = ticks.tail(30000).reset_index(drop=True)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:972:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:973:        salvar_csv_seguro(ticks, ARQUIVO_TICKS)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:974:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:975:        return ticks
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:976:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:977:    salvar_csv_seguro(df_tick, ARQUIVO_TICKS)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:978:    return df_tick
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:979:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:980:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:981:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:982:# MONTAR CANDLES 2 MIN
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:983:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:984:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:985:def montar_candles_2min(ticks):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:986:    if ticks.empty:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:987:        return pd.DataFrame()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:988:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:989:    base = ticks.copy()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:990:    base["DataHora_SP"] = pd.to_datetime(base["DataHora_SP"], errors="coerce")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1048:        "localSymbol",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1049:    ]].copy()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1050:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1051:    salvar_csv_seguro(candles, ARQUIVO_CANDLES)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1052:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1053:    return candles
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1054:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1055:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1056:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1057:# INDICADORES / FEATURES
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1058:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1059:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1060:def ema(series, n):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1061:    return series.ewm(span=n, adjust=False).mean()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1062:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1063:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1064:def rma(series, n):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1065:    return series.ewm(alpha=1 / n, adjust=False).mean()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1066:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1067:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1068:def sma(series, n):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1069:    return series.rolling(n).mean()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1070:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1071:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1072:def calcular_rsi(close, n):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1073:    delta = close.diff()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1074:    ganho = delta.clip(lower=0)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1075:    perda = -delta.clip(upper=0)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1076:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1077:    avg_gain = rma(ganho, n)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1082:    return 100 - (100 / (1 + rs))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1083:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1084:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1085:def calcular_stoch_rsi(close, rsi_len=14, stoch_len=14, smooth_k=3, smooth_d=3):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1086:    rsi_base = calcular_rsi(close, rsi_len)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1087:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1088:    rsi_min = rsi_base.rolling(stoch_len).min()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1089:    rsi_max = rsi_base.rolling(stoch_len).max()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1090:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1096:    return k, d
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1097:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1098:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1099:def calcular_macd(close, fast=12, slow=26, signal=9):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1100:    macd_line = ema(close, fast) - ema(close, slow)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1101:    macd_signal = ema(macd_line, signal)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1102:    macd_hist = macd_line - macd_signal
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1103:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1104:    return macd_line, macd_signal, macd_hist
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1105:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1106:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1107:def calcular_adx(df, n=14):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1108:    high = df["high"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1109:    low = df["low"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1110:    close = df["close"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1111:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1112:    up_move = high - high.shift(1)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1134:    return adx, plus_di, minus_di, tr
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1135:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1136:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1137:def adicionar_sequencias(base):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1138:    base["candle_alta"] = (base["close"] > base["open"]).astype(int)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1139:    base["candle_baixa"] = (base["close"] < base["open"]).astype(int)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1140:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1141:    for n in [2, 3, 4, 5, 8, 10]:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1142:        base[f"seq_alta_{n}"] = base["candle_alta"].rolling(n).sum()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1145:    return base
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1146:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1147:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1148:def adicionar_features_prev(base):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1149:    colunas_para_prev = []
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1150:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1151:    ignorar = {
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1152:        "DataHora_SP",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1153:        "DataHora_Chicago",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1180:    return base.copy()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1181:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1182:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1183:def garantir_features_esperadas(base, features_esperadas):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1184:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1185:    Garante que todas as features esperadas existam e que cada uma seja 1-dimensional.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1186:    Corrige erro:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1187:    Data must be 1-dimensional, got ndarray of shape (..., 2)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1188:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1198:        "cos_hora_sp": "cos_hora",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1199:    }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1200:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1201:    def pegar_coluna_1d(df, nome):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1202:        """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1203:        Retorna sempre uma Series 1D.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1204:        Se por algum motivo vier DataFrame com colunas duplicadas, pega a primeira.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1205:        """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1206:        if nome not in df.columns:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1276:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1277:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1278:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1279:def achatar_features_modelo(features):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1280:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1281:    Aceita:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1282:    - lista antiga de features
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1283:    - dict da V7: {"v51": [...], "v55": [...]}
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1284:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1305:    return []
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1306:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1307:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1308:def preparar_features_tempo_real(df, features_v3, features_v4):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1309:    base = df.copy()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1310:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1311:    base = base.sort_values("DataHora_SP").reset_index(drop=True)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1312:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1313:    base["DataHora_SP"] = pd.to_datetime(base["DataHora_SP"], errors="coerce")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1537:# SCORE V3 / PROB V4
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1538:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1539:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1540:def preparar_X(df_features, feature_cols):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1541:    ultima = df_features.iloc[-1].copy()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1542:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1543:    linha = {}
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1544:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1545:    for col in feature_cols:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1553:    return X, ultima
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1554:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1555:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1556:def calcular_score_v3(modelo_v3, X_v3):
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1557:    probas = modelo_v3.predict_proba(limpar_inf_nan_ml(X_v3))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1558:    classes = list(modelo_v3.named_steps["model"].classes_)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1559:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1560:    score_none = 0.0
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1561:    score_buy = 0.0
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1562:    score_sell = 0.0
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1570:            score_sell = float(probas[0, i])
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1571:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1572:    if score_buy > score_sell:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1573:        direcao = "BUY"
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1574:        score_direcao = score_buy
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1575:        score_oposto = score_sell
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1576:    elif score_sell > score_buy:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1577:        direcao = "SELL"
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1578:        score_direcao = score_sell
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1579:        score_oposto = score_buy
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1580:    else:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1581:        direcao = "NONE"
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1582:        score_direcao = score_none
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1583:        score_oposto = max(score_buy, score_sell)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1584:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1585:    score_diff = score_direcao - score_oposto
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1586:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1587:    return {
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1588:        "score_NONE": score_none,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1589:        "score_BUY": score_buy,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1590:        "score_SELL": score_sell,
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1591:        "Direcao": direcao,
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1592:        "score_direcao": score_direcao,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1593:        "score_oposto": score_oposto,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1594:        "score_diff": score_diff,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1595:    }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1596:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1597:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1598:def calcular_prob_v4(modelo_v4, X_v4, direcao=None):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1599:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1600:    CompatÃ­vel com:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1601:    - modelo Ãºnico antigo da V4
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1602:    - modelo V5.1 em dict: {"BUY": modelo_buy, "SELL": modelo_sell}
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1603:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1605:    modelo_usado = modelo_v4
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1606:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1607:    if isinstance(modelo_v4, dict):
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1608:        direcao_txt = str(direcao or "").upper().strip()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1609:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1610:        if direcao_txt in modelo_v4:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1611:            modelo_usado = modelo_v4[direcao_txt]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1612:        else:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1613:            # fallback conservador:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1614:            # se nÃ£o souber a direÃ§Ã£o, calcula as duas probabilidades
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1615:            # e usa a menor para evitar entrada indevida.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1616:            probs = []
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1619:                if chave in modelo_v4:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1620:                    m = modelo_v4[chave]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1621:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1622:                    if hasattr(m, "predict_proba"):
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1623:                        probs.append(float(m.predict_proba(limpar_inf_nan_ml(X_v4))[0][1]))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1624:                    else:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1625:                        probs.append(float(m.predict(limpar_inf_nan_ml(X_v4))[0]))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1626:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1627:            if probs:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1628:                return float(min(probs))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1629:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1630:            raise RuntimeError("Modelo V5.1 em dict, mas sem chaves BUY/SELL vÃ¡lidas.")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1631:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1632:    if hasattr(modelo_usado, "predict_proba"):
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1633:        prob = modelo_usado.predict_proba(limpar_inf_nan_ml(X_v4))[0][1]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1634:        return float(prob)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1635:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1636:    pred = modelo_usado.predict(limpar_inf_nan_ml(X_v4))[0]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1637:    return float(pred)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1638:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1639:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1640:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1641:def prever_probabilidade_modelo_binario(modelo, X):
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1642:    if hasattr(modelo, "predict_proba"):
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1643:        return float(modelo.predict_proba(limpar_inf_nan_ml(X))[0][1])
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1644:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1645:    pred = modelo.predict(limpar_inf_nan_ml(X))[0]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1646:    return float(pred)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1647:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1648:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1649:def calcular_probs_operacionais_v7(modelo_v4, features_v4, df_feat, ultima, score_v3):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1650:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1651:    Calcula probabilidades oficiais da V7.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1652:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1653:    Formato esperado:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1654:    modelos_final_v7_oficial.joblib:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1655:        {
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1656:            "v51": {"BUY": modelo, "SELL": modelo},
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1657:            "v55": modelo_global
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1658:        }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1659:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1660:    features_final_v7_oficial.joblib:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1661:        {
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1662:            "v51": [...],
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1663:            "v55": [...]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1664:        }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1665:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1666:    Se cair em modelo antigo, mantém compatibilidade usando prob_win_v4.
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1667:    """
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1668:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1669:    direcao = str(score_v3.get("Direcao", "NONE")).upper().strip()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1670:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1671:    # V7 oficial
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1672:    if isinstance(modelo_v4, dict) and "v51" in modelo_v4 and "v55" in modelo_v4:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1673:        if not isinstance(features_v4, dict):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1674:            raise RuntimeError("Modelo V7 carregado, mas features V7 nao estao em dict.")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1682:        modelo_v51 = modelo_v4["v51"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1683:        modelo_v55 = modelo_v4["v55"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1684:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1685:        prob_v51 = calcular_prob_v4(modelo_v51, X_v51, direcao)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1686:        prob_v55 = prever_probabilidade_modelo_binario(modelo_v55, X_v55)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1687:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1688:        return {
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1689:            "prob_win_v4": float(prob_v51),  # compatibilidade com monitor antigo
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1690:            "prob_v51": float(prob_v51),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1696:    # Compatibilidade com V5.1/V4 antiga
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1697:    features_lista = achatar_features_modelo(features_v4)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1698:    X_v4 = montar_X_v4(df_feat, ultima, score_v3, features_lista)
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1699:    prob = calcular_prob_v4(modelo_v4, X_v4, direcao)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1700:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1701:    return {
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1702:        "prob_win_v4": float(prob),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1703:        "prob_v51": float(prob),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1704:        "prob_v55": np.nan,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1707:    }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1708:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1709:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1710:def montar_X_v4(df_features, ultima, score_v3, feature_cols_v4):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1711:    linha = {}
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1712:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1713:    for col in feature_cols_v4:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1714:        if col in score_v3:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1715:            linha[col] = score_v3[col]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1727:# ESTADO OPERACIONAL
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1728:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1729:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1730:def carregar_estado_operacional():
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1731:    if not os.path.exists(ARQUIVO_ESTADO):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1732:        return {
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1733:            "data": "",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1734:            "trades_hoje": 0,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1735:            "loss_no_dia": False,
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1736:            "ultimo_sinal_datahora": "",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1737:        }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1738:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1739:    with open(ARQUIVO_ESTADO, "r", encoding="utf-8") as f:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1740:        return json.load(f)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1741:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1742:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1743:def salvar_estado_operacional(estado):
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1744:    salvar_json_seguro(estado, ARQUIVO_ESTADO)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1745:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1746:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1747:def atualizar_estado_para_data(estado, data_atual):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1748:    data_str = str(data_atual)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1749:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1750:    if estado.get("data") != data_str:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1751:        estado = {
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1752:            "data": data_str,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1753:            "trades_hoje": 0,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1754:            "loss_no_dia": False,
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1755:            "ultimo_sinal_datahora": "",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1756:        }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1757:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1758:    return estado
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1759:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1760:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1761:# =====================================================
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1762:# GERAÃƒÆ’Ã¢â‚¬Â¡ÃƒÆ’Ã†â€™O DE SINAL
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1763:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1764:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1765:def gerar_sinal_tempo_real(candles, config_v4, modelo_v3, features_v3, modelo_v4, features_v4):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1766:    if len(candles) < CANDLES_MINIMOS:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1767:        return {
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1768:            "sinal": "none",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1769:            "motivo": "candles_insuficientes",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1770:            "candles_disponiveis": len(candles),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1771:            "candles_minimos": CANDLES_MINIMOS,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1772:            "datahora_execucao": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1773:        }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1774:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1775:    df_feat = preparar_features_tempo_real(candles, features_v3, features_v4)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1776:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1777:    salvar_csv_seguro(df_feat.tail(300), ARQUIVO_FEATURES_TEMPO_REAL)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1778:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1779:    X_v3, ultima = preparar_X(df_feat, features_v3)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1780:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1781:    
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1782:    ultima = corrigir_ultima_com_df_feat(ultima, df_feat)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1846:        datahora_ultimo_candle = str(pd.Timestamp.now())
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1847:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1848:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1849:    ja_enviou_nesse_candle = estado.get("ultimo_sinal_datahora") == datahora_ultimo_candle
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1850:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1851:    pode_operar_dia = (
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1852:        estado.get("trades_hoje", 0) < config_v4["max_trades_dia"] and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1853:        (not config_v4["parar_apos_loss"] or not estado.get("loss_no_dia", False))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1854:    )
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1855:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1856:    direcao = score_v3["Direcao"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1857:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1858:    cond_base = (
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1859:        horario_operacional_valido and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1860:        pode_operar_dia and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1861:        not ja_enviou_nesse_candle and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1866:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1867:    cond_buy = (
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1868:        cond_base and
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1869:        direcao == "BUY" and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1870:        score_v3["score_BUY"] >= config_v4["score_buy_min"] and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1871:        score_v3["score_BUY"] > score_v3["score_SELL"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1872:    )
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1873:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1874:    cond_sell = (
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1875:        cond_base and
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1876:        direcao == "SELL" and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1877:        score_v3["score_SELL"] >= config_v4["score_sell_min"] and
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1878:        score_v3["score_SELL"] > score_v3["score_BUY"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1879:    )
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1880:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1881:    sinal = "none"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1882:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1883:    if cond_buy:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1884:        sinal = "buy"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1885:    elif cond_sell:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1886:        sinal = "sell"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1887:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1888:    preco_entrada_ref = float(ultima["close"])
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1889:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1890:    if sinal == "buy":
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1891:        preco_take = preco_entrada_ref + config_v4["take_pontos"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1892:        preco_stop = preco_entrada_ref - config_v4["stop_pontos"]
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1893:    elif sinal == "sell":
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1894:        preco_take = preco_entrada_ref - config_v4["take_pontos"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1895:        preco_stop = preco_entrada_ref + config_v4["stop_pontos"]
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1896:    else:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1897:        preco_take = np.nan
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1898:        preco_stop = np.nan
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1899:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1900:    motivo = "sem_sinal"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1901:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1902:    if not dentro_horario:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1903:        motivo = "fora_do_horario_v4"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1904:    elif ja_enviou_nesse_candle:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1905:        motivo = "sinal_ja_enviado_neste_candle"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1906:    elif not pode_operar_dia:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1907:        motivo = "limite_diario_ou_loss_no_dia"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1908:    elif prob_v51 < config_v4["prob_win_min"]:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1909:        motivo = "prob_v51_abaixo_minimo"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1910:    elif (not pd.isna(prob_v55)) and prob_v55 < float(config_v4.get("prob_v55_min", 0.0)):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1911:        motivo = "prob_v55_abaixo_minimo"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1912:    elif score_v3["score_diff"] < config_v4["diferenca_minima"]:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1913:        motivo = "score_diff_abaixo_minimo"
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1914:    elif sinal == "none":
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1915:        motivo = "score_buy_sell_nao_passou"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1916:    else:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1917:        motivo = "sinal_valido"
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1918:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1919:    features_v3_faltando = sum(1 for col in features_v3 if col not in df_feat.columns)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1920:    features_v3_nan_ultimo = sum(1 for col in features_v3 if col in df_feat.columns and pd.isna(ultima[col]))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1921:    features_v3_validas = len(features_v3) - features_v3_faltando - features_v3_nan_ultimo
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1922:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1923:    event_id = gerar_event_id(datahora_ultimo_candle, sinal, direcao, preco_entrada_ref)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1924:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1925:    payload = {
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1926:        "event_id": event_id,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1927:        "versao_robo": "V7_OFICIAL",
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1928:        "sinal": sinal,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1929:        "motivo": motivo,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1930:        "modo_seguro_sem_ordem": MODO_SEGURO_SEM_ORDEM,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1931:        "datahora_execucao": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1932:        "datahora_ultimo_candle_sp": datahora_ultimo_candle,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1933:        "data": str(data_atual),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1953:        "prob_v55_min": config_v4.get("prob_v55_min", None),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1954:        "prob_v51_min": config_v4["prob_win_min"],
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1955:        "prob_v55_min": float(config_v4.get("prob_v55_min", 0.0)),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1956:        "Direcao": direcao,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1957:        "score_NONE": float(score_v3["score_NONE"]),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1958:        "score_BUY": float(score_v3["score_BUY"]),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1959:        "score_SELL": float(score_v3["score_SELL"]),
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1960:        "score_direcao": float(score_v3["score_direcao"]),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1961:        "score_oposto": float(score_v3["score_oposto"]),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1962:        "score_diff": float(score_v3["score_diff"]),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1963:        "score_buy_min": config_v4["score_buy_min"],
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1964:        "score_sell_min": config_v4["score_sell_min"],
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1965:        "diferenca_minima": config_v4["diferenca_minima"],
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1977:        "features_v3_validas": features_v3_validas,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1978:    }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1979:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1980:    if sinal in ["buy", "sell"]:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1981:        estado["trades_hoje"] = int(estado.get("trades_hoje", 0)) + 1
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1982:        estado["ultimo_sinal_datahora"] = datahora_ultimo_candle
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1983:        salvar_estado_operacional(estado)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1984:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1985:    return payload
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1986:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1987:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1988:def salvar_payload_sinal(payload):
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1989:    sinal = payload.get("sinal", "none")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1990:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1991:    salvar_txt_seguro(sinal, ARQUIVO_SINAL_TXT)
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1992:    salvar_json_seguro(payload, ARQUIVO_ULTIMO_SINAL_JSON)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1993:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1994:    append_log(payload)
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1995:    salvar_evento_aprendizado(payload)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1996:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1997:    print("\n=====================================================")
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1998:    print("SINAL ATUAL")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:1999:    print("=====================================================")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2000:    print(json.dumps(payload, ensure_ascii=False, indent=4, default=str))
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2001:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2002:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2003:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2004:# EXECUÃƒÆ’Ã¢â‚¬Â¡ÃƒÆ’Ã†â€™O
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2005:# =====================================================
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2006:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2007:def executar_uma_vez(config_v4, modelo_v3, features_v3, modelo_v4, features_v4):
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2008:    tick = ler_blackarrow_rtd()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2009:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2010:    ticks = atualizar_ticks(tick)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2011:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2012:    candles = montar_candles_2min(ticks)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2013:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2014:    atualizar_resultados_aprendizado(candles)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2015:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2016:    payload = gerar_sinal_tempo_real(
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2017:        candles,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2018:        config_v4,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2019:        modelo_v3,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2020:        features_v3,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2021:        modelo_v4,
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2022:        features_v4
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2023:    )
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2024:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2025:    salvar_payload_sinal(payload)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2026:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2027:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2028:def main():
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2029:    print("=====================================================")
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2030:    print("SINAL V7 OFICIAL BLACKARROW TEMPO REAL - LOG INTELIGENTE")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2031:    print("=====================================================")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2032:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2033:    print("Lendo arquivo:", ARQUIVO_BLACKARROW_RTD)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2034:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2035:    config_v4 = carregar_config_v4()
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2072:                executar_uma_vez(config_v4, modelo_v3, features_v3, modelo_v4, features_v4)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2073:            except Exception as e:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2074:                payload = {
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2075:                    "sinal": "none",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2076:                    "motivo": "erro",
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2077:                    "erro": str(e),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2078:                    "datahora_execucao": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2079:                }
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2080:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2081:                try:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2082:                    salvar_payload_sinal(payload)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2083:                except Exception:
+> C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2084:                    print("ERRO AO SALVAR PAYLOAD DE ERRO:")
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2085:                    print(e)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2086:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2087:                print("ERRO:", e)
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2088:
+  C:\Users\ualac\Documents\2025\Mercado\machine-pyton\sinal_v7_blackarrow_tempo_real_log_inteligente.py:2089:            time.sleep(INTERVALO_SEGUNDOS)

@@ -1,0 +1,118 @@
+Canalde travado : 
+
+Estava travado por 3 motivos em sequência:
+
+O candle estava com data futura
+
+Depois os ticks ficaram sem cabeçalho
+
+Quando corrigimos os candles, alguns scripts salvaram o arquivo:
+
+
+Tinha mistura de horários da sessão noturna
+
+Parte dos dados da noite ficou no mesmo dia, tipo:
+
+
+
+
+
+
+Solução
+
+cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+
+@'
+from pathlib import Path
+from datetime import datetime
+import shutil
+import pandas as pd
+
+BASE = Path(r"C:\Users\ualac\Documents\2025\Mercado\machine-pyton")
+PASTA = BASE / "operacional_v71_oficial"
+
+ARQ_TICKS = PASTA / "blackarrow_ticks.csv"
+BACKUP = PASTA / f"blackarrow_ticks_BACKUP_forcar_cabecalho_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+
+shutil.copy2(ARQ_TICKS, BACKUP)
+print("Backup criado:", BACKUP)
+
+COLS = [
+    "DataHora_SP",
+    "Data",
+    "Hora_SP_Decimal",
+    "ultimo",
+    "abertura",
+    "maximo",
+    "minimo",
+    "negocios_acumulado",
+    "Asset",
+    "strike",
+]
+
+primeira = ARQ_TICKS.read_text(encoding="utf-8", errors="ignore").splitlines()[0]
+
+if primeira.startswith("DataHora_SP"):
+    df = pd.read_csv(ARQ_TICKS)
+    print("Ticks já tinham cabeçalho.")
+else:
+    df = pd.read_csv(ARQ_TICKS, header=None)
+    print("Ticks estavam sem cabeçalho. Aplicando cabeçalho correto.")
+
+    if df.shape[1] < len(COLS):
+        raise RuntimeError(f"Arquivo de ticks tem {df.shape[1]} colunas; esperado {len(COLS)}.")
+
+    df = df.iloc[:, :len(COLS)].copy()
+    df.columns = COLS
+
+df = df.rename(columns={
+    "Ultimo": "ultimo",
+    "Abertura": "abertura",
+    "Maximo": "maximo",
+    "Minimo": "minimo",
+    "Negocios": "negocios_acumulado",
+    "Strike": "strike",
+})
+
+for col in COLS:
+    if col not in df.columns:
+        if col == "strike":
+            df[col] = 0
+        elif col == "Asset":
+            df[col] = "MNQM6"
+        else:
+            df[col] = pd.NA
+
+df["DataHora_SP"] = pd.to_datetime(df["DataHora_SP"], errors="coerce")
+df = df.dropna(subset=["DataHora_SP"]).copy()
+
+df["Data"] = df["DataHora_SP"].dt.strftime("%Y-%m-%d")
+df["Hora_SP_Decimal"] = (
+    df["DataHora_SP"].dt.hour
+    + df["DataHora_SP"].dt.minute / 60.0
+    + df["DataHora_SP"].dt.second / 3600.0
+)
+
+for c in ["ultimo", "abertura", "maximo", "minimo", "negocios_acumulado", "strike"]:
+    df[c] = pd.to_numeric(df[c], errors="coerce")
+
+df = df.sort_values("DataHora_SP").drop_duplicates(
+    subset=["DataHora_SP", "ultimo"],
+    keep="last"
+).copy()
+
+df = df[COLS].copy()
+df.to_csv(ARQ_TICKS, index=False, header=True)
+
+print()
+print("Ticks corrigidos com cabeçalho.")
+print("Colunas:")
+print(list(df.columns))
+print()
+print("Total ticks:", len(df))
+print()
+print("Últimos ticks:")
+print(df.tail(10).to_string(index=False))
+'@ | Set-Content ".\forcar_cabecalho_ticks_v71.py" -Encoding UTF8
+
+python ".\forcar_cabecalho_ticks_v71.py"

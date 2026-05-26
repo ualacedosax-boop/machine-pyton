@@ -1,0 +1,260 @@
+﻿import os
+import json
+import time
+import warnings
+import joblib
+import numpy as np
+import pandas as pd
+from datetime import datetime
+
+
+# =====================================================
+# CONFIGURAÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ES GERAIS
+# =====================================================
+
+BASE_DIR = r"C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+
+PASTA_V3 = os.path.join(BASE_DIR, "saida_ml_entradas_video_v3")
+PASTA_V4 = os.path.join(BASE_DIR, "saida_ml_entradas_video_v4_antiloss")
+PASTA_V5_1 = os.path.join(BASE_DIR, "OPERACIONAL_V5_1_CAMPEA")
+PASTA_V7 = os.path.join(BASE_DIR, "OPERACIONAL_V7_OFICIAL")
+PASTA_OPERACIONAL = os.path.join(BASE_DIR, "operacional_v4")
+os.makedirs(PASTA_OPERACIONAL, exist_ok=True)
+
+ARQUIVO_BLACKARROW_RTD = os.path.join(BASE_DIR, "blackarrow_rtd.csv")
+
+ARQUIVO_TICKS = os.path.join(PASTA_OPERACIONAL, "blackarrow_ticks.csv")
+ARQUIVO_CANDLES = os.path.join(PASTA_OPERACIONAL, "blackarrow_candles_2min.csv")
+ARQUIVO_FEATURES_TEMPO_REAL = os.path.join(PASTA_OPERACIONAL, "features_blackarrow_tempo_real.csv")
+
+ARQUIVO_SINAL_TXT = os.path.join(PASTA_OPERACIONAL, "sinal.txt")
+ARQUIVO_ULTIMO_SINAL_JSON = os.path.join(PASTA_OPERACIONAL, "ultimo_sinal_v4_blackarrow.json")
+ARQUIVO_LOG = os.path.join(PASTA_OPERACIONAL, "log_sinal_v4_blackarrow.csv")
+ARQUIVO_LOG_RESERVA = os.path.join(PASTA_OPERACIONAL, "log_sinal_v4_blackarrow_reserva.csv")
+ARQUIVO_ESTADO = os.path.join(PASTA_OPERACIONAL, "estado_operacional_v4_blackarrow.json")
+
+# =====================================================
+# APRENDIZADO INTELIGENTE V7
+# =====================================================
+
+PASTA_APRENDIZADO_V7 = os.path.join(PASTA_OPERACIONAL, "aprendizado_v7")
+PASTA_APRENDIZADO_EVENTOS = os.path.join(PASTA_APRENDIZADO_V7, "eventos")
+PASTA_APRENDIZADO_RESULTADOS = os.path.join(PASTA_APRENDIZADO_V7, "resultados")
+PASTA_APRENDIZADO_TREINOS_SEMANAIS = os.path.join(PASTA_APRENDIZADO_V7, "treinos_semanais")
+PASTA_APRENDIZADO_TREINOS_MENSAIS = os.path.join(PASTA_APRENDIZADO_V7, "treinos_mensais")
+
+for _pasta in [
+    PASTA_APRENDIZADO_V7,
+    PASTA_APRENDIZADO_EVENTOS,
+    PASTA_APRENDIZADO_RESULTADOS,
+    PASTA_APRENDIZADO_TREINOS_SEMANAIS,
+    PASTA_APRENDIZADO_TREINOS_MENSAIS,
+]:
+    os.makedirs(_pasta, exist_ok=True)
+
+ARQUIVO_APRENDIZADO_EVENTOS = os.path.join(PASTA_APRENDIZADO_EVENTOS, "eventos_v7_inteligente.csv")
+ARQUIVO_APRENDIZADO_PENDENTES = os.path.join(PASTA_APRENDIZADO_RESULTADOS, "operacoes_pendentes_v7.csv")
+ARQUIVO_APRENDIZADO_RESULTADOS = os.path.join(PASTA_APRENDIZADO_RESULTADOS, "resultados_v7_inteligente.csv")
+
+ARQUIVO_MODELO_V3 = os.path.join(PASTA_V3, "modelo_v3_score.joblib")
+ARQUIVO_FEATURES_V3 = os.path.join(PASTA_V3, "features_v3_score.joblib")
+ARQUIVO_CONFIG_V3 = os.path.join(PASTA_V3, "config_modelo_v3_score.json")
+
+ARQUIVO_CONFIG_V4 = os.path.join(PASTA_V4, "config_melhor_v4.json")
+
+ARQUIVO_CONFIG_V7 = os.path.join(PASTA_V7, "config_v7_oficial.json")
+ARQUIVO_MODELO_V7 = os.path.join(PASTA_V7, "modelos_final_v7_oficial.joblib")
+ARQUIVO_FEATURES_V7 = os.path.join(PASTA_V7, "features_final_v7_oficial.joblib")
+
+# Mantive os nomes V4 internamente para reduzir risco de quebrar o restante do cÃ³digo.
+# A partir desta versÃ£o, eles apontam para a V7 OFICIAL.
+ARQUIVO_MODELO_V4 = ARQUIVO_MODELO_V7
+ARQUIVO_FEATURES_V4 = ARQUIVO_FEATURES_V7
+
+RODAR_EM_LOOP = True
+INTERVALO_SEGUNDOS = 1
+
+MODO_SEGURO_SEM_ORDEM = True
+
+CANDLES_MINIMOS = 220
+
+warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
+
+
+# =====================================================
+# FUNÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢ES DE ARQUIVO
+# =====================================================
+
+
+
+# ============================================================
+# LIMPEZA DE INF / NAN PARA MODELOS ML
+# ============================================================
+
+
+
+# ============================================================
+# GARANTIR COLUNA DataHora_SP
+# ============================================================
+
+
+
+# ============================================================
+# CORRIGIR SERIE ULTIMA COM DADOS DE HORARIO DO DF ORIGINAL
+# ============================================================
+
+
+
+# ============================================================
+# OBTER COLUNA FLEXIVEL DO BLACKARROW
+# ============================================================
+
+def obter_valor_coluna_flexivel(row, nomes, padrao=np.nan):
+    try:
+        # tenta nomes exatos
+        for nome in nomes:
+            if nome in row.index:
+                return row.get(nome, padrao)
+
+        # tenta ignorando acentos, maiusculas e caracteres quebrados
+        mapa = {}
+        for col in row.index:
+            chave = str(col).strip().lower()
+            chave = (
+                chave.replace("ÃƒÆ’Ã‚Â¡", "a")
+                     .replace("ÃƒÆ’Ã‚Â ", "a")
+                     .replace("ÃƒÆ’Ã‚Â£", "a")
+                     .replace("ÃƒÆ’Ã‚Â¢", "a")
+                     .replace("ÃƒÆ’Ã‚Â©", "e")
+                     .replace("ÃƒÆ’Ã‚Âª", "e")
+                     .replace("ÃƒÆ’Ã‚Â­", "i")
+                     .replace("ÃƒÆ’Ã‚Â³", "o")
+                     .replace("ÃƒÆ’Ã‚Â´", "o")
+                     .replace("ÃƒÆ’Ã‚Âµ", "o")
+                     .replace("ÃƒÆ’Ã‚Âº", "u")
+                     .replace("ÃƒÆ’Ã‚Â§", "c")
+            )
+            mapa[chave] = col
+
+        for nome in nomes:
+            chave = str(nome).strip().lower()
+            chave = (
+                chave.replace("ÃƒÆ’Ã‚Â¡", "a")
+                     .replace("ÃƒÆ’Ã‚Â ", "a")
+                     .replace("ÃƒÆ’Ã‚Â£", "a")
+                     .replace("ÃƒÆ’Ã‚Â¢", "a")
+                     .replace("ÃƒÆ’Ã‚Â©", "e")
+                     .replace("ÃƒÆ’Ã‚Âª", "e")
+                     .replace("ÃƒÆ’Ã‚Â­", "i")
+                     .replace("ÃƒÆ’Ã‚Â³", "o")
+                     .replace("ÃƒÆ’Ã‚Â´", "o")
+                     .replace("ÃƒÆ’Ã‚Âµ", "o")
+                     .replace("ÃƒÆ’Ã‚Âº", "u")
+                     .replace("ÃƒÆ’Ã‚Â§", "c")
+            )
+            if chave in mapa:
+                return row.get(mapa[chave], padrao)
+
+        return padrao
+    except Exception:
+        return padrao
+
+
+def corrigir_ultima_com_df_feat(ultima, df_feat):
+    import pandas as pd
+
+    try:
+        if ultima is None:
+            return ultima
+
+        if df_feat is None or len(df_feat) == 0:
+            if "DataHora_SP" not in ultima.index:
+                ultima["DataHora_SP"] = pd.Timestamp.now()
+            if "Data" not in ultima.index:
+                ultima["Data"] = pd.Timestamp.now().date()
+            if "Hora_SP_Decimal" not in ultima.index:
+                agora = pd.Timestamp.now()
+                ultima["Hora_SP_Decimal"] = agora.hour + agora.minute / 60.0 + agora.second / 3600.0
+            return ultima
+
+        base = df_feat.copy()
+
+        if "DataHora_SP" not in base.columns:
+            base = garantir_coluna_datahora_sp(base)
+
+        if "DataHora_SP" in base.columns:
+            dt = pd.to_datetime(base["DataHora_SP"].iloc[-1], errors="coerce")
+            if pd.isna(dt):
+                dt = pd.Timestamp.now()
+
+            ultima["DataHora_SP"] = dt
+
+            if "Data" not in ultima.index:
+                ultima["Data"] = dt.date()
+
+            if "Hora_SP_Decimal" not in ultima.index:
+                ultima["Hora_SP_Decimal"] = dt.hour + dt.minute / 60.0 + dt.second / 3600.0
+
+        else:
+            dt = pd.Timestamp.now()
+            ultima["DataHora_SP"] = dt
+
+            if "Data" not in ultima.index:
+                ultima["Data"] = dt.date()
+
+            if "Hora_SP_Decimal" not in ultima.index:
+                ultima["Hora_SP_Decimal"] = dt.hour + dt.minute / 60.0 + dt.second / 3600.0
+
+        return ultima
+
+    except Exception:
+        try:
+            dt = pd.Timestamp.now()
+            ultima["DataHora_SP"] = dt
+            ultima["Data"] = dt.date()
+            ultima["Hora_SP_Decimal"] = dt.hour + dt.minute / 60.0 + dt.second / 3600.0
+        except Exception:
+            pass
+
+        return ultima
+
+
+def garantir_coluna_datahora_sp(df):
+    import pandas as pd
+
+    if df is None:
+        return df
+
+    if "DataHora_SP" in df.columns:
+        df["DataHora_SP"] = pd.to_datetime(df["DataHora_SP"], errors="coerce")
+        return df
+
+    candidatas = [
+        "datahora_ultimo_candle_sp",
+        "datahora_candle_sp",
+        "datahora_sp",
+        "DataHora",
+        "datahora",
+        "datetime",
+        "time",
+        "date",
+        "Date",
+        "Time",
+    ]
+
+    for col in candidatas:
+        if col in df.columns:
+            df["DataHora_SP"] = pd.to_datetime(df[col], errors="coerce")
+            return df
+
+    return df
+
+
+def limpar_inf_nan_ml(X):
+    import numpy as np
+    import pandas as pd
+
+    if isinstance(X, pd.DataFrame):
+        X = X.replace([np.inf, -np.inf], 0)
+        X = X.fillna(0)

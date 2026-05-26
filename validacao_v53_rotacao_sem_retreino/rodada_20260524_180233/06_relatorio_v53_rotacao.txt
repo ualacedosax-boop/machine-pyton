@@ -1,0 +1,79 @@
+================================================================================
+RELATÓRIO V5.3 - ROTAÇÃO SEM RETREINO
+================================================================================
+
+Arquivo usado: C:\Users\ualac\Documents\2025\Mercado\machine-pyton\PACOTE_ROBO_V5_1_CAMPEA_ENVIO\05_config_v4_base\08_v4_melhor_trades.csv.gz
+Data execução: 20260524_180233
+
+IMPORTANTE:
+Este script NÃO retreina modelo.
+Este script NÃO altera lógica da V5.3.
+Este script apenas separa os trades já existentes por meses/rotações.
+
+================================================================================
+RESUMO GERAL
+================================================================================
+                                0
+grupo                       GERAL
+trades                        220
+wins                          188
+losses                         32
+winrate                 85.454545
+lucro_pontos               5750.0
+profit_factor            2.535791
+drawdown_trades_pontos     -830.0
+dias_operados                 214
+media_trades_por_dia     1.028037
+pior_dia_pontos            -117.0
+melhor_dia_pontos           101.0
+buy_total                     116
+sell_total                    104
+
+================================================================================
+RESUMO POR ROTAÇÃO
+================================================================================
+    grupo  trades  wins  losses   winrate  lucro_pontos  profit_factor  drawdown_trades_pontos  dias_operados  media_trades_por_dia  pior_dia_pontos  melhor_dia_pontos  buy_total  sell_total   Rotacao Meses_Rotacao
+ROTACAO_A      75    62      13 82.666667        1610.0       2.058514                  -561.5             74              1.013514           -117.0              101.0         43          32 ROTACAO_A      3,6,9,12
+ROTACAO_B      74    60      14 81.081081        1392.0       1.849817                  -800.5             70              1.057143           -117.0              101.0         41          33 ROTACAO_B      2,5,8,11
+ROTACAO_C      71    66       5 92.957746        2748.0       5.697436                  -183.5             70              1.014286           -117.0              101.0         32          39 ROTACAO_C      1,4,7,10
+
+================================================================================
+RESUMO POR ROTAÇÃO E ANO
+================================================================================
+         grupo  trades  wins  losses   winrate  lucro_pontos  profit_factor  drawdown_trades_pontos  dias_operados  media_trades_por_dia  pior_dia_pontos  melhor_dia_pontos  buy_total  sell_total  Ano   Rotacao Meses_Rotacao
+2025_ROTACAO_A      75    62      13 82.666667        1610.0       2.058514                  -561.5             74              1.013514           -117.0              101.0         43          32 2025 ROTACAO_A      3,6,9,12
+2025_ROTACAO_B      74    60      14 81.081081        1392.0       1.849817                  -800.5             70              1.057143           -117.0              101.0         41          33 2025 ROTACAO_B      2,5,8,11
+2025_ROTACAO_C      71    66       5 92.957746        2748.0       5.697436                  -183.5             70              1.014286           -117.0              101.0         32          39 2025 ROTACAO_C      1,4,7,10
+
+================================================================================
+RESUMO MENSAL
+================================================================================
+  grupo  trades  wins  losses    winrate  lucro_pontos  profit_factor  drawdown_trades_pontos  dias_operados  media_trades_por_dia  pior_dia_pontos  melhor_dia_pontos  buy_total  sell_total  AnoMes  Ano  Mes
+2025-01      21    21       0 100.000000        1060.5     999.000000                     0.0             21              1.000000             50.5               50.5         12           9 2025-01 2025    1
+2025-02      16    16       0 100.000000         808.0     999.000000                     0.0             15              1.066667             50.5              101.0         11           5 2025-02 2025    2
+2025-03      19    19       0 100.000000         959.5     999.000000                     0.0             19              1.000000             50.5               50.5          9          10 2025-03 2025    3
+2025-04      14    14       0 100.000000         707.0     999.000000                     0.0             14              1.000000             50.5               50.5          3          11 2025-04 2025    4
+2025-05      21    21       0 100.000000        1060.5     999.000000                     0.0             19              1.105263             50.5              101.0         12           9 2025-05 2025    5
+2025-06      20    20       0 100.000000        1010.0     999.000000                     0.0             19              1.052632             50.5              101.0         14           6 2025-06 2025    6
+2025-07      19    17       2  89.473684         624.5       3.668803                  -117.0             19              1.000000           -117.0               50.5         11           8 2025-07 2025    7
+2025-08      21    12       9  57.142857        -447.0       0.575499                  -566.5             20              1.050000           -117.0              101.0         11          10 2025-08 2025    8
+2025-09      22    15       7  68.181818         -61.5       0.924908                  -465.5             22              1.000000           -117.0               50.5         10          12 2025-09 2025    9
+2025-10      17    14       3  82.352941         356.0       2.014245                  -117.0             16              1.062500           -117.0              101.0          6          11 2025-10 2025   10
+2025-11      16    11       5  68.750000         -29.5       0.949573                  -300.5             16              1.000000           -117.0               50.5          7           9 2025-11 2025   11
+2025-12      14     8       6  57.142857        -298.0       0.575499                  -399.0             14              1.000000           -117.0               50.5         10           4 2025-12 2025   12
+
+================================================================================
+CHECAGENS
+================================================================================
+Meses positivos: 8
+Meses negativos: 4
+
+Meses negativos encontrados:
+ AnoMes  trades   winrate  lucro_pontos  profit_factor
+2025-08      21 57.142857        -447.0       0.575499
+2025-09      22 68.181818         -61.5       0.924908
+2025-11      16 68.750000         -29.5       0.949573
+2025-12      14 57.142857        -298.0       0.575499
+
+Rotações negativas: 0
+Nenhuma rotação negativa encontrada.

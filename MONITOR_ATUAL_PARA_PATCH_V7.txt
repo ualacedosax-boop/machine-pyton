@@ -1,0 +1,483 @@
+﻿# monitor_alarme_v4_completo.ps1
+# Monitor completo V4:
+# - Mostra status igual ao monitor antigo JSON
+# - Mostra Prob V5.1, BUY, SELL, checklist e melhores scores
+# - Corrige a barra de progresso para comparar com o minimo exigido
+# - Monitora entrada real no CSV
+# - Toca alarme diferente com voz para COMPRA e VENDA
+
+# ============================================================
+# CAMINHOS
+# ============================================================
+
+$basePath = "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+
+$jsonPath1 = Join-Path $basePath "ultimo_sinal_v4_blackarrow.json"
+$jsonPath2 = Join-Path $basePath "operacional_v4\ultimo_sinal_v4_blackarrow.json"
+
+$csvPath = Join-Path $basePath "operacional_v4\log_sinal_v4_blackarrow.csv"
+
+# Usa o JSON que existir
+if (Test-Path $jsonPath1) {
+    $jsonPath = $jsonPath1
+}
+elseif (Test-Path $jsonPath2) {
+    $jsonPath = $jsonPath2
+}
+else {
+    $jsonPath = $jsonPath1
+}
+
+# ============================================================
+# CONFIGURACOES DOS LIMITES
+# ============================================================
+
+$minProbV4 = 0.575
+$minBuy    = 0.74
+$minSell   = 0.50
+
+# ============================================================
+# VOZ DO WINDOWS
+# ============================================================
+
+try {
+    Add-Type -AssemblyName System.Speech
+    $voz = New-Object System.Speech.Synthesis.SpeechSynthesizer
+    $voz.Volume = 100
+    $voz.Rate = 2
+}
+catch {
+    $voz = $null
+}
+
+# ============================================================
+# VARIAVEIS DE CONTROLE
+# ============================================================
+
+$ultimoSinalProcessadoCSV = ""
+
+$melhorBuy = -999
+$melhorSell = -999
+$melhorV4 = -999
+
+$melhorBuyHora = ""
+$melhorSellHora = ""
+$melhorV4Hora = ""
+
+$melhorBuyPreco = ""
+$melhorSellPreco = ""
+$melhorV4Preco = ""
+
+# ============================================================
+# FUNCOES
+# ============================================================
+
+function To-Double {
+    param ($valor)
+
+    if ($null -eq $valor) {
+        return 0.0
+    }
+
+    $txt = "$valor"
+    $txt = $txt.Replace(",", ".")
+
+    try {
+        return [double]::Parse($txt, [System.Globalization.CultureInfo]::InvariantCulture)
+    }
+    catch {
+        return 0.0
+    }
+}
+
+function Format-Num {
+    param (
+        $valor,
+        $casas = 6
+    )
+
+    try {
+        $v = To-Double $valor
+        return $v.ToString("N$casas")
+    }
+    catch {
+        return "$valor"
+    }
+}
+
+function Barra-Progresso {
+    param (
+        [double]$valor,
+        [double]$minimo
+    )
+
+    $tamanho = 24
+
+    if ($minimo -le 0) {
+        $perc = 0
+    }
+    else {
+        $perc = $valor / $minimo
+    }
+
+    if ($perc -lt 0) { $perc = 0 }
+    if ($perc -gt 1) { $perc = 1 }
+
+    $cheio = [int]($perc * $tamanho)
+    $vazio = $tamanho - $cheio
+
+    $barra = ("#" * $cheio) + ("-" * $vazio)
+    $percentual = "{0:N1}%" -f ($perc * 100)
+
+    return "[$barra] $percentual"
+}
+
+function Faltando {
+    param (
+        [double]$valor,
+        [double]$minimo
+    )
+
+    $falta = $minimo - $valor
+
+    if ($falta -le 0) {
+        return "0,000000"
+    }
+
+    return $falta.ToString("N6")
+}
+
+function Get-Prop {
+    param (
+        $obj,
+        [string[]]$nomes
+    )
+
+    foreach ($nome in $nomes) {
+        if ($null -ne $obj.PSObject.Properties[$nome]) {
+            return $obj.$nome
+        }
+    }
+
+    return $null
+}
+
+function Tocar-AlarmeCompra {
+    param ($voz)
+
+    Write-Host ""
+    Write-Host "ðŸš¨ COMPRA DETECTADA - BUY ðŸš¨" -ForegroundColor Green
+
+    for ($i = 0; $i -lt 3; $i++) {
+        [console]::beep(1400, 150)
+        Start-Sleep -Milliseconds 50
+        [console]::beep(1800, 150)
+
+        if ($null -ne $voz) {
+            $voz.Speak("Compra detectada")
+        }
+
+        Start-Sleep -Milliseconds 250
+    }
+}
+
+function Tocar-AlarmeVenda {
+    param ($voz)
+
+    Write-Host ""
+    Write-Host "ðŸš¨ VENDA DETECTADA - SELL ðŸš¨" -ForegroundColor Red
+
+    for ($i = 0; $i -lt 3; $i++) {
+        [console]::beep(700, 250)
+        Start-Sleep -Milliseconds 80
+        [console]::beep(500, 250)
+
+        if ($null -ne $voz) {
+            $voz.Speak("Venda detectada")
+        }
+
+        Start-Sleep -Milliseconds 250
+    }
+}
+
+function Verificar-Alarme-CSV {
+    param (
+        $csvPath,
+        $voz
+    )
+
+    if (!(Test-Path $csvPath)) {
+        return
+    }
+
+    try {
+        $dadosCsv = Import-Csv $csvPath
+
+        if ($dadosCsv.Count -le 0) {
+            return
+        }
+
+        $ultimoCsv = $dadosCsv | Select-Object -Last 1
+
+        $datahoraCsv = $ultimoCsv.datahora_execucao
+        $sinalCsv    = $ultimoCsv.sinal
+        $motivoCsv   = $ultimoCsv.motivo
+        $precoCsv    = $ultimoCsv.preco_close
+        $probCsv     = $ultimoCsv.prob_win_v4
+        $direcaoCsv  = $ultimoCsv.Direcao
+
+        $idCsv = "$datahoraCsv|$sinalCsv|$precoCsv|$direcaoCsv"
+
+        if ($script:ultimoSinalProcessadoCSV -eq "") {
+            $script:ultimoSinalProcessadoCSV = $idCsv
+            return
+        }
+
+        if ($idCsv -ne $script:ultimoSinalProcessadoCSV) {
+            $script:ultimoSinalProcessadoCSV = $idCsv
+
+            if ($sinalCsv -eq "buy") {
+                Clear-Host
+                Write-Host "===============================================" -ForegroundColor Green
+                Write-Host " ENTRADA REAL DETECTADA NO CSV - COMPRA" -ForegroundColor Green
+                Write-Host "===============================================" -ForegroundColor Green
+                Write-Host "Data/Hora     : $datahoraCsv"
+                Write-Host "Sinal         : $sinalCsv"
+                Write-Host "Motivo        : $motivoCsv"
+                Write-Host "Preco         : $precoCsv"
+                Write-Host "Probabilidade : $probCsv"
+                Write-Host "Direcao       : $direcaoCsv"
+                Tocar-AlarmeCompra $voz
+                Start-Sleep -Seconds 2
+            }
+            elseif ($sinalCsv -eq "sell") {
+                Clear-Host
+                Write-Host "===============================================" -ForegroundColor Red
+                Write-Host " ENTRADA REAL DETECTADA NO CSV - VENDA" -ForegroundColor Red
+                Write-Host "===============================================" -ForegroundColor Red
+                Write-Host "Data/Hora     : $datahoraCsv"
+                Write-Host "Sinal         : $sinalCsv"
+                Write-Host "Motivo        : $motivoCsv"
+                Write-Host "Preco         : $precoCsv"
+                Write-Host "Probabilidade : $probCsv"
+                Write-Host "Direcao       : $direcaoCsv"
+                Tocar-AlarmeVenda $voz
+                Start-Sleep -Seconds 2
+            }
+        }
+    }
+    catch {
+        return
+    }
+}
+
+# ============================================================
+# LOOP PRINCIPAL
+# ============================================================
+
+while ($true) {
+
+    Verificar-Alarme-CSV $csvPath $voz
+
+    Clear-Host
+
+    Write-Host "============================================================" -ForegroundColor Cyan
+    Write-Host "MONITOR V4 BLACKARROW - JSON + ALARME CSV" -ForegroundColor Cyan
+    Write-Host "============================================================" -ForegroundColor Cyan
+    Write-Host "Atualizacao: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    Write-Host "Fonte JSON : $jsonPath"
+    Write-Host "Fonte CSV  : $csvPath"
+    Write-Host ""
+
+    if (!(Test-Path $jsonPath)) {
+        Write-Host "ERRO: JSON nao encontrado." -ForegroundColor Red
+        Write-Host "Verifique se existe um destes arquivos:"
+        Write-Host $jsonPath1
+        Write-Host $jsonPath2
+        Write-Host ""
+        Write-Host "O alarme do CSV continua tentando monitorar entradas reais."
+        Start-Sleep -Seconds 2
+        continue
+    }
+
+    try {
+        $jsonRaw = Get-Content $jsonPath -Raw
+        $json = $jsonRaw | ConvertFrom-Json
+    }
+    catch {
+        Write-Host "ERRO: nao foi possivel ler o JSON." -ForegroundColor Red
+        Write-Host $_.Exception.Message
+        Start-Sleep -Seconds 2
+        continue
+    }
+
+    # ============================================================
+    # CAMPOS PRINCIPAIS
+    # ============================================================
+
+    $sinal   = Get-Prop $json @("sinal", "signal", "Sinal")
+    $motivo  = Get-Prop $json @("motivo", "reason", "Motivo")
+    $exec    = Get-Prop $json @("datahora_execucao", "execucao", "execution_time", "Execucao")
+    $candle  = Get-Prop $json @("datahora_ultimo_candle_sp", "candle", "ultimo_candle", "Candle")
+    $data    = Get-Prop $json @("data", "date", "Data")
+    $preco   = Get-Prop $json @("preco_close", "preco", "price", "Preco")
+    $direcao = Get-Prop $json @("Direcao", "direcao", "direction", "DirecaoPrevista")
+    $candles = Get-Prop $json @("candles", "Candles", "qtd_candles")
+
+    $dentroHora = Get-Prop $json @("dentro_hora", "dentroHorario", "dentro_horario", "DentroHora")
+
+    # ============================================================
+    # SCORES
+    # ============================================================
+
+    $probV4    = Get-Prop $json @("prob_win_v4", "prob_v4", "Prob V5.1", "probabilidade", "NONE", "none")
+    $buyScore  = Get-Prop $json @("BUY", "buy", "score_BU", "score_buy", "buy_score")
+    $sellScore = Get-Prop $json @("SELL", "sell", "score_SE", "score_sell", "sell_score")
+
+    $probV4d = To-Double $probV4
+    $buyD    = To-Double $buyScore
+    $sellD   = To-Double $sellScore
+
+    # ============================================================
+    # MELHORES DESDE QUE ABRIU
+    # ============================================================
+
+    if ($probV4d -gt $melhorV4) {
+        $melhorV4 = $probV4d
+        $melhorV4Hora = $candle
+        $melhorV4Preco = $preco
+    }
+
+    if ($buyD -gt $melhorBuy) {
+        $melhorBuy = $buyD
+        $melhorBuyHora = $candle
+        $melhorBuyPreco = $preco
+    }
+
+    if ($sellD -gt $melhorSell) {
+        $melhorSell = $sellD
+        $melhorSellHora = $candle
+        $melhorSellPreco = $preco
+    }
+
+    # ============================================================
+    # CHECKS
+    # ============================================================
+
+    $passouProb = $probV4d -ge $minProbV4
+    $passouBuy  = $buyD -ge $minBuy
+    $passouSell = $sellD -ge $minSell
+
+    # ============================================================
+    # TELA
+    # ============================================================
+
+    Write-Host "STATUS ATUAL" -ForegroundColor Cyan
+    Write-Host "------------------------------------------------------------"
+    Write-Host ("Sinal       : {0}" -f $sinal)
+    Write-Host ("Motivo      : {0}" -f $motivo)
+    Write-Host ("Execucao    : {0}" -f $exec)
+    Write-Host ("Candle      : {0}" -f $candle)
+    Write-Host ("Data        : {0}" -f $data)
+    Write-Host ("Preco       : {0}" -f $preco)
+    Write-Host ("Direcao     : {0}" -f $direcao)
+    Write-Host ("NONE        : {0}" -f (Format-Num $probV4d 6))
+    Write-Host ("Candles     : {0}" -f $candles)
+    Write-Host ("Dentro hora : {0}" -f $dentroHora)
+    Write-Host ""
+
+    Write-Host "SCORES X LIMITES" -ForegroundColor Cyan
+    Write-Host "------------------------------------------------------------"
+
+    # Prob V5.1
+    Write-Host ("Prob V5.1     : {0} / min {1} | melhor {2}" -f (Format-Num $probV4d 6), (Format-Num $minProbV4 2), (Format-Num $melhorV4 6))
+    Write-Host ("              {0}" -f (Barra-Progresso $probV4d $minProbV4))
+
+    if ($passouProb) {
+        Write-Host ("              Falta: {0} | PASSOU" -f (Faltando $probV4d $minProbV4)) -ForegroundColor Green
+    }
+    else {
+        Write-Host ("              Falta: {0} | NAO PASSOU" -f (Faltando $probV4d $minProbV4)) -ForegroundColor Red
+    }
+
+    Write-Host ""
+
+    # BUY
+    Write-Host ("BUY         : {0} / min {1} | melhor {2}" -f (Format-Num $buyD 6), (Format-Num $minBuy 2), (Format-Num $melhorBuy 6))
+    Write-Host ("              {0}" -f (Barra-Progresso $buyD $minBuy))
+
+    if ($passouBuy) {
+        Write-Host ("              Falta: {0} | PASSOU" -f (Faltando $buyD $minBuy)) -ForegroundColor Green
+    }
+    else {
+        Write-Host ("              Falta: {0} | NAO PASSOU" -f (Faltando $buyD $minBuy)) -ForegroundColor Red
+    }
+
+    Write-Host ""
+
+    # SELL
+    Write-Host ("SELL        : {0} / min {1} | melhor {2}" -f (Format-Num $sellD 6), (Format-Num $minSell 2), (Format-Num $melhorSell 6))
+    Write-Host ("              {0}" -f (Barra-Progresso $sellD $minSell))
+
+    if ($passouSell) {
+        Write-Host ("              Falta: {0} | PASSOU" -f (Faltando $sellD $minSell)) -ForegroundColor Green
+    }
+    else {
+        Write-Host ("              Falta: {0} | NAO PASSOU" -f (Faltando $sellD $minSell)) -ForegroundColor Red
+    }
+
+    Write-Host ""
+    Write-Host "MELHORES DESDE QUE ABRIU O MONITOR" -ForegroundColor Cyan
+    Write-Host "------------------------------------------------------------"
+    Write-Host ("Melhor BUY  : {0} | {1} | Preco {2}" -f (Format-Num $melhorBuy 6), $melhorBuyHora, $melhorBuyPreco)
+    Write-Host ("Melhor SELL : {0} | {1} | Preco {2}" -f (Format-Num $melhorSell 6), $melhorSellHora, $melhorSellPreco)
+    Write-Host ("Melhor V5.1   : {0} | {1} | Preco {2}" -f (Format-Num $melhorV4 6), $melhorV4Hora, $melhorV4Preco)
+    Write-Host ""
+
+    Write-Host "CHECKLIST" -ForegroundColor Cyan
+    Write-Host "------------------------------------------------------------"
+
+    if ($passouProb) {
+        Write-Host ("Prob V5.1 >= {0} : PASSOU" -f (Format-Num $minProbV4 2)) -ForegroundColor Green
+    }
+    else {
+        Write-Host ("Prob V5.1 >= {0} : NAO PASSOU" -f (Format-Num $minProbV4 2)) -ForegroundColor Red
+    }
+
+    if ($passouBuy) {
+        Write-Host ("BUY     >= {0} : PASSOU" -f (Format-Num $minBuy 2)) -ForegroundColor Green
+    }
+    else {
+        Write-Host ("BUY     >= {0} : NAO PASSOU" -f (Format-Num $minBuy 2)) -ForegroundColor Red
+    }
+
+    if ($passouSell) {
+        Write-Host ("SELL    >= {0} : PASSOU" -f (Format-Num $minSell 2)) -ForegroundColor Green
+    }
+    else {
+        Write-Host ("SELL    >= {0} : NAO PASSOU" -f (Format-Num $minSell 2)) -ForegroundColor Red
+    }
+
+    Write-Host ""
+    Write-Host ("Regra BUY : Prob V5.1 >= {0} + BUY >= {1} + Direcao BUY" -f (Format-Num $minProbV4 2), (Format-Num $minBuy 2))
+    Write-Host ("Regra SELL: Prob V5.1 >= {0} + SELL >= {1} + Direcao SELL" -f (Format-Num $minProbV4 2), (Format-Num $minSell 2))
+    Write-Host ""
+
+    if ($sinal -eq "buy") {
+        Write-Host "ALARME: sinal oficial de COMPRA no JSON. Entrada real sera confirmada pelo CSV." -ForegroundColor Green
+    }
+    elseif ($sinal -eq "sell") {
+        Write-Host "ALARME: sinal oficial de VENDA no JSON. Entrada real sera confirmada pelo CSV." -ForegroundColor Red
+    }
+    else {
+        Write-Host "ALARME: monitorando... sem sinal oficial." -ForegroundColor Yellow
+    }
+
+    Write-Host "Para parar: CTRL + C" -ForegroundColor DarkGray
+
+    Start-Sleep -Seconds 2
+}
+
+
+
+

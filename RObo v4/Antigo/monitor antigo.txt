@@ -1,0 +1,3 @@
+cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+.\monitor_scores_v4_json.ps1

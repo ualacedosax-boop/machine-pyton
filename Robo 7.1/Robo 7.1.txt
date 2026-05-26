@@ -1,0 +1,16 @@
+incio RObo 7.1
+
+cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+.\RODAR_ROBO_V71_OFICIAL.bat
+
+
+
+Robo e monitor
+
+cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
+
+Start-Process powershell -ArgumentList '-NoExit', '-Command', 'cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"; .\RODAR_ROBO_V71_OFICIAL.bat'
+
+Start-Sleep -Seconds 3
+
+Start-Process powershell -ArgumentList '-NoExit', '-Command', 'cd "C:\Users\ualac\Documents\2025\Mercado\machine-pyton"; .\RODAR_MONITOR_V71_OFICIAL.bat'

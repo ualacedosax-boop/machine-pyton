@@ -1,0 +1,708 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  <head>
+    <title>Relatório do Testador de Estratégia</title>
+    <meta name="generator" content="strategy tester">
+    <style type="text/css">
+    <!--
+    @media screen {
+      td { font: 8pt  Tahoma,Arial; }
+      th { font: 10pt Tahoma,Arial; }
+    }
+    @media print {
+      td { font: 7pt Tahoma,Arial; }
+      th { font: 9pt Tahoma,Arial; }
+    }
+    .msdate { mso-number-format:"General Date"; }
+    .mspt   { mso-number-format:\#\,\#\#0\.00;  }
+    body {margin:1px;}
+    //-->
+    </style>
+  </head>
+<body>
+<div align="center">
+<table cellspacing="1" cellpadding="3" border="0">
+   <tr align="center">
+      <td colspan="13"><div style="font: 14pt Tahoma"><b>Relatório do Testador de Estratégia</b><br></div></td>
+   </tr>
+   <tr align="center">
+      <td colspan="13"><div style="font: 10pt Tahoma"><b>ZeroMarkets-1 (Build 5660)</b><br></div></td>
+   </tr>
+   <tr>
+      <td nowrap style="height: 10px"></td>
+    </tr>
+   <tr>
+      <td colspan="13" align="center"><div style="font: 10pt Tahoma"><b>Configuração</b></div></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Expert Advisor (Robô):</td>
+      <td nowrap colspan="10" align="left"><b>EA_AUTO_REFINO_0002</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Ativo:</td>
+      <td nowrap colspan="10" align="left"><b>US100</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Período:</td>
+      <td nowrap colspan="10" align="left"><b>M2 (2025.04.14 - 2026.04.14)</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Parâmetros de entrada:</td>
+      <td nowrap colspan="10" align="left"><b>Lote=2.0</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>MagicNumber=20260414</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>DeviationPoints=20</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>OffsetHorasTV_MT5=-6</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>OffsetPrecoMNQ_US100=149.0</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>UsarPrecoAjustado=true</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>PeriodoEMA17=17</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>PeriodoEMA34=34</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>PeriodoBias=23</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>PeriodoRSI=14</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>PeriodoStochRSI=14</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>SmoothK=3</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>SmoothD=3</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>PeriodoATR=14</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>PeriodoStdRetorno=10</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>PeriodoEmaVol=5</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>FatorVol=0.65</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>ATR_Mult=7.0</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>MinStop=75.0</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>MaxStop=105.0</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>TakePontos=52.5</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>UsarFiltroHorario=true</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>HoraBloqIni=17</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>MinBloqIni=40</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>HoraBloqFim=19</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>MinBloqFim=2</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>FecharNoHorarioForcado=true</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>HoraFechamento=17</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>MinFechamento=40</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>UmaOperacaoPorCandle=true</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>BloquearReentradaMesmoCandle=true</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>UsarFiltroSlopeEMA17=false</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>SlopeMinEMA17=0.0</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>UsarFiltroDistEMA=false</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>DistMinEMAs=0.0</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="10" align="left"><b>DebugLog=false</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3" >Empresa:</td>
+      <td nowrap colspan="10" align="left"><b>Zero Financial Ltd</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3" >Moeda:</td>
+      <td nowrap colspan="10" align="left"><b>USD</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3" >Depósito Inicial:</td>
+      <td nowrap colspan="10" align="left"><b>1 000.00</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3" >Alavancagem:</td>
+      <td nowrap colspan="10" align="left"><b>1:1</b></td>
+   </tr>
+   <tr>
+      <td nowrap style="height: 10px"></td>
+    </tr>
+   <tr>
+      <td colspan="13" align="center"><div style="font: 10pt Tahoma"><b>Resultados</b></div></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Qualidade do histórico:</td>
+      <td nowrap><b>100%</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Barras:</td>
+      <td nowrap><b>4778</b></td>
+      <td nowrap colspan="3">Ticks:</td>
+      <td nowrap><b>38213</b></td>
+      <td nowrap colspan="3">Ativos:</td>
+      <td nowrap colspan="2"><b>1</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Lucro Líquido Total:</td>
+      <td nowrap><b>-936.90</b></td>
+      <td nowrap colspan="3">Rebaixamento Absoluto do Saldo :</td>
+      <td nowrap><b>936.90</b></td>
+      <td nowrap colspan="3">Rebaixamento Absoluto do Capital Líquido:</td>
+      <td nowrap colspan="2"><b>945.90</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Lucro Bruto:</td>
+      <td nowrap><b>3 672.70</b></td>
+      <td nowrap colspan="3">Rebaixamento Máximo do Saldo :</td>
+      <td nowrap><b>1 521.10 (96.02%)</b></td>
+      <td nowrap colspan="3">Rebaixamento Máximo do Capital Líquido:</td>
+      <td nowrap colspan="2"><b>1 552.00 (96.63%)</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Perda Bruta:</td>
+      <td nowrap><b>-4 609.60</b></td>
+      <td nowrap colspan="3">Rebaixamento Relativo do Saldo :</td>
+      <td nowrap><b>96.02% (1 521.10)</b></td>
+      <td nowrap colspan="3">Rebaixamento Relativo do Capital Líquido:</td>
+      <td nowrap colspan="2"><b>96.63% (1 552.00)</b></td>
+   </tr>
+   <tr>
+      <td nowrap style="height: 10px"></td>
+    </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Fator de Lucro:</td>
+      <td nowrap><b>0.80</b></td>
+      <td nowrap colspan="3">Retorno Esperado (Payoff):</td>
+      <td nowrap><b>-14.64</b></td>
+      <td nowrap colspan="3">Nível de Margem:</td>
+      <td nowrap colspan="2"><b>28.79%</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Fator de Recuperação:</td>
+      <td nowrap><b>-0.60</b></td>
+      <td nowrap colspan="3">Índice de Sharpe:</td>
+      <td nowrap><b>-5.00</b></td>
+      <td nowrap colspan="3">Z-Pontuação:</td>
+      <td nowrap colspan="2"><b>-1.13 (73.73%)</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">AHPR:</td>
+      <td nowrap><b>0.9856 (-1.44%)</b></td>
+      <td nowrap colspan="3">Correlação LR :</td>
+      <td nowrap><b>-0.73</b></td>
+      <td nowrap colspan="3">Resultado OnTester:</td>
+      <td nowrap colspan="2"><b>0</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">GHPR:</td>
+      <td nowrap><b>0.9577 (-4.23%)</b></td>
+      <td nowrap colspan="3">Erro Padrão LR :</td>
+      <td nowrap><b>242.19</b></td>
+      <td nowrap colspan="3"></td>
+      <td nowrap colspan="2"><b></b></td>
+   </tr>
+   <tr>
+      <td nowrap style="height: 10px"></td>
+    </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Total de Negociações:</td>
+      <td nowrap><b>64</b></td>
+      <td nowrap colspan="3">Posições Vendidas (% e ganhos):</td>
+      <td nowrap><b>26 (46.15%)</b></td>
+      <td nowrap colspan="3">Posições Compradas (% de ganhos):</td>
+      <td nowrap colspan="2"><b>38 (52.63%)</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Ofertas Total:</td>
+      <td nowrap><b>128</b></td>
+      <td nowrap colspan="3">Negociações com Lucro (% of total):</td>
+      <td nowrap><b>32 (50.00%)</b></td>
+      <td nowrap colspan="3">Negociações com Perda (% of total):</td>
+      <td nowrap colspan="2"><b>32 (50.00%)</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="4"></td>
+      <td nowrap colspan="3">Maior lucro da negociação:</td>
+      <td nowrap><b>218.90</b></td>
+      <td nowrap colspan="3">Maior perda na Negociação:</td>
+      <td nowrap colspan="2"><b>-306.10</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="4"></td>
+      <td nowrap colspan="3">Média lucro da negociação:</td>
+      <td nowrap><b>114.77</b></td>
+      <td nowrap colspan="3">Média perda na Negociação:</td>
+      <td nowrap colspan="2"><b>-144.05</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="4"></td>
+      <td nowrap colspan="3">Máximo ganhos consecutivos ($):</td>
+      <td nowrap><b>6 (826.90)</b></td>
+      <td nowrap colspan="3">Máximo perdas consecutivas ($):</td>
+      <td nowrap colspan="2"><b>4 (-592.50)</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="4"></td>
+      <td nowrap colspan="3">Máxima lucro consecutivo (contagem):</td>
+      <td nowrap><b>826.90 (6)</b></td>
+      <td nowrap colspan="3">Máxima perda consecutiva (contagem):</td>
+      <td nowrap colspan="2"><b>-695.80 (3)</b></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="4"></td>
+      <td nowrap colspan="3">Média ganhos consecutivos:</td>
+      <td nowrap><b>2</b></td>
+      <td nowrap colspan="3">Média perdas consecutivas:</td>
+      <td nowrap colspan="2"><b>2</b></td>
+   </tr>
+   <tr align="right">
+      <td colspan="13" style="height: 10px"></td>
+   </tr>
+   <tr align="center">
+      <th colspan="13"><img src="report_refino_0002.png" title="Grafico do saldo" width=820 height=200 border=0 alt="Graph"></th>
+   </tr>
+   <tr align="right">
+      <td colspan="13" style="height: 10px"></td>
+   </tr>
+   <tr align="center">
+      <th colspan="13"><img src="report_refino_0002-hst.png" width=860 height=400 border=0 alt="Graph"></th>
+   </tr>
+   <tr align="right">
+      <td colspan="13" style="height: 10px"></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Correlação (Lucros,MFE):</td>
+      <td nowrap><b>0.79</b></td>
+      <td nowrap colspan="3">Correlação (Lucros,MAE):</td>
+      <td nowrap><b>0.90</b></td>
+      <td nowrap colspan="3">Correlação(MFE,MAE):</td>
+      <td nowrap colspan="2"><b>0.6226</b></td>
+   </tr>
+   <tr align="center">
+      <th colspan="13"><img src="report_refino_0002-mfemae.png" width=860 height=400 border=0 alt="Graph"></th>
+   </tr>
+   <tr align="right">
+      <td colspan="13" style="height: 10px"></td>
+   </tr>
+   <tr align="right">
+      <td nowrap colspan="3">Tempo mínimo de duração da posição:</td>
+      <td nowrap><b>0:03:40</b></td>
+      <td nowrap colspan="3">Tempo máximo de duração da posição:</td>
+      <td nowrap><b>5:02:00</b></td>
+      <td nowrap colspan="3">Tempo médio de duração da posição:</td>
+      <td nowrap colspan="2"><b>1:05:15</b></td>
+   </tr>
+   <tr align="center">
+      <th colspan="13"><img src="report_refino_0002-holding.png" width=860 height=200 border=0 alt="Graph"></th>
+   </tr>
+   <tr align="right">
+      <td colspan="13" style="height: 10px"></td>
+   </tr>
+</table>
+<table cellspacing="1" cellpadding="3" border="0">
+   <tr>
+      <td style="width: 90px;height: 10px"></td>
+      <td style="width: 40px;"></td>
+      <td style="width: 60px;"></td>
+      <td style="width: 60px;"></td>
+      <td style="width: 60px;"></td>
+      <td style="width: 60px;"></td>
+      <td style="width: 60px;"></td>
+      <td style="width: 70px;"></td>
+      <td style="width: 70px;"></td>
+      <td style="width: 60px;"></td>
+      <td style="width: 60px;"></td>
+      <td style="width: 60px;"></td>
+      <td style="width: 100px;"></td>
+   </tr>
+   <tr align="center">
+      <th colspan="13" style="height: 25px"><div style="font: 10pt Tahoma"><b>Ordens</b></div></th>
+   </tr>
+   <tr align="center" bgcolor="#E5F0FC">
+      <td nowrap style="height: 30px"><b>Horário da Abertura</b></td>
+      <td nowrap><b>Ordem</b></td>
+      <td nowrap><b>Ativo</b></td>
+      <td nowrap><b>Tipo</b></td>
+      <td nowrap colspan="2"><b>Volume</b></td>
+      <td nowrap><b>Preço</b></td>
+      <td nowrap><b>S / L</b></td>
+      <td nowrap><b>T / P</b></td>
+      <td nowrap colspan="2"><b>Horário</b></td>
+      <td nowrap><b>Estado</b></td>
+      <td nowrap><b>Comentário</b></td>
+   </tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 01:46:00</td><td>2</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 01:46:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 02:15:40</td><td>3</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 02:15:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 02:46:00</td><td>4</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 02:46:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 03:11:40</td><td>5</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 03:11:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 07:04:00</td><td>6</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 07:04:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 07:48:40</td><td>7</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 07:48:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 10:08:00</td><td>8</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 10:08:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 10:52:40</td><td>9</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 10:52:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 11:40:00</td><td>10</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 11:40:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 12:36:40</td><td>11</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 12:36:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 13:10:00</td><td>12</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 13:10:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 14:13:40</td><td>13</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 14:13:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 14:42:00</td><td>14</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 14:42:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 15:36:40</td><td>15</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 15:36:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 19:44:00</td><td>16</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 19:44:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 19:52:40</td><td>17</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 19:52:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 20:48:00</td><td>18</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 20:48:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 20:51:40</td><td>19</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 20:51:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 22:38:00</td><td>20</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 22:38:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 22:57:40</td><td>21</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.14 22:57:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 02:40:00</td><td>22</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 02:40:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 04:11:40</td><td>23</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 04:11:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 07:40:00</td><td>24</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 07:40:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 09:08:00</td><td>25</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 09:08:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 09:08:00</td><td>26</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 09:08:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 10:04:40</td><td>27</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 10:04:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 11:02:00</td><td>28</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 11:02:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 12:24:00</td><td>29</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 12:24:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 12:24:00</td><td>30</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 12:24:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 14:35:40</td><td>31</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 14:35:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 18:38:00</td><td>32</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 18:38:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 18:53:40</td><td>33</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 18:53:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 20:50:00</td><td>34</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 20:50:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 20:53:40</td><td>35</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 20:53:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 21:40:00</td><td>36</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 21:40:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 22:32:00</td><td>37</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 22:32:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 22:32:00</td><td>38</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 22:32:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 23:40:00</td><td>39</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.15 23:40:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 03:04:00</td><td>40</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 03:04:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 03:33:40</td><td>41</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 03:33:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 04:04:00</td><td>42</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 04:04:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 05:02:00</td><td>43</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 05:02:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 05:02:00</td><td>44</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 05:02:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 08:02:40</td><td>45</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 08:02:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 12:56:00</td><td>46</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 12:56:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 14:38:00</td><td>47</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 14:38:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 14:38:00</td><td>48</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 14:38:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 15:12:00</td><td>49</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 15:12:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 15:12:00</td><td>50</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 15:12:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 16:28:40</td><td>51</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 16:28:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 16:42:00</td><td>52</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 16:42:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 16:45:40</td><td>53</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 16:45:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 18:06:00</td><td>54</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 18:06:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 18:22:40</td><td>55</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 18:22:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 20:28:00</td><td>56</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 20:28:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 20:31:40</td><td>57</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.16 20:31:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 04:50:00</td><td>58</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 04:50:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 06:06:40</td><td>59</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 06:06:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 08:26:00</td><td>60</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 08:26:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 09:06:40</td><td>61</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 09:06:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 10:04:00</td><td>62</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 10:04:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 10:18:40</td><td>63</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 10:18:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 11:12:00</td><td>64</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 11:12:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 12:32:00</td><td>65</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 12:32:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 12:32:00</td><td>66</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 12:32:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 13:43:40</td><td>67</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 13:43:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 14:42:00</td><td>68</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 14:42:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 15:03:40</td><td>69</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 15:03:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 15:56:00</td><td>70</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 15:56:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 16:33:40</td><td>71</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 16:33:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 21:56:00</td><td>72</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 21:56:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 22:50:40</td><td>73</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.17 22:50:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 02:02:00</td><td>74</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 02:02:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 05:36:40</td><td>75</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 05:36:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 06:16:00</td><td>76</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 06:16:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 09:30:00</td><td>77</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 09:30:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 09:30:00</td><td>78</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 09:30:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 10:22:40</td><td>79</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 10:22:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 11:12:00</td><td>80</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 11:12:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 13:28:00</td><td>81</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 13:28:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 13:28:00</td><td>82</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 13:28:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 14:03:40</td><td>83</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 14:03:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 15:14:00</td><td>84</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 15:14:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 16:04:00</td><td>85</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 16:04:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 16:04:00</td><td>86</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 16:04:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 16:58:40</td><td>87</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 16:58:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 19:18:00</td><td>88</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 19:18:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 20:02:40</td><td>89</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 20:02:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 21:22:00</td><td>90</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 21:22:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 22:37:40</td><td>91</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.21 22:37:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 01:10:00</td><td>92</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 01:10:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 02:49:40</td><td>93</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 02:49:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 03:38:00</td><td>94</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 03:38:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 04:25:40</td><td>95</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 04:25:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 05:10:00</td><td>96</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 05:10:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 06:14:40</td><td>97</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 06:14:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 06:48:00</td><td>98</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 06:48:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 09:46:40</td><td>99</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 09:46:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 10:24:00</td><td>100</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 10:24:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 15:26:00</td><td>101</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 15:26:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 15:26:00</td><td>102</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 15:26:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 16:24:40</td><td>103</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 16:24:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 18:36:00</td><td>104</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 18:36:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 19:00:40</td><td>105</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 19:00:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 19:50:00</td><td>106</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 19:50:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 20:15:40</td><td>107</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 20:15:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 22:54:00</td><td>108</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 22:54:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 23:40:00</td><td>109</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.22 23:40:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 02:36:00</td><td>110</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 02:36:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 04:22:00</td><td>111</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 04:22:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 04:22:00</td><td>112</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 04:22:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 04:37:40</td><td>113</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 04:37:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 05:16:00</td><td>114</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 05:16:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 06:10:00</td><td>115</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 06:10:00</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 06:10:00</td><td>116</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 06:10:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 07:02:40</td><td>117</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 07:02:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 08:02:00</td><td>118</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 08:02:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 10:48:40</td><td>119</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 10:48:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 12:20:00</td><td>120</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 12:20:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 13:41:40</td><td>121</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 13:41:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 14:42:00</td><td>122</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 14:42:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 15:47:40</td><td>123</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 15:47:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 18:10:00</td><td>124</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 18:10:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 18:23:40</td><td>125</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 18:23:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 19:52:00</td><td>126</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 19:52:00</td><td>filled</td><td>SELL</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 20:21:40</td><td>127</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 20:21:40</td><td>filled</td><td></td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 21:34:00</td><td>128</td><td>US100</td><td>buy</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 21:34:00</td><td>filled</td><td>BUY</td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 22:16:00</td><td>129</td><td>US100</td><td>sell</td><td colspan="2">2 / 2</td><td>0.00</td><td></td><td></td><td colspan="2">2025.04.23 22:16:00</td><td>filled</td><td>so 33.58% </td></tr>
+   <tr>
+      <td nowrap style="height: 10px"></td>
+   </tr>
+   <tr align="center">
+      <th colspan="13" style="height: 25px"><div style="font: 10pt Tahoma"><b>Transações</b></div></th>
+   </tr>
+   <tr align="center" bgcolor="#E5F0FC">
+      <td nowrap style="height: 30px"><b>Horário</b></td>
+      <td nowrap><b>Oferta</b></td>
+      <td nowrap><b>Ativo</b></td>
+      <td nowrap><b>Tipo</b></td>
+      <td nowrap><b>Direção</b></td>
+      <td nowrap><b>Volume</b></td>
+      <td nowrap><b>Preço</b></td>
+      <td nowrap><b>Ordem</b></td>
+      <td nowrap><b>Comissão</b></td>
+      <td nowrap><b>Swap</b></td>
+      <td nowrap><b>Lucro</b></td>
+      <td nowrap><b>Saldo</b></td>
+      <td nowrap><b>Comentário</b></td>
+   </tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 00:00:00</td><td>1</td><td></td><td>balance</td><td></td><td></td><td></td><td></td><td>0.00</td><td>0.00</td><td>1 000.00</td><td>1 000.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 01:46:00</td><td>2</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18859.60</td><td>2</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 000.00</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 02:15:40</td><td>3</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18912.60</td><td>3</td><td>0.00</td><td>0.00</td><td>106.00</td><td>1 106.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 02:46:00</td><td>4</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18883.35</td><td>4</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 106.00</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 03:11:40</td><td>5</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18940.35</td><td>5</td><td>0.00</td><td>0.00</td><td>114.00</td><td>1 220.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 07:04:00</td><td>6</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18932.85</td><td>6</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 220.00</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 07:48:40</td><td>7</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18999.85</td><td>7</td><td>0.00</td><td>0.00</td><td>134.00</td><td>1 354.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 10:08:00</td><td>8</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18976.60</td><td>8</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 354.00</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 10:52:40</td><td>9</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>19031.75</td><td>9</td><td>0.00</td><td>0.00</td><td>110.30</td><td>1 464.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 11:40:00</td><td>10</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>19009.00</td><td>10</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 464.30</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 12:36:40</td><td>11</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18915.50</td><td>11</td><td>0.00</td><td>0.00</td><td>-187.00</td><td>1 277.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 13:10:00</td><td>12</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18938.25</td><td>12</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 277.30</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 14:13:40</td><td>13</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>19040.75</td><td>13</td><td>0.00</td><td>0.00</td><td>-205.00</td><td>1 072.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 14:42:00</td><td>14</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>19001.00</td><td>14</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 072.30</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 15:36:40</td><td>15</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>19059.00</td><td>15</td><td>0.00</td><td>0.00</td><td>116.00</td><td>1 188.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 19:44:00</td><td>16</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18740.00</td><td>16</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 188.30</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 19:52:40</td><td>17</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18684.75</td><td>17</td><td>0.00</td><td>0.00</td><td>110.50</td><td>1 298.80</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 20:48:00</td><td>18</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18714.75</td><td>18</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 298.80</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 20:51:40</td><td>19</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18768.75</td><td>19</td><td>0.00</td><td>0.00</td><td>108.00</td><td>1 406.80</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.14 22:38:00</td><td>20</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18910.50</td><td>20</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 406.80</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.14 22:57:40</td><td>21</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18794.75</td><td>21</td><td>0.00</td><td>0.00</td><td>-231.50</td><td>1 175.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 02:40:00</td><td>22</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18721.55</td><td>22</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 175.30</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 04:11:40</td><td>23</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18803.30</td><td>23</td><td>0.00</td><td>0.00</td><td>-163.50</td><td>1 011.80</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 07:40:00</td><td>24</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18780.55</td><td>24</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 011.80</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 09:08:00</td><td>25</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18767.55</td><td>25</td><td>0.00</td><td>0.00</td><td>-26.00</td><td>985.80</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 09:08:00</td><td>26</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18767.55</td><td>26</td><td>0.00</td><td>0.00</td><td>0.00</td><td>985.80</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 10:04:40</td><td>27</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18853.30</td><td>27</td><td>0.00</td><td>0.00</td><td>-171.50</td><td>814.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 11:02:00</td><td>28</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18862.55</td><td>28</td><td>0.00</td><td>0.00</td><td>0.00</td><td>814.30</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 12:24:00</td><td>29</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18869.55</td><td>29</td><td>0.00</td><td>0.00</td><td>14.00</td><td>828.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 12:24:00</td><td>30</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18869.55</td><td>30</td><td>0.00</td><td>0.00</td><td>0.00</td><td>828.30</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 14:35:40</td><td>31</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18816.95</td><td>31</td><td>0.00</td><td>0.00</td><td>105.20</td><td>933.50</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 18:38:00</td><td>32</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18880.45</td><td>32</td><td>0.00</td><td>0.00</td><td>0.00</td><td>933.50</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 18:53:40</td><td>33</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18940.65</td><td>33</td><td>0.00</td><td>0.00</td><td>120.40</td><td>1 053.90</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 20:50:00</td><td>34</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18849.90</td><td>34</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 053.90</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 20:53:40</td><td>35</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18790.20</td><td>35</td><td>0.00</td><td>0.00</td><td>119.40</td><td>1 173.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 21:40:00</td><td>36</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18809.90</td><td>36</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 173.30</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 22:32:00</td><td>37</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18831.45</td><td>37</td><td>0.00</td><td>0.00</td><td>-43.10</td><td>1 130.20</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.15 22:32:00</td><td>38</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18831.45</td><td>38</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 130.20</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.15 23:40:00</td><td>39</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18802.90</td><td>39</td><td>0.00</td><td>0.00</td><td>-57.10</td><td>1 073.10</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 03:04:00</td><td>40</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18595.65</td><td>40</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 073.10</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 03:33:40</td><td>41</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18528.20</td><td>41</td><td>0.00</td><td>0.00</td><td>134.90</td><td>1 208.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 04:04:00</td><td>42</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18547.40</td><td>42</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 208.00</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 05:02:00</td><td>43</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18582.70</td><td>43</td><td>0.00</td><td>0.00</td><td>-70.60</td><td>1 137.40</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 05:02:00</td><td>44</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18582.70</td><td>44</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 137.40</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 08:02:40</td><td>45</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18500.65</td><td>45</td><td>0.00</td><td>0.00</td><td>-164.10</td><td>973.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 12:56:00</td><td>46</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18589.95</td><td>46</td><td>0.00</td><td>0.00</td><td>0.00</td><td>973.30</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 14:38:00</td><td>47</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18566.40</td><td>47</td><td>0.00</td><td>0.00</td><td>-47.10</td><td>926.20</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 14:38:00</td><td>48</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18566.40</td><td>48</td><td>0.00</td><td>0.00</td><td>0.00</td><td>926.20</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 15:12:00</td><td>49</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18563.20</td><td>49</td><td>0.00</td><td>0.00</td><td>6.40</td><td>932.60</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 15:12:00</td><td>50</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18563.20</td><td>50</td><td>0.00</td><td>0.00</td><td>0.00</td><td>932.60</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 16:28:40</td><td>51</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18453.40</td><td>51</td><td>0.00</td><td>0.00</td><td>-219.60</td><td>713.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 16:42:00</td><td>52</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18531.90</td><td>52</td><td>0.00</td><td>0.00</td><td>0.00</td><td>713.00</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 16:45:40</td><td>53</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18478.20</td><td>53</td><td>0.00</td><td>0.00</td><td>107.40</td><td>820.40</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 18:06:00</td><td>54</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18479.55</td><td>54</td><td>0.00</td><td>0.00</td><td>0.00</td><td>820.40</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 18:22:40</td><td>55</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18540.00</td><td>55</td><td>0.00</td><td>0.00</td><td>120.90</td><td>941.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.16 20:28:00</td><td>56</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18452.00</td><td>56</td><td>0.00</td><td>0.00</td><td>0.00</td><td>941.30</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.16 20:31:40</td><td>57</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18342.55</td><td>57</td><td>0.00</td><td>0.00</td><td>218.90</td><td>1 160.20</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 04:50:00</td><td>58</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18339.40</td><td>58</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 160.20</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 06:06:40</td><td>59</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18392.85</td><td>59</td><td>0.00</td><td>0.00</td><td>106.90</td><td>1 267.10</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 08:26:00</td><td>60</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18401.65</td><td>60</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 267.10</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 09:06:40</td><td>61</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18456.10</td><td>61</td><td>0.00</td><td>0.00</td><td>108.90</td><td>1 376.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 10:04:00</td><td>62</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18449.40</td><td>62</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 376.00</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 10:18:40</td><td>63</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18531.35</td><td>63</td><td>0.00</td><td>0.00</td><td>163.90</td><td>1 539.90</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 11:12:00</td><td>64</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18488.40</td><td>64</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 539.90</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 12:32:00</td><td>65</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18454.35</td><td>65</td><td>0.00</td><td>0.00</td><td>-68.10</td><td>1 471.80</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 12:32:00</td><td>66</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18454.35</td><td>66</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 471.80</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 13:43:40</td><td>67</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18398.15</td><td>67</td><td>0.00</td><td>0.00</td><td>112.40</td><td>1 584.20</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 14:42:00</td><td>68</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18387.85</td><td>68</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 584.20</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 15:03:40</td><td>69</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18502.65</td><td>69</td><td>0.00</td><td>0.00</td><td>-229.60</td><td>1 354.60</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 15:56:00</td><td>70</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18413.40</td><td>70</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 354.60</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 16:33:40</td><td>71</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18293.10</td><td>71</td><td>0.00</td><td>0.00</td><td>-240.60</td><td>1 114.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.17 21:56:00</td><td>72</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18333.90</td><td>72</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 114.00</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.17 22:50:40</td><td>73</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18221.10</td><td>73</td><td>0.00</td><td>0.00</td><td>-225.60</td><td>888.40</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 02:02:00</td><td>74</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18194.25</td><td>74</td><td>0.00</td><td>0.00</td><td>0.00</td><td>888.40</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 05:36:40</td><td>75</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18125.80</td><td>75</td><td>0.00</td><td>0.00</td><td>136.90</td><td>1 025.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 06:16:00</td><td>76</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18119.25</td><td>76</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 025.30</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 09:30:00</td><td>77</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18126.05</td><td>77</td><td>0.00</td><td>0.00</td><td>-13.60</td><td>1 011.70</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 09:30:00</td><td>78</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18126.05</td><td>78</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 011.70</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 10:22:40</td><td>79</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18045.00</td><td>79</td><td>0.00</td><td>0.00</td><td>-162.10</td><td>849.60</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 11:12:00</td><td>80</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18073.50</td><td>80</td><td>0.00</td><td>0.00</td><td>0.00</td><td>849.60</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 13:28:00</td><td>81</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18048.80</td><td>81</td><td>0.00</td><td>0.00</td><td>49.40</td><td>899.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 13:28:00</td><td>82</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18048.80</td><td>82</td><td>0.00</td><td>0.00</td><td>0.00</td><td>899.00</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 14:03:40</td><td>83</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18101.50</td><td>83</td><td>0.00</td><td>0.00</td><td>105.40</td><td>1 004.40</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 15:14:00</td><td>84</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18000.25</td><td>84</td><td>0.00</td><td>0.00</td><td>0.00</td><td>1 004.40</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 16:04:00</td><td>85</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18005.80</td><td>85</td><td>0.00</td><td>0.00</td><td>-11.10</td><td>993.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 16:04:00</td><td>86</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18005.80</td><td>86</td><td>0.00</td><td>0.00</td><td>0.00</td><td>993.30</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 16:58:40</td><td>87</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>17900.75</td><td>87</td><td>0.00</td><td>0.00</td><td>-210.10</td><td>783.20</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 19:18:00</td><td>88</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>17730.25</td><td>88</td><td>0.00</td><td>0.00</td><td>0.00</td><td>783.20</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 20:02:40</td><td>89</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>17659.05</td><td>89</td><td>0.00</td><td>0.00</td><td>142.40</td><td>925.60</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.21 21:22:00</td><td>90</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>17637.50</td><td>90</td><td>0.00</td><td>0.00</td><td>0.00</td><td>925.60</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.21 22:37:40</td><td>91</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>17745.55</td><td>91</td><td>0.00</td><td>0.00</td><td>-216.10</td><td>709.50</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 01:10:00</td><td>92</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>17796.15</td><td>92</td><td>0.00</td><td>0.00</td><td>0.00</td><td>709.50</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 02:49:40</td><td>93</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>17869.10</td><td>93</td><td>0.00</td><td>0.00</td><td>145.90</td><td>855.40</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 03:38:00</td><td>94</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>17881.40</td><td>94</td><td>0.00</td><td>0.00</td><td>0.00</td><td>855.40</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 04:25:40</td><td>95</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>17938.60</td><td>95</td><td>0.00</td><td>0.00</td><td>114.40</td><td>969.80</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 05:10:00</td><td>96</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>17930.90</td><td>96</td><td>0.00</td><td>0.00</td><td>0.00</td><td>969.80</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 06:14:40</td><td>97</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>17839.10</td><td>97</td><td>0.00</td><td>0.00</td><td>-183.60</td><td>786.20</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 06:48:00</td><td>98</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>17891.10</td><td>98</td><td>0.00</td><td>0.00</td><td>0.00</td><td>786.20</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 09:46:40</td><td>99</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>17967.65</td><td>99</td><td>0.00</td><td>0.00</td><td>-153.10</td><td>633.10</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 10:24:00</td><td>100</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>17989.90</td><td>100</td><td>0.00</td><td>0.00</td><td>0.00</td><td>633.10</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 15:26:00</td><td>101</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>17968.60</td><td>101</td><td>0.00</td><td>0.00</td><td>-42.60</td><td>590.50</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 15:26:00</td><td>102</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>17968.60</td><td>102</td><td>0.00</td><td>0.00</td><td>0.00</td><td>590.50</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 16:24:40</td><td>103</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18044.40</td><td>103</td><td>0.00</td><td>0.00</td><td>-151.60</td><td>438.90</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 18:36:00</td><td>104</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18237.65</td><td>104</td><td>0.00</td><td>0.00</td><td>0.00</td><td>438.90</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 19:00:40</td><td>105</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18328.85</td><td>105</td><td>0.00</td><td>0.00</td><td>182.40</td><td>621.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 19:50:00</td><td>106</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18356.15</td><td>106</td><td>0.00</td><td>0.00</td><td>0.00</td><td>621.30</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 20:15:40</td><td>107</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18221.60</td><td>107</td><td>0.00</td><td>0.00</td><td>-269.10</td><td>352.20</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.22 22:54:00</td><td>108</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18236.35</td><td>108</td><td>0.00</td><td>0.00</td><td>0.00</td><td>352.20</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.22 23:40:00</td><td>109</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18267.65</td><td>109</td><td>0.00</td><td>0.00</td><td>-62.60</td><td>289.60</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 02:36:00</td><td>110</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18639.70</td><td>110</td><td>0.00</td><td>0.00</td><td>0.00</td><td>289.60</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 04:22:00</td><td>111</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18609.90</td><td>111</td><td>0.00</td><td>0.00</td><td>-59.60</td><td>230.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 04:22:00</td><td>112</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18609.90</td><td>112</td><td>0.00</td><td>0.00</td><td>0.00</td><td>230.00</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 04:37:40</td><td>113</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18547.95</td><td>113</td><td>0.00</td><td>0.00</td><td>123.90</td><td>353.90</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 05:16:00</td><td>114</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18549.40</td><td>114</td><td>0.00</td><td>0.00</td><td>0.00</td><td>353.90</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 06:10:00</td><td>115</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18566.20</td><td>115</td><td>0.00</td><td>0.00</td><td>-33.60</td><td>320.30</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 06:10:00</td><td>116</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18566.20</td><td>116</td><td>0.00</td><td>0.00</td><td>0.00</td><td>320.30</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 07:02:40</td><td>117</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18622.90</td><td>117</td><td>0.00</td><td>0.00</td><td>113.40</td><td>433.70</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 08:02:00</td><td>118</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18613.70</td><td>118</td><td>0.00</td><td>0.00</td><td>0.00</td><td>433.70</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 10:48:40</td><td>119</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18666.90</td><td>119</td><td>0.00</td><td>0.00</td><td>106.40</td><td>540.10</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 12:20:00</td><td>120</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18729.95</td><td>120</td><td>0.00</td><td>0.00</td><td>0.00</td><td>540.10</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 13:41:40</td><td>121</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18783.40</td><td>121</td><td>0.00</td><td>0.00</td><td>106.90</td><td>647.00</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 14:42:00</td><td>122</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18792.70</td><td>122</td><td>0.00</td><td>0.00</td><td>0.00</td><td>647.00</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 15:47:40</td><td>123</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18846.15</td><td>123</td><td>0.00</td><td>0.00</td><td>106.90</td><td>753.90</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 18:10:00</td><td>124</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18955.95</td><td>124</td><td>0.00</td><td>0.00</td><td>0.00</td><td>753.90</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 18:23:40</td><td>125</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18802.90</td><td>125</td><td>0.00</td><td>0.00</td><td>-306.10</td><td>447.80</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 19:52:00</td><td>126</td><td>US100</td><td>sell</td><td>in</td><td>2</td><td>18746.45</td><td>126</td><td>0.00</td><td>0.00</td><td>0.00</td><td>447.80</td><td>SELL</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 20:21:40</td><td>127</td><td>US100</td><td>buy</td><td>out</td><td>2</td><td>18852.25</td><td>127</td><td>0.00</td><td>0.00</td><td>-211.60</td><td>236.20</td><td></td></tr>
+   <tr bgcolor="#F7F7F7" align=right><td>2025.04.23 21:34:00</td><td>128</td><td>US100</td><td>buy</td><td>in</td><td>2</td><td>18791.75</td><td>128</td><td>0.00</td><td>0.00</td><td>0.00</td><td>236.20</td><td>BUY</td></tr>
+   <tr bgcolor="#FFFFFF" align=right><td>2025.04.23 22:16:00</td><td>129</td><td>US100</td><td>sell</td><td>out</td><td>2</td><td>18705.20</td><td>129</td><td>0.00</td><td>0.00</td><td>-173.10</td><td>63.10</td><td>so 33.58% </td></tr>
+   <tr align="right">
+      <td nowrap colspan="8" style="height: 30px"></td>
+      <td nowrap><b>0.00</b></td>
+      <td nowrap><b>0.00</b></td>
+      <td nowrap><b>-936.90</b></td>
+      <td nowrap><b>63.10</b></td>
+      <td nowrap></td>
+   </tr>
+   <tr>
+      <td nowrap style="height: 10px"></td>
+   </tr>
+</table>
+</div>
+</body>
+</html>

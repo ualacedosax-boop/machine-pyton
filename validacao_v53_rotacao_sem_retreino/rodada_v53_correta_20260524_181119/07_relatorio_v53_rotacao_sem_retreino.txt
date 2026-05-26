@@ -1,0 +1,99 @@
+================================================================================
+RELATÓRIO V5.3 - ROTAÇÃO SEM RETREINO
+================================================================================
+
+IMPORTANTE:
+Este script NÃO retreina a V5.3.
+Este script NÃO altera o modelo.
+Este script NÃO altera a lógica.
+Ele apenas lê as predições/trades da V5.3 e separa por rotação mensal.
+
+MODO: AMBOS
+Data execução: 20260524_181119
+Pasta saída: C:\Users\ualac\Documents\2025\Mercado\machine-pyton\validacao_v53_rotacao_sem_retreino\rodada_v53_correta_20260524_181119
+
+================================================================================
+RESUMO GERAL
+================================================================================
+                                 0
+grupo                        GERAL
+trades                         573
+wins                           491
+losses                          82
+winrate                  85.689354
+lucro_pontos               15201.5
+profit_factor              2.58448
+drawdown_trades_pontos      -814.0
+dias_operados                  302
+media_trades_por_dia      1.897351
+pior_dia_pontos             -117.0
+melhor_dia_pontos            151.5
+buy_total                      257
+sell_total                     316
+media_pontos_trade       26.529668
+media_pontos_10_trades  265.296684
+
+================================================================================
+RESUMO POR FONTE
+================================================================================
+         grupo  trades  wins  losses   winrate  lucro_pontos  profit_factor  drawdown_trades_pontos  dias_operados  media_trades_por_dia  pior_dia_pontos  melhor_dia_pontos  buy_total  sell_total  media_pontos_trade  media_pontos_10_trades          Fonte
+    TESTE_2026     167   132      35 79.041916        2571.0       1.627839                  -582.5             89              1.876404           -117.0              151.5         47         120           15.395210              153.952096     TESTE_2026
+VALIDACAO_2025     406   359      47 88.423645       12630.5       3.296872                  -814.0            213              1.906103           -117.0              151.5        210         196           31.109606              311.096059 VALIDACAO_2025
+
+================================================================================
+RESUMO POR ROTAÇÃO
+================================================================================
+    grupo  trades  wins  losses   winrate  lucro_pontos  profit_factor  drawdown_trades_pontos  dias_operados  media_trades_por_dia  pior_dia_pontos  melhor_dia_pontos  buy_total  sell_total  media_pontos_trade  media_pontos_10_trades   Rotacao Meses_Rotacao
+ROTACAO_A     183   155      28 84.699454        4551.5       2.389347                  -484.0             95              1.926316           -117.0              151.5         92          91           24.871585              248.715847 ROTACAO_A      3,6,9,12
+ROTACAO_B     182   155      27 85.164835        4668.5       2.477841                  -710.5             99              1.838384           -117.0              151.5         84          98           25.651099              256.510989 ROTACAO_B      2,5,8,11
+ROTACAO_C     208   181      27 87.019231        5981.5       2.893479                  -582.5            108              1.925926           -117.0              151.5         81         127           28.757212              287.572115 ROTACAO_C      1,4,7,10
+
+================================================================================
+RESUMO POR ROTAÇÃO E FONTE
+================================================================================
+                   grupo  trades  wins  losses   winrate  lucro_pontos  profit_factor  drawdown_trades_pontos  dias_operados  media_trades_por_dia  pior_dia_pontos  melhor_dia_pontos  buy_total  sell_total  media_pontos_trade  media_pontos_10_trades          Fonte   Rotacao Meses_Rotacao
+    TESTE_2026_ROTACAO_A      47    37      10 78.723404         698.5       1.597009                  -447.0             22              2.136364           -117.0              151.5         14          33           14.861702              148.617021     TESTE_2026 ROTACAO_A      3,6,9,12
+    TESTE_2026_ROTACAO_B      55    47       8 85.454545        1437.5       2.535791                  -367.0             29              1.896552           -117.0              151.5         13          42           26.136364              261.363636     TESTE_2026 ROTACAO_B      2,5,8,11
+    TESTE_2026_ROTACAO_C      65    48      17 73.846154         435.0       1.218703                  -582.5             38              1.710526           -117.0              151.5         20          45            6.692308               66.923077     TESTE_2026 ROTACAO_C      1,4,7,10
+VALIDACAO_2025_ROTACAO_A     136   118      18 86.764706        3853.0       2.829535                  -484.0             73              1.863014           -117.0              151.5         78          58           28.330882              283.308824 VALIDACAO_2025 ROTACAO_A      3,6,9,12
+VALIDACAO_2025_ROTACAO_B     127   108      19 85.039370        3231.0       2.453441                  -710.5             70              1.814286           -117.0              151.5         71          56           25.440945              254.409449 VALIDACAO_2025 ROTACAO_B      2,5,8,11
+VALIDACAO_2025_ROTACAO_C     143   133      10 93.006993        5546.5       5.740598                  -417.5             70              2.042857           -117.0              151.5         61          82           38.786713              387.867133 VALIDACAO_2025 ROTACAO_C      1,4,7,10
+
+================================================================================
+RESUMO MENSAL
+================================================================================
+                 grupo  trades  wins  losses    winrate  lucro_pontos  profit_factor  drawdown_trades_pontos  dias_operados  media_trades_por_dia  pior_dia_pontos  melhor_dia_pontos  buy_total  sell_total  media_pontos_trade  media_pontos_10_trades          Fonte  AnoMes  Ano  Mes
+    TESTE_2026_2026-01      31    22       9  70.967742          58.0       1.055081                  -316.5             18              1.722222           -117.0              151.5          7          24            1.870968               18.709677     TESTE_2026 2026-01 2026    1
+    TESTE_2026_2026-02      34    28       6  82.352941         712.0       2.014245                  -367.0             18              1.888889           -117.0              151.5          6          28           20.941176              209.411765     TESTE_2026 2026-02 2026    2
+    TESTE_2026_2026-03      47    37      10  78.723404         698.5       1.597009                  -447.0             22              2.136364           -117.0              151.5         14          33           14.861702              148.617021     TESTE_2026 2026-03 2026    3
+    TESTE_2026_2026-04      34    26       8  76.470588         377.0       1.402778                  -582.5             20              1.700000           -117.0              151.5         13          21           11.088235              110.882353     TESTE_2026 2026-04 2026    4
+    TESTE_2026_2026-05      21    19       2  90.476190         725.5       4.100427                  -117.0             11              1.909091           -117.0              151.5          7          14           34.547619              345.476190     TESTE_2026 2026-05 2026    5
+VALIDACAO_2025_2025-01      54    54       0 100.000000        2727.0     999.000000                     0.0             21              2.571429             50.5              151.5         26          28           50.500000              505.000000 VALIDACAO_2025 2025-01 2025    1
+VALIDACAO_2025_2025-02      38    38       0 100.000000        1919.0     999.000000                     0.0             15              2.533333             50.5              151.5         23          15           50.500000              505.000000 VALIDACAO_2025 2025-02 2025    2
+VALIDACAO_2025_2025-03      35    35       0 100.000000        1767.5     999.000000                     0.0             18              1.944444             50.5              151.5         17          18           50.500000              505.000000 VALIDACAO_2025 2025-03 2025    3
+VALIDACAO_2025_2025-04      31    30       1  96.774194        1398.0      12.948718                  -117.0             15              2.066667            -66.5              151.5          8          23           45.096774              450.967742 VALIDACAO_2025 2025-04 2025    4
+VALIDACAO_2025_2025-05      33    33       0 100.000000        1666.5     999.000000                     0.0             19              1.736842             50.5              151.5         19          14           50.500000              505.000000 VALIDACAO_2025 2025-05 2025    5
+VALIDACAO_2025_2025-06      45    43       2  95.555556        1937.5       9.279915                  -117.0             19              2.368421           -117.0              151.5         28          17           43.055556              430.555556 VALIDACAO_2025 2025-06 2025    6
+VALIDACAO_2025_2025-07      35    32       3  91.428571        1265.0       4.603989                  -234.0             18              1.944444           -117.0              151.5         19          16           36.142857              361.428571 VALIDACAO_2025 2025-07 2025    7
+VALIDACAO_2025_2025-08      34    23      11  67.647059        -125.5       0.902486                  -431.0             21              1.619048           -117.0              151.5         22          12           -3.691176              -36.911765 VALIDACAO_2025 2025-08 2025    8
+VALIDACAO_2025_2025-09      36    26      10  72.222222         143.0       1.122222                  -484.0             22              1.636364           -117.0              151.5         22          14            3.972222               39.722222 VALIDACAO_2025 2025-09 2025    9
+VALIDACAO_2025_2025-10      23    17       6  73.913043         156.5       1.222934                  -417.5             16              1.437500           -117.0              151.5          8          15            6.804348               68.043478 VALIDACAO_2025 2025-10 2025   10
+VALIDACAO_2025_2025-11      22    14       8  63.636364        -229.0       0.755342                  -484.0             15              1.466667           -117.0              151.5          7          15          -10.409091             -104.090909 VALIDACAO_2025 2025-11 2025   11
+VALIDACAO_2025_2025-12      20    14       6  70.000000           5.0       1.007123                  -316.5             14              1.428571           -117.0              151.5         11           9            0.250000                2.500000 VALIDACAO_2025 2025-12 2025   12
+
+================================================================================
+CHECAGEM DE MESES NEGATIVOS
+================================================================================
+Meses positivos: 15
+Meses negativos: 2
+
+Meses negativos:
+         Fonte  AnoMes  trades  wins  losses   winrate  lucro_pontos  profit_factor  drawdown_trades_pontos
+VALIDACAO_2025 2025-08      34    23      11 67.647059        -125.5       0.902486                  -431.0
+VALIDACAO_2025 2025-11      22    14       8 63.636364        -229.0       0.755342                  -484.0
+
+================================================================================
+CHECAGEM DE ROTAÇÕES NEGATIVAS
+================================================================================
+Rotações negativas por fonte: 0
+Nenhuma rotação negativa por fonte encontrada.
