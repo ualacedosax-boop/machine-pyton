@@ -11,32 +11,57 @@ function Log($msg) {
 }
 
 Log "=== INICIANDO abrir_excel_macro_v71.ps1 ==="
-Log "Planilha : $Planilha"
-Log "Macro    : $Macro"
 
+# Se Excel ja estiver rodando, usa a instancia existente; senao cria nova.
 try {
-    Log "Criando instancia Excel COM..."
+    $xl = [System.Runtime.InteropServices.Marshal]::GetActiveObject("Excel.Application")
+    Log "Excel ja estava rodando - usando instancia existente"
+} catch {
     $xl = New-Object -ComObject Excel.Application
-    $xl.Visible           = $true
-    $xl.DisplayAlerts     = $false
-    # msoAutomationSecurityLow = 1 -> permite macros sem prompt de seguranca.
-    # Deve ser definido ANTES de abrir a pasta de trabalho.
+    # msoAutomationSecurityLow = 1: deve ser definido ANTES de abrir o workbook
     $xl.AutomationSecurity = 1
+    Log "Nova instancia Excel criada"
+}
 
+$xl.Visible       = $true
+$xl.DisplayAlerts = $false
+
+# Abre o workbook apenas se ainda nao estiver aberto
+$NomeArquivo = [System.IO.Path]::GetFileName($Planilha)
+$wb = $xl.Workbooks | Where-Object { $_.Name -eq $NomeArquivo }
+
+if ($wb) {
+    Log "Planilha ja estava aberta - aguardando 5s"
+    Start-Sleep -Seconds 5
+} else {
+    $xl.AutomationSecurity = 1
     Log "Abrindo planilha..."
     $wb = $xl.Workbooks.Open($Planilha)
-
-    Log "Aguardando 20 segundos para RTD carregar..."
-    Start-Sleep -Seconds 20
-
-    # Nome completo evita ambiguidade quando ha varios workbooks abertos
-    $NomeArquivo   = [System.IO.Path]::GetFileName($Planilha)
-    $MacroCompleto = "'$NomeArquivo'!$Macro"
-    Log "Executando: $MacroCompleto"
-    $xl.Run($MacroCompleto)
-    Log "Macro iniciada com sucesso."
+    Log "Aguardando 25 segundos para RTD carregar..."
+    Start-Sleep -Seconds 25
 }
-catch {
-    Log "ERRO: $_"
-    Log "Abra a planilha manualmente e rode a macro $Macro via ALT+F8."
+
+# 3 tentativas com 10s de espera entre elas (para o erro 0x800AC472 - Excel ocupado)
+$MacroCompleto = "'$NomeArquivo'!$Macro"
+$sucesso = $false
+
+for ($i = 1; $i -le 3; $i++) {
+    try {
+        Log "Tentativa $i - Executando: $MacroCompleto"
+        $xl.Run($MacroCompleto)
+        Log "Macro iniciada com sucesso na tentativa $i."
+        $sucesso = $true
+        break
+    } catch {
+        Log "Tentativa $i falhou: $_"
+        if ($i -lt 3) {
+            Log "Aguardando 10s antes da proxima tentativa..."
+            Start-Sleep -Seconds 10
+        }
+    }
+}
+
+if (-not $sucesso) {
+    Log "FALHA: macro nao iniciou apos 3 tentativas."
+    Log "Abra a planilha manualmente e rode $Macro via ALT+F8."
 }
