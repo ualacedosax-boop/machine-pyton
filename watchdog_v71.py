@@ -180,7 +180,7 @@ def main():
                 print()
                 print("!" * 60)
                 print(f"  SINAL: {sinal_ativo} - EXECUTE A ORDEM!")
-                print(f"  Stop: 90 pts | Take: 50.5 pts | 1 micro MNQ")
+                print(f"  Stop: 117 pts | Take: 50.5 pts | 1 micro MNQ")
                 print("!" * 60)
                 alarme(5)
                 ultimo_sinal_alertado = sinal_ativo

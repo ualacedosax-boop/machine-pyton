@@ -179,6 +179,7 @@ INTERVALO_SEGUNDOS = 1
 MODO_SEGURO_SEM_ORDEM = True
 
 CANDLES_MINIMOS = 220
+COOLDOWN_ENTRADAS_MINUTOS = 5
 
 warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -1958,6 +1959,7 @@ def carregar_estado_operacional():
             "trades_hoje": 0,
             "loss_no_dia": False,
             "ultimo_sinal_datahora": "",
+            "cooldown_entradas_minutos": COOLDOWN_ENTRADAS_MINUTOS,
         }
 
     with open(ARQUIVO_ESTADO, "r", encoding="utf-8") as f:
@@ -1977,6 +1979,7 @@ def atualizar_estado_para_data(estado, data_atual):
             "trades_hoje": 0,
             "loss_no_dia": False,
             "ultimo_sinal_datahora": "",
+            "cooldown_entradas_minutos": COOLDOWN_ENTRADAS_MINUTOS,
         }
 
     return estado
@@ -2095,6 +2098,80 @@ def gerar_sinal_tempo_real(candles, config_v4, modelo_v3, features_v3, modelo_v4
 
     ja_enviou_nesse_candle = estado.get("ultimo_sinal_datahora") == datahora_ultimo_candle
 
+    ultimo_sinal_dt = pd.to_datetime(estado.get("ultimo_sinal_datahora", ""), errors="coerce")
+    candle_atual_dt = pd.to_datetime(datahora_ultimo_candle, errors="coerce")
+    cooldown_entradas = pd.Timedelta(minutes=COOLDOWN_ENTRADAS_MINUTOS)
+    cooldown_ativo = False
+    proxima_entrada_liberada_em = ""
+
+    if not pd.isna(ultimo_sinal_dt) and not pd.isna(candle_atual_dt):
+        proxima_dt = ultimo_sinal_dt + cooldown_entradas
+        cooldown_ativo = bool(candle_atual_dt < proxima_dt)
+        proxima_entrada_liberada_em = str(proxima_dt)
+
+    # =====================================================
+    # V7.1 OFICIAL - COOLDOWN DE ENTRADAS
+    # =====================================================
+    # Objetivo:
+    # Depois que o robô envia BUY/SELL válido, bloqueia apenas
+    # novos sinais nos próximos 5 minutos.
+    #
+    # Isso evita duplicidade como:
+    # 03:50 SELL válido
+    # 03:52 SELL repetido
+    #
+    # Mas libera novas entradas legítimas depois da janela:
+    # 04:48 SELL válido, mesmo que o trade de 03:50 ainda exista.
+    # =====================================================
+
+    operacao_aberta = bool(estado.get("operacao_aberta", False))
+    operacao_fechou_agora = False
+    operacao_fechamento_motivo = ""
+
+    if operacao_aberta:
+        try:
+            op_sinal = str(estado.get("operacao_sinal", "")).lower()
+            op_take = float(estado.get("operacao_preco_take", np.nan))
+            op_stop = float(estado.get("operacao_preco_stop", np.nan))
+
+            candle_high = float(ultima.get("high", ultima.get("High", ultima.get("close", np.nan))))
+            candle_low = float(ultima.get("low", ultima.get("Low", ultima.get("close", np.nan))))
+
+            bateu_take = False
+            bateu_stop = False
+
+            if op_sinal == "buy":
+                bateu_take = candle_high >= op_take
+                bateu_stop = candle_low <= op_stop
+
+            elif op_sinal == "sell":
+                bateu_take = candle_low <= op_take
+                bateu_stop = candle_high >= op_stop
+
+            # Em caso raro de take e stop no mesmo candle, assume STOP primeiro por segurança.
+            if bateu_stop:
+                estado["operacao_aberta"] = False
+                estado["operacao_fechamento_motivo"] = "stop"
+                estado["operacao_fechamento_datahora"] = datahora_ultimo_candle
+                estado["loss_no_dia"] = True
+                operacao_aberta = False
+                operacao_fechou_agora = True
+                operacao_fechamento_motivo = "stop"
+                salvar_estado_operacional(estado)
+
+            elif bateu_take:
+                estado["operacao_aberta"] = False
+                estado["operacao_fechamento_motivo"] = "take"
+                estado["operacao_fechamento_datahora"] = datahora_ultimo_candle
+                operacao_aberta = False
+                operacao_fechou_agora = True
+                operacao_fechamento_motivo = "take"
+                salvar_estado_operacional(estado)
+
+        except Exception as e:
+            print("AVISO: erro ao verificar operação aberta:", e)
+            operacao_aberta = bool(estado.get("operacao_aberta", False))
+
     pode_operar_dia = (
         estado.get("trades_hoje", 0) < config_v4["max_trades_dia"] and
         (not config_v4["parar_apos_loss"] or not estado.get("loss_no_dia", False))
@@ -2106,6 +2183,7 @@ def gerar_sinal_tempo_real(candles, config_v4, modelo_v3, features_v3, modelo_v4
         horario_operacional_valido and
         pode_operar_dia and
         not ja_enviou_nesse_candle and
+        not cooldown_ativo and
         prob_v51 >= config_v4["prob_win_min"] and
         (pd.isna(prob_v55) or prob_v55 >= float(config_v4.get("prob_v55_min", 0.0))) and
         score_v3["score_diff"] >= config_v4["diferenca_minima"]
@@ -2171,6 +2249,8 @@ def gerar_sinal_tempo_real(candles, config_v4, modelo_v3, features_v3, modelo_v4
         motivo = "fora_do_horario_v4"
     elif ja_enviou_nesse_candle:
         motivo = "sinal_ja_enviado_neste_candle"
+    elif cooldown_ativo:
+        motivo = "cooldown_5_min_apos_ultima_entrada"
     elif not pode_operar_dia:
         motivo = "limite_diario_ou_loss_no_dia"
     elif prob_v51 < config_v4["prob_win_min"]:
@@ -2250,6 +2330,10 @@ def gerar_sinal_tempo_real(candles, config_v4, modelo_v3, features_v3, modelo_v4
         "max_trades_dia": config_v4["max_trades_dia"],
         "loss_no_dia": estado.get("loss_no_dia", False),
         "parar_apos_loss": config_v4["parar_apos_loss"],
+        "cooldown_entradas_minutos": COOLDOWN_ENTRADAS_MINUTOS,
+        "cooldown_ativo": bool(cooldown_ativo),
+        "proxima_entrada_liberada_em": proxima_entrada_liberada_em,
+        "ultimo_sinal_datahora": estado.get("ultimo_sinal_datahora", ""),
         "bloquear_0430_0444": config_v4.get("bloquear_0430_0444", False),
         "hora_bloqueio_inicio": config_v4.get("hora_bloqueio_inicio", None),
         "hora_bloqueio_fim": config_v4.get("hora_bloqueio_fim", None),
@@ -2258,11 +2342,37 @@ def gerar_sinal_tempo_real(candles, config_v4, modelo_v3, features_v3, modelo_v4
         "features_v3_faltando": features_v3_faltando,
         "features_v3_nan_ultimo": features_v3_nan_ultimo,
         "features_v3_validas": features_v3_validas,
+
+        # Controle informativo da última operação acompanhada.
+        # A liberação oficial de nova entrada é por cooldown de 5 minutos.
+        "operacao_aberta": bool(estado.get("operacao_aberta", False)),
+        "operacao_fechou_agora": bool(operacao_fechou_agora),
+        "operacao_fechamento_motivo": operacao_fechamento_motivo,
+        "operacao_sinal": estado.get("operacao_sinal", ""),
+        "operacao_preco_entrada": estado.get("operacao_preco_entrada", np.nan),
+        "operacao_preco_take": estado.get("operacao_preco_take", np.nan),
+        "operacao_preco_stop": estado.get("operacao_preco_stop", np.nan),
+        "operacao_datahora_entrada": estado.get("operacao_datahora_entrada", ""),
     }
 
-    if sinal in ["buy", "sell"]:
+    if sinal in ["buy", "sell"] and motivo == "sinal_valido":
         estado["trades_hoje"] = int(estado.get("trades_hoje", 0)) + 1
         estado["ultimo_sinal_datahora"] = datahora_ultimo_candle
+        estado["cooldown_entradas_minutos"] = COOLDOWN_ENTRADAS_MINUTOS
+
+        # Mantém a última operação para acompanhamento/aprendizado.
+        # Isso não bloqueia nova entrada depois do cooldown oficial de 5 minutos.
+        estado["operacao_aberta"] = True
+        estado["operacao_sinal"] = sinal
+        estado["operacao_direcao"] = direcao
+        estado["operacao_preco_entrada"] = float(preco_entrada_ref)
+        estado["operacao_preco_take"] = None if pd.isna(preco_take) else float(preco_take)
+        estado["operacao_preco_stop"] = None if pd.isna(preco_stop) else float(preco_stop)
+        estado["operacao_datahora_entrada"] = datahora_ultimo_candle
+        estado["operacao_event_id"] = event_id
+        estado["operacao_fechamento_motivo"] = ""
+        estado["operacao_fechamento_datahora"] = ""
+
         salvar_estado_operacional(estado)
 
     return payload
@@ -2293,9 +2403,19 @@ def salvar_logs_extras_v71(payload):
 
 
 def salvar_payload_sinal(payload):
-    sinal = payload.get("sinal", "none")
+    sinal = str(payload.get("sinal", "none")).lower()
+    motivo = str(payload.get("motivo", ""))
 
-    salvar_txt_seguro(sinal, ARQUIVO_SINAL_TXT)
+    # Segurança:
+    # Só escreve BUY/SELL no sinal.txt quando o sinal é realmente válido.
+    # Qualquer bloqueio, inclusive cooldown de 5 minutos, escreve NONE.
+    if motivo != "sinal_valido" or sinal not in ["buy", "sell"]:
+        sinal_txt = "none"
+        payload["sinal"] = "none"
+    else:
+        sinal_txt = sinal
+
+    salvar_txt_seguro(sinal_txt, ARQUIVO_SINAL_TXT)
     salvar_json_seguro(payload, ARQUIVO_ULTIMO_SINAL_JSON)
 
     append_log(payload)

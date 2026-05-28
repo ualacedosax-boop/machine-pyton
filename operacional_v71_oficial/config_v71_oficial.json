@@ -1,0 +1,28 @@
+﻿{
+  "nome": "V7.1_OFICIAL",
+  "descricao": "V7 filtrada pela V5.3 oficial",
+  "take_pontos": 50.5,
+  "stop_pontos": 117.0,
+  "cooldown_entradas_minutos": 5,
+  "regra_nova_entrada": "liberar novo sinal 5 minutos apos a ultima entrada valida",
+  "max_trades_dia": 3,
+  "parar_apos_loss": true,
+  "tolerancia_minutos_v53": 2,
+  "hora_inicio_1": "03:45",
+  "hora_fim_1": "03:55",
+  "hora_inicio_2": "04:45",
+  "hora_fim_2": "04:55",
+  "operar_fora_das_janelas": false,
+  "resultado_teste_2026": {
+    "trades": 107,
+    "wins": 93,
+    "losses": 14,
+    "winrate": 86.915888,
+    "lucro_pontos": 3058.5,
+    "profit_factor": 2.867216,
+    "drawdown_pontos": -300.5,
+    "media_pontos_trade": 28.584112,
+    "media_pontos_10_trades": 285.841121
+  },
+  "observacao": "Configuração oficial congelada após comparação V7 x V7.1 em 2026."
+}
