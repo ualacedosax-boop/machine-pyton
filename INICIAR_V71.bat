@@ -86,6 +86,8 @@ echo   Planilha : blackarrow_rtd.xlsm (macro rodando em background)
 echo   Robo     : janela "ROBO V7.1"
 echo   Monitor  : janela "MONITOR V7.1"
 echo   Take     : 50,5 pts   Stop: 117 pts   Max: 3 trades/dia
+echo   Regra    : novo sinal liberado somente apos 5 minutos
+echo   Alarme   : monitor atualizado por JSON + CSV
 echo   Janela   : 02:00 - 06:00 (bloqueio 04:30-04:45)
 echo ============================================================
 echo.
