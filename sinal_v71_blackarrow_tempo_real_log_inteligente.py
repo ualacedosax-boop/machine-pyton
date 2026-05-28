@@ -137,6 +137,27 @@ ARQUIVO_APRENDIZADO_PENDENTES = os.path.join(PASTA_APRENDIZADO_RESULTADOS, "oper
 ARQUIVO_APRENDIZADO_RESULTADOS = os.path.join(PASTA_APRENDIZADO_RESULTADOS, "resultados_v71_inteligente.csv")
 
 
+def csv_vazio_ou_sem_cabecalho(caminho):
+    if not os.path.exists(caminho) or os.path.getsize(caminho) == 0:
+        return True
+
+    try:
+        with open(caminho, "r", encoding="utf-8-sig") as f:
+            return not f.read(4096).strip()
+    except OSError:
+        return False
+
+
+def ler_csv_aprendizado_seguro(caminho, **kwargs):
+    if csv_vazio_ou_sem_cabecalho(caminho):
+        return pd.DataFrame()
+
+    try:
+        return pd.read_csv(caminho, encoding="utf-8-sig", low_memory=False, **kwargs)
+    except pd.errors.EmptyDataError:
+        return pd.DataFrame()
+
+
 # =====================================================
 # LOGS EXTRAS V7.1 OFICIAL
 # =====================================================
@@ -528,7 +549,7 @@ def append_csv_generico(payload, caminho, encoding="utf-8-sig"):
     df_linha = pd.DataFrame([payload])
 
     try:
-        arquivo_existe = os.path.exists(caminho)
+        arquivo_existe = os.path.exists(caminho) and not csv_vazio_ou_sem_cabecalho(caminho)
 
         df_linha.to_csv(
             caminho,
@@ -540,7 +561,7 @@ def append_csv_generico(payload, caminho, encoding="utf-8-sig"):
 
     except PermissionError:
         reserva = caminho.replace(".csv", "_reserva.csv")
-        arquivo_existe = os.path.exists(reserva)
+        arquivo_existe = os.path.exists(reserva) and not csv_vazio_ou_sem_cabecalho(reserva)
 
         df_linha.to_csv(
             reserva,
@@ -565,11 +586,9 @@ def ja_registrou_evento_aprendizado(event_id):
         return False
 
     try:
-        df = pd.read_csv(
+        df = ler_csv_aprendizado_seguro(
             ARQUIVO_APRENDIZADO_EVENTOS,
             usecols=["event_id"],
-            encoding="utf-8-sig",
-            low_memory=False
         )
 
         if df.empty:
@@ -666,7 +685,7 @@ def salvar_operacao_pendente_aprendizado(evento):
 
         if os.path.exists(ARQUIVO_APRENDIZADO_PENDENTES):
             try:
-                pend = pd.read_csv(ARQUIVO_APRENDIZADO_PENDENTES, encoding="utf-8-sig", low_memory=False)
+                pend = ler_csv_aprendizado_seguro(ARQUIVO_APRENDIZADO_PENDENTES)
                 if "event_id" in pend.columns and event_id in set(pend["event_id"].astype(str).tolist()):
                     return
             except Exception:
@@ -716,7 +735,7 @@ def atualizar_resultados_aprendizado(candles):
         if not os.path.exists(ARQUIVO_APRENDIZADO_PENDENTES):
             return
 
-        pend = pd.read_csv(ARQUIVO_APRENDIZADO_PENDENTES, encoding="utf-8-sig", low_memory=False)
+        pend = ler_csv_aprendizado_seguro(ARQUIVO_APRENDIZADO_PENDENTES)
 
         if pend.empty:
             return
@@ -871,7 +890,8 @@ def atualizar_resultados_aprendizado(candles):
             for res in resolvidos:
                 append_csv_generico(res, ARQUIVO_APRENDIZADO_RESULTADOS)
 
-        pd.DataFrame(manter).to_csv(
+        colunas_pendentes = list(pend.columns)
+        pd.DataFrame(manter, columns=colunas_pendentes).to_csv(
             ARQUIVO_APRENDIZADO_PENDENTES,
             index=False,
             encoding="utf-8-sig"
