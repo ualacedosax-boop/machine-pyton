@@ -97,17 +97,7 @@ stop_txt = dir_buy ? fmt(preco_stop_buy) : dir_sell ? fmt(preco_stop_sell) : ""
 
 if mostrar_label and na_entrada
     data_txt = str.tostring(year) + "-" + str.tostring(month) + "-" + str.tostring(dayofmonth) + " " + str.tostring(h_sp) + ":" + str.tostring(m_sp)
-    txt = "DIAG 04:06 SP" +
-        "\nDataHora SP: " + data_txt +
-        "\nDirecao: " + dir_txt +
-        "\nO/H/L/C: " + fmt(open) + " / " + fmt(high) + " / " + fmt(low) + " / " + fmt(close) +
-        "\nrange_ratio_10: " + fmt(range_ratio_10) +
-        "\npos_range_20: " + fmt(pos_range_20) +
-        "\nextremo: " + fmt(extremo_reversao) +
-        "\nfiltro: " + (filtro_final ? "PASSOU" : "BLOQUEOU") +
-        "\nentrada: " + fmt(preco_entrada) +
-        "\ntake: " + take_txt +
-        "\nstop: " + stop_txt
+    txt = "DIAG 04:06 SP | " + data_txt + " | " + dir_txt + " | O:" + fmt(open) + " H:" + fmt(high) + " L:" + fmt(low) + " C:" + fmt(close) + " | rr10:" + fmt(range_ratio_10) + " | pos20:" + fmt(pos_range_20) + " | ext:" + fmt(extremo_reversao) + " | filtro:" + (filtro_final ? "PASSOU" : "BLOQUEOU") + " | ent:" + fmt(preco_entrada) + " | take:" + take_txt + " | stop:" + stop_txt
     label.new(bar_index, high, txt, style=label.style_label_down, textcolor=color.white, color=color.new(color.black, 0), size=size.small)
 
 var table t = table.new(position.top_right, 2, 12, bgcolor=color.new(color.black, 75), border_color=color.gray, border_width=1)
