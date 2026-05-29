@@ -80,16 +80,14 @@ if venda
     entrou_hoje := true
 
 // === ALERTAS ===
-alertcondition(compra, title="V71 Pesquisa 04:06 BUY", message="V71 PESQUISA 04:06 BUY - MNQ/NQ 6min")
-alertcondition(venda, title="V71 Pesquisa 04:06 SELL", message="V71 PESQUISA 04:06 SELL - MNQ/NQ 6min")
+alertcondition(compra, "V71 Pesquisa BUY", "V71 Pesquisa BUY")
+alertcondition(venda, "V71 Pesquisa SELL", "V71 Pesquisa SELL")
 
 // === VISUAL ===
 bgcolor(show_bg and na_entrada ? color.new(color.yellow, 82) : na, title="Candle entrada 04:06")
 
-plotshape(show_marks and compra, style=shape.triangleup, location=location.belowbar,
-     color=color.lime, size=size.large, text="BUY\n04:06")
-plotshape(show_marks and venda, style=shape.triangledown, location=location.abovebar,
-     color=color.red, size=size.large, text="SELL\n04:06")
+plotshape(show_marks and compra, style=shape.triangleup, location=location.belowbar, color=color.lime, size=size.large, text="BUY 0406")
+plotshape(show_marks and venda, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.large, text="SELL 0406")
 
 plot(pos_range_20, "pos_range_20", color=color.new(color.aqua, 0), display=display.data_window)
 plot(range_ratio_10, "range_ratio_10", color=color.new(color.orange, 0), display=display.data_window)

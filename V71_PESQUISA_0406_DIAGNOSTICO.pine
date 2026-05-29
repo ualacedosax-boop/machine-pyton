@@ -75,12 +75,12 @@ if venda
     strategy.exit("SELL_0406_X", "SELL_0406", profit=math.round(take_pts / tk), loss=math.round(stop_pts / tk))
     entrou_hoje := true
 
-alertcondition(compra, title="DIAG V71 04:06 BUY", message="DIAG V71 04:06 BUY")
-alertcondition(venda, title="DIAG V71 04:06 SELL", message="DIAG V71 04:06 SELL")
+alertcondition(compra, "DIAG BUY", "DIAG BUY")
+alertcondition(venda, "DIAG SELL", "DIAG SELL")
 
 bgcolor(na_entrada ? color.new(color.yellow, 82) : na, title="Candle 04:06")
-plotshape(compra, style=shape.triangleup, location=location.belowbar, color=color.lime, size=size.large, text="BUY\nDIAG")
-plotshape(venda, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.large, text="SELL\nDIAG")
+plotshape(compra, style=shape.triangleup, location=location.belowbar, color=color.lime, size=size.large, text="BUY DIAG")
+plotshape(venda, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.large, text="SELL DIAG")
 
 plot(pos_range_20, "pos_range_20", color=color.new(color.aqua, 0), display=display.data_window)
 plot(range_ratio_10, "range_ratio_10", color=color.new(color.orange, 0), display=display.data_window)
