@@ -1,0 +1,138 @@
+//@version=5
+strategy("V7.1 PESQUISA - 04:06 Diagnostico", shorttitle="V71 0406 Diag", overlay=true,
+     default_qty_type=strategy.fixed, default_qty_value=1,
+     initial_capital=50000, currency=currency.USD,
+     commission_type=strategy.commission.cash_per_contract, commission_value=0.85,
+     process_orders_on_close=true)
+
+// ============================================================
+// DIAGNOSTICO PARA COMPARAR TRADINGVIEW X PYTHON
+// Use no grafico de 6 minutos.
+// Objetivo: mostrar valores do candle 04:06 e facilitar auditoria.
+// ============================================================
+
+modo_pesquisa = input.string("ROBUSTO_81", "Modo", options=["ROBUSTO_81", "EXPLORATORIO_85"], group="Pesquisa")
+take_pts      = input.float(50.5, "Take Profit pts", group="Risco")
+stop_pts      = input.float(117.0, "Stop Loss pts", group="Risco")
+h_entrada     = input.int(4, "Hora entrada SP", group="Horario", minval=0, maxval=23)
+m_entrada     = input.int(6, "Min entrada SP", group="Horario", minval=0, maxval=59)
+range_max     = input.float(1.5, "Max range_ratio_10", group="Filtros", step=0.1)
+extremo_min   = input.float(0.80, "Extremo min modo 85", group="Filtros", step=0.05)
+mostrar_label = input.bool(true, "Label diagnostico no candle", group="Visual")
+mostrar_tabela = input.bool(true, "Tabela diagnostico", group="Visual")
+
+h_sp = hour(time, "America/Sao_Paulo")
+m_sp = minute(time, "America/Sao_Paulo")
+na_entrada = h_sp == h_entrada and m_sp == m_entrada
+
+var int dia_controle = 0
+var bool entrou_hoje = false
+
+dia_atual = year * 10000 + month * 100 + dayofmonth
+if dia_atual != dia_controle
+    entrou_hoje := false
+    dia_controle := dia_atual
+
+range_atual = high - low
+range_med_10 = ta.sma(range_atual, 10)
+range_ratio_10 = range_atual / math.max(range_med_10, syminfo.mintick)
+
+max_20 = ta.highest(high, 20)
+min_20 = ta.lowest(low, 20)
+pos_range_20 = (close - min_20) / math.max(max_20 - min_20, syminfo.mintick)
+
+dir_buy = pos_range_20 <= 0.35
+dir_sell = pos_range_20 >= 0.65
+
+extremo_reversao = dir_buy ? 1.0 - pos_range_20 : dir_sell ? pos_range_20 : na
+direcao_candle_buy = close >= open
+mesmo_sentido_candle = dir_buy ? direcao_candle_buy : dir_sell ? not direcao_candle_buy : false
+
+filtro_robusto = range_ratio_10 <= range_max
+filtro_85 = filtro_robusto and extremo_reversao >= extremo_min and not mesmo_sentido_candle
+filtro_final = modo_pesquisa == "ROBUSTO_81" ? filtro_robusto : filtro_85
+
+tem_reversao = dir_buy or dir_sell
+pode_entrar = na_entrada and not entrou_hoje and tem_reversao and filtro_final and strategy.position_size == 0
+
+compra = pode_entrar and dir_buy
+venda = pode_entrar and dir_sell
+
+preco_entrada = close
+preco_take_buy = preco_entrada + take_pts
+preco_stop_buy = preco_entrada - stop_pts
+preco_take_sell = preco_entrada - take_pts
+preco_stop_sell = preco_entrada + stop_pts
+
+tk = syminfo.mintick
+if compra
+    strategy.entry("BUY_0406", strategy.long)
+    strategy.exit("BUY_0406_X", "BUY_0406", profit=math.round(take_pts / tk), loss=math.round(stop_pts / tk))
+    entrou_hoje := true
+
+if venda
+    strategy.entry("SELL_0406", strategy.short)
+    strategy.exit("SELL_0406_X", "SELL_0406", profit=math.round(take_pts / tk), loss=math.round(stop_pts / tk))
+    entrou_hoje := true
+
+alertcondition(compra, title="DIAG V71 04:06 BUY", message="DIAG V71 04:06 BUY")
+alertcondition(venda, title="DIAG V71 04:06 SELL", message="DIAG V71 04:06 SELL")
+
+bgcolor(na_entrada ? color.new(color.yellow, 82) : na, title="Candle 04:06")
+plotshape(compra, style=shape.triangleup, location=location.belowbar, color=color.lime, size=size.large, text="BUY\nDIAG")
+plotshape(venda, style=shape.triangledown, location=location.abovebar, color=color.red, size=size.large, text="SELL\nDIAG")
+
+plot(pos_range_20, "pos_range_20", color=color.new(color.aqua, 0), display=display.data_window)
+plot(range_ratio_10, "range_ratio_10", color=color.new(color.orange, 0), display=display.data_window)
+plot(extremo_reversao, "extremo_reversao", color=color.new(color.fuchsia, 0), display=display.data_window)
+plot(range_atual, "range_atual", color=color.new(color.gray, 0), display=display.data_window)
+plot(range_med_10, "range_med_10", color=color.new(color.silver, 0), display=display.data_window)
+
+fmt(v) =>
+    str.tostring(v, "#.##")
+
+dir_txt = dir_buy ? "BUY" : dir_sell ? "SELL" : "NONE"
+take_txt = dir_buy ? fmt(preco_take_buy) : dir_sell ? fmt(preco_take_sell) : ""
+stop_txt = dir_buy ? fmt(preco_stop_buy) : dir_sell ? fmt(preco_stop_sell) : ""
+
+if mostrar_label and na_entrada
+    data_txt = str.tostring(year) + "-" + str.tostring(month) + "-" + str.tostring(dayofmonth) + " " + str.tostring(h_sp) + ":" + str.tostring(m_sp)
+    txt = "DIAG 04:06 SP" +
+        "\nDataHora SP: " + data_txt +
+        "\nDirecao: " + dir_txt +
+        "\nO/H/L/C: " + fmt(open) + " / " + fmt(high) + " / " + fmt(low) + " / " + fmt(close) +
+        "\nrange_ratio_10: " + fmt(range_ratio_10) +
+        "\npos_range_20: " + fmt(pos_range_20) +
+        "\nextremo: " + fmt(extremo_reversao) +
+        "\nfiltro: " + (filtro_final ? "PASSOU" : "BLOQUEOU") +
+        "\nentrada: " + fmt(preco_entrada) +
+        "\ntake: " + take_txt +
+        "\nstop: " + stop_txt
+    label.new(bar_index, high, txt, style=label.style_label_down, textcolor=color.white, color=color.new(color.black, 0), size=size.small)
+
+var table t = table.new(position.top_right, 2, 12, bgcolor=color.new(color.black, 75), border_color=color.gray, border_width=1)
+if mostrar_tabela and barstate.islast
+    table.cell(t, 0, 0, "Modo", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 0, modo_pesquisa, text_color=color.lime, text_size=size.small)
+    table.cell(t, 0, 1, "Horario SP", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 1, str.tostring(h_sp) + ":" + str.tostring(m_sp), text_color=na_entrada ? color.yellow : color.white, text_size=size.small)
+    table.cell(t, 0, 2, "Direcao", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 2, dir_txt, text_color=dir_buy ? color.lime : dir_sell ? color.red : color.gray, text_size=size.small)
+    table.cell(t, 0, 3, "O/H/L/C", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 3, fmt(open) + "/" + fmt(high) + "/" + fmt(low) + "/" + fmt(close), text_color=color.white, text_size=size.small)
+    table.cell(t, 0, 4, "Range", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 4, fmt(range_atual), text_color=color.white, text_size=size.small)
+    table.cell(t, 0, 5, "RangeMed10", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 5, fmt(range_med_10), text_color=color.white, text_size=size.small)
+    table.cell(t, 0, 6, "RangeRatio10", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 6, fmt(range_ratio_10), text_color=filtro_robusto ? color.lime : color.red, text_size=size.small)
+    table.cell(t, 0, 7, "PosRange20", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 7, fmt(pos_range_20), text_color=tem_reversao ? color.lime : color.gray, text_size=size.small)
+    table.cell(t, 0, 8, "Extremo", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 8, fmt(extremo_reversao), text_color=color.white, text_size=size.small)
+    table.cell(t, 0, 9, "Filtro final", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 9, filtro_final ? "PASSOU" : "BLOQUEOU", text_color=filtro_final ? color.lime : color.red, text_size=size.small)
+    table.cell(t, 0, 10, "Take", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 10, take_txt, text_color=color.lime, text_size=size.small)
+    table.cell(t, 0, 11, "Stop", text_color=color.white, text_size=size.small)
+    table.cell(t, 1, 11, stop_txt, text_color=color.red, text_size=size.small)
