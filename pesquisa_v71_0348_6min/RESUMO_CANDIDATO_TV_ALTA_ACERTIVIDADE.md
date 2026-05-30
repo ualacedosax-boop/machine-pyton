@@ -197,3 +197,14 @@ Correcao apos teste no TV:
 - A primeira versao do compilado nao gerou entradas no TradingView.
 - Foi removida a trava manual `flat`; agora o controle fica por `pyramiding=0`, igual aos Piness que ja geraram entradas.
 - O take DMI3 padrao voltou para 50,5, pois essa versao ja foi validada no TV com 140 trades e 82,14% em 365 dias.
+
+## Compilado V2 simples
+
+Arquivo Pine: `V71_PESQUISA_COMPILADO_VENCEDORAS_V2_SIMPLES.pine`
+
+Motivo:
+- O compilado anterior continuou sem gerar ordens no TradingView.
+- A V2 foi reescrita de forma mais simples, com IDs curtos e mesma base do DMI3 validado.
+- Mantem DMI3 50,5/117 por padrao e adiciona EMA/ADX 03:50/20:54.
+
+Este e o arquivo recomendado para novo teste do compilado.

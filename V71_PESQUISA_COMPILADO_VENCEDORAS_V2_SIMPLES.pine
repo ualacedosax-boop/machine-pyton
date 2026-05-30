@@ -1,0 +1,122 @@
+//@version=6
+strategy("V71 Pesquisa Compilado Vencedoras V2 Simples",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// V2 simples: parte do DMI3 ja validado no TradingView e adiciona EMA/ADX extra.
+
+takePontos = input.float(50.5, "Take DMI3 em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop DMI3 em pontos", step=0.25)
+dmiGapMin = input.float(3.0, "Gap minimo DMI3", step=0.5)
+usarEmaAdxExtra = input.bool(true, "Adicionar EMA/ADX 03:50 e 20:54")
+usarEmaAdx2052 = input.bool(false, "Adicionar EMA/ADX 20:52")
+takeEmaAdx = input.float(50.5, "Take EMA/ADX em pontos", step=0.25)
+stopEmaAdx = input.float(117.0, "Stop EMA/ADX em pontos", step=0.25)
+adxMin = input.float(28.0, "ADX minimo EMA/ADX", step=0.5)
+dmiGapEmaMin = input.float(4.0, "Gap minimo EMA/ADX", step=0.5)
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+takeEmaTicks = int(math.round(takeEmaAdx / syminfo.mintick))
+stopEmaTicks = int(math.round(stopEmaAdx / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+eh0348 = hSP == 3 and mSP == 48
+eh0350 = hSP == 3 and mSP == 50
+eh1030 = hSP == 10 and mSP == 30
+eh2052 = hSP == 20 and mSP == 52
+eh2054 = hSP == 20 and mSP == 54
+eh2058 = hSP == 20 and mSP == 58
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+sma17 = ta.sma(close, 17)
+sma34 = ta.sma(close, 34)
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+roc5 = close - close[5]
+roc10 = close - close[10]
+prevRoc5 = roc5[1]
+body = close - open
+vwapDia = ta.vwap(hlc3)
+[diPlus, diMinus, adx14] = ta.dmi(14, 14)
+dmiGap = math.abs(diPlus - diMinus)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+votoMacd = macd >= macdSignal ? 1 : -1
+votoCandle = body >= 0 ? 1 : -1
+votoPrevRoc5Contra = prevRoc5 <= 0 ? 1 : -1
+votoSma1734 = sma17 >= sma34 ? 1 : -1
+votoRoc10 = roc10 >= 0 ? 1 : -1
+votoEma1734 = ema17 >= ema34 ? 1 : -1
+votoRoc5 = roc5 >= 0 ? 1 : -1
+votoVwap = close >= vwapDia ? 1 : -1
+
+score0348 = votoMacd + votoCandle + votoPrevRoc5Contra
+score1030 = votoSma1734 + votoRoc10 + votoPrevRoc5Contra
+score2058 = votoEma1734 + votoRoc5 + votoVwap
+
+dmi3Ok = dmiGap >= dmiGapMin
+dmi3Buy0348 = dmi3Ok and eh0348 and score0348 >= 0 and (dowSP == dayofweek.monday or dowSP == dayofweek.tuesday)
+dmi3Buy1030 = dmi3Ok and eh1030 and score1030 >= 0 and dowSP == dayofweek.monday
+dmi3Sell1030 = dmi3Ok and eh1030 and score1030 < 0 and dowSP == dayofweek.friday
+dmi3Buy2058 = dmi3Ok and eh2058 and score2058 >= 0 and (dowSP == dayofweek.sunday or dowSP == dayofweek.wednesday)
+
+emaAdxHorario = eh0350 or eh2054 or (usarEmaAdx2052 and eh2052)
+emaAdxOk = usarEmaAdxExtra and emaAdxHorario and adx14 >= adxMin and dmiGap >= dmiGapEmaMin
+emaAdxBuy = emaAdxOk and ema17 > ema34 and diPlus > diMinus
+emaAdxSell = emaAdxOk and ema17 < ema34 and diMinus > diPlus
+
+if dmi3Buy0348
+    strategy.entry("D3B0348", strategy.long)
+
+if dmi3Buy1030
+    strategy.entry("D3B1030", strategy.long)
+
+if dmi3Buy2058
+    strategy.entry("D3B2058", strategy.long)
+
+if dmi3Sell1030
+    strategy.entry("D3S1030", strategy.short)
+
+if not (dmi3Buy0348 or dmi3Buy1030 or dmi3Buy2058 or dmi3Sell1030) and emaAdxBuy
+    strategy.entry("EABUY", strategy.long)
+
+if not (dmi3Buy0348 or dmi3Buy1030 or dmi3Buy2058 or dmi3Sell1030) and emaAdxSell
+    strategy.entry("EASELL", strategy.short)
+
+strategy.exit("XD3B0348", from_entry="D3B0348", profit=takeTicks, loss=stopTicks)
+strategy.exit("XD3B1030", from_entry="D3B1030", profit=takeTicks, loss=stopTicks)
+strategy.exit("XD3B2058", from_entry="D3B2058", profit=takeTicks, loss=stopTicks)
+strategy.exit("XD3S1030", from_entry="D3S1030", profit=takeTicks, loss=stopTicks)
+strategy.exit("XEABUY", from_entry="EABUY", profit=takeEmaTicks, loss=stopEmaTicks)
+strategy.exit("XEASELL", from_entry="EASELL", profit=takeEmaTicks, loss=stopEmaTicks)
+
+compraCond = dmi3Buy0348 or dmi3Buy1030 or dmi3Buy2058 or emaAdxBuy
+vendaCond = dmi3Sell1030 or emaAdxSell
+
+plotshape(dmi3Buy0348, title="DMI3 BUY 03:48", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.normal, text="D3 0348")
+plotshape(dmi3Buy1030, title="DMI3 BUY 10:30", style=shape.triangleup, location=location.belowbar,
+     color=color.green, size=size.normal, text="D3 1030")
+plotshape(dmi3Buy2058, title="DMI3 BUY 20:58", style=shape.triangleup, location=location.belowbar,
+     color=color.teal, size=size.normal, text="D3 2058")
+plotshape(dmi3Sell1030, title="DMI3 SELL 10:30", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.normal, text="D3 S1030")
+plotshape(emaAdxBuy, title="EMA/ADX BUY", style=shape.circle, location=location.belowbar,
+     color=color.aqua, size=size.tiny, text="EA BUY")
+plotshape(emaAdxSell, title="EMA/ADX SELL", style=shape.circle, location=location.abovebar,
+     color=color.orange, size=size.tiny, text="EA SELL")
+
+alertcondition(compraCond, title="V71 Compilado V2 BUY", message="V71 COMPILADO V2 BUY")
+alertcondition(vendaCond, title="V71 Compilado V2 SELL", message="V71 COMPILADO V2 SELL")
