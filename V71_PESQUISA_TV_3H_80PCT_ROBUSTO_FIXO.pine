@@ -13,6 +13,7 @@ strategy("V71 Pesquisa TV 3H 80pct Robusto FIXO",
 // 20:58 BUY domingo/quarta
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarPainel = input.bool(true, "Mostrar painel de auditoria")
 
 takeTicks = int(math.round(takePontos / syminfo.mintick))
 stopTicks = int(math.round(stopPontos / syminfo.mintick))
@@ -91,3 +92,18 @@ plotshape(sell1030, title="SELL 10:30", style=shape.triangledown, location=locat
 
 alertcondition(compraCond, title="V71 Pesquisa 3H Robusto BUY", message="V71 PESQUISA 3H ROBUSTO BUY")
 alertcondition(vendaCond, title="V71 Pesquisa 3H Robusto SELL", message="V71 PESQUISA 3H ROBUSTO SELL")
+
+var table painel = table.new(position.top_right, 2, 6, bgcolor=color.new(color.black, 20))
+if mostrarPainel and barstate.islast
+    table.cell(painel, 0, 0, "V71 3H", text_color=color.white)
+    table.cell(painel, 1, 0, "PESQUISA", text_color=color.yellow)
+    table.cell(painel, 0, 1, "03:48", text_color=color.white)
+    table.cell(painel, 1, 1, "BUY seg/ter", text_color=color.lime)
+    table.cell(painel, 0, 2, "10:30", text_color=color.white)
+    table.cell(painel, 1, 2, "BUY seg / SELL sex", text_color=color.lime)
+    table.cell(painel, 0, 3, "20:58", text_color=color.white)
+    table.cell(painel, 1, 3, "BUY dom/qua", text_color=color.lime)
+    table.cell(painel, 0, 4, "TP/SL", text_color=color.white)
+    table.cell(painel, 1, 4, str.tostring(takePontos) + " / " + str.tostring(stopPontos), text_color=color.white)
+    table.cell(painel, 0, 5, "Oficial", text_color=color.white)
+    table.cell(painel, 1, 5, "NAO ALTERADO", text_color=color.orange)

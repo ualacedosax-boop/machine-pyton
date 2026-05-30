@@ -107,3 +107,9 @@ Resultado no export TV:
 - 30 dias: 10 trades, 80,00%, +340,0 USD
 
 Leitura: e o melhor equilibrio encontrado ate agora com os 3 horarios ativos e validacao recente positiva. Ainda precisa ser confirmado no TradingView antes de qualquer promocao para oficial.
+
+Observacao apos teste visual no TV:
+- O Pine `V71_PESQUISA_TV_ALTA_ACERTIVIDADE_CALENDARIO.pine` ficou bom em 365/90 dias, mas negativo nos ultimos 30 dias no print do TradingView.
+- Portanto ele nao deve ser considerado pronto para operar.
+- O proximo candidato para validar no TV e `V71_PESQUISA_TV_3H_80PCT_ROBUSTO_FIXO.pine`.
+- Depois de exportar a Lista de negociacoes desse Pine, rodar `pesquisa_v71_0348_6min/auditar_export_tv_3h_robusto.py` para conferir 365/90/30 dias com o resultado real do TradingView.
