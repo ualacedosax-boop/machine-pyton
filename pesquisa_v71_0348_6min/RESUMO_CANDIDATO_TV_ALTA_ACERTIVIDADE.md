@@ -85,3 +85,25 @@ Leitura: fica um pouco abaixo de 80%, mas tem mais trades, maior lucro e apenas 
 Para passar de 80% anual, foi necessario reduzir frequencia. A configuracao com todos os dias nao atingiu a meta.
 
 Esta linha continua em pesquisa. Nao foi promovida a oficial.
+
+## Novo candidato com 3 horarios e 30/90 dias positivos
+
+Arquivo Pine: `V71_PESQUISA_TV_3H_80PCT_ROBUSTO_FIXO.pine`
+
+Regras:
+- BUY 03:48 somente segunda e terca.
+- BUY 10:30 somente segunda.
+- SELL 10:30 somente sexta.
+- BUY 20:58 somente domingo e quarta.
+- Take/stop: 50,5 / 117 pontos.
+
+Resultado no export TV:
+- 160 trades
+- 80,63% de acerto
+- +6878,0 USD
+- Max DD -816,5 USD
+- Profit factor 2,136
+- 90 dias: 41 trades, 87,80%, +2466,0 USD
+- 30 dias: 10 trades, 80,00%, +340,0 USD
+
+Leitura: e o melhor equilibrio encontrado ate agora com os 3 horarios ativos e validacao recente positiva. Ainda precisa ser confirmado no TradingView antes de qualquer promocao para oficial.

@@ -1,0 +1,69 @@
+//@version=6
+strategy("V71 Pesquisa TV 81pct Stop110 FIXO",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Candidato fixo de pesquisa baseado no export TradingView.
+// NAO altera o V7.1 oficial.
+// Regras: BUY 03:48 segunda/terca e BUY 20:58 domingo/terca.
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(110.0, "Stop em pontos", step=0.25)
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+roc5 = close - close[5]
+prevRoc5 = roc5[1]
+body = close - open
+vwapDia = ta.vwap(hlc3)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+votoMacd = macd >= macdSignal ? 1 : -1
+votoCandle = body >= 0 ? 1 : -1
+votoPrevRoc5Contra = prevRoc5 <= 0 ? 1 : -1
+votoEma1734 = ema17 >= ema34 ? 1 : -1
+votoRoc5 = roc5 >= 0 ? 1 : -1
+votoVwap = close >= vwapDia ? 1 : -1
+
+score0348 = votoMacd + votoCandle + votoPrevRoc5Contra
+score2058 = votoEma1734 + votoRoc5 + votoVwap
+
+eh0348 = hSP == 3 and mSP == 48
+eh2058 = hSP == 20 and mSP == 58
+
+cal0348 = eh0348 and (dowSP == dayofweek.monday or dowSP == dayofweek.tuesday)
+cal2058 = eh2058 and (dowSP == dayofweek.sunday or dowSP == dayofweek.tuesday)
+
+buy0348 = cal0348 and score0348 >= 0
+buy2058 = cal2058 and score2058 >= 0
+compraCond = buy0348 or buy2058
+
+if buy0348
+    strategy.entry("BUY_0348_81", strategy.long, alert_message="V71 PESQUISA 81 BUY 03:48")
+
+if buy2058
+    strategy.entry("BUY_2058_81", strategy.long, alert_message="V71 PESQUISA 81 BUY 20:58")
+
+strategy.exit("TP/SL BUY_0348", from_entry="BUY_0348_81", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL BUY_2058", from_entry="BUY_2058_81", profit=takeTicks, loss=stopTicks)
+
+plotshape(buy0348, title="BUY 03:48", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.normal, text="B0348")
+plotshape(buy2058, title="BUY 20:58", style=shape.triangleup, location=location.belowbar,
+     color=color.green, size=size.normal, text="B2058")
+
+alertcondition(compraCond, title="V71 Pesquisa 81 BUY", message="V71 PESQUISA 81 BUY")
