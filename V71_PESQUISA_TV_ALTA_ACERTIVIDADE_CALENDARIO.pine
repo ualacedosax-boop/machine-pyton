@@ -52,17 +52,21 @@ usar2058Dom = eh2058 and dowSP == dayofweek.sunday
 usar2058Ter = eh2058 and dowSP == dayofweek.tuesday
 usar2058Qua = eh2058 and dowSP == dayofweek.wednesday
 
-cal0348 =
-     modo == "87pct_54trades" ? usar0348Seg :
-     modo == "84pct_78trades" ? usar0348Seg :
-     modo == "81pct_105trades" ? (usar0348Seg or usar0348Ter) :
-     (usar0348Seg or usar0348Ter)
+bool cal0348 = false
+bool cal2058 = false
 
-cal2058 =
-     modo == "87pct_54trades" ? usar2058Dom :
-     modo == "84pct_78trades" ? (usar2058Dom or usar2058Ter) :
-     modo == "81pct_105trades" ? (usar2058Dom or usar2058Ter) :
-     (usar2058Dom or usar2058Ter or usar2058Qua)
+if modo == "87pct_54trades"
+    cal0348 := usar0348Seg
+    cal2058 := usar2058Dom
+else if modo == "84pct_78trades"
+    cal0348 := usar0348Seg
+    cal2058 := usar2058Dom or usar2058Ter
+else if modo == "81pct_105trades"
+    cal0348 := usar0348Seg or usar0348Ter
+    cal2058 := usar2058Dom or usar2058Ter
+else
+    cal0348 := usar0348Seg or usar0348Ter
+    cal2058 := usar2058Dom or usar2058Ter or usar2058Qua
 
 buy0348 = cal0348 and score0348 >= 0
 buy2058 = cal2058 and score2058 >= 0
