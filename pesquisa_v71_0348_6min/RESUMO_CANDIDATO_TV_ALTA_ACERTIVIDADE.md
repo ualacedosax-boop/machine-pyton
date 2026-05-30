@@ -159,3 +159,20 @@ Resultado em re-simulacao local com candles IBKR 2min:
 - 30 dias: 11 trades, 90,91%, +338,0 pontos.
 
 Leitura: melhorou acerto, DD e resultado recente em relacao ao DMI3 original, sem reduzir frequencia. E o principal candidato novo para validacao no TradingView.
+
+## Compilado de estrategias vencedoras
+
+Arquivo Pine: `V71_PESQUISA_COMPILADO_VENCEDORAS_MAX_ENTRADAS.pine`
+
+Objetivo:
+- Unir os blocos positivos em um unico Pine de pesquisa no grafico de 2 minutos.
+- Aumentar o numero de entradas.
+- Evitar duplicidade no mesmo candle e manter `pyramiding=0`.
+
+Modulos:
+- DMI3 Take45: 03:48, 10:30 e 20:58.
+- EMA/ADX extra: 03:50 e 20:54.
+- EMA/ADX alternativo 20:52 fica como opcional desligado.
+
+Observacao:
+- Como e uma uniao de estrategias, precisa validacao no TradingView em 365/90/30 dias. Unir estrategias aumenta frequencia, mas pode reduzir acerto se algum modulo piorar o conjunto.

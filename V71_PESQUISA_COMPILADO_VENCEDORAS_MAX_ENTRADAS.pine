@@ -1,0 +1,167 @@
+//@version=6
+strategy("V71 Pesquisa Compilado Vencedoras Max Entradas",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Objetivo: unir blocos vencedores/positivos no grafico de 2 minutos
+// para aumentar a quantidade de entradas sem duplicar sinais no mesmo candle.
+
+// =====================
+// CONTROLES
+// =====================
+usarDmi3Take45 = input.bool(true, "Modulo DMI3 Take45 03:48/10:30/20:58", group="Modulos")
+usarEmaAdxExtra = input.bool(true, "Modulo EMA/ADX extra 03:50/20:54", group="Modulos")
+usarEmaAdxAlt = input.bool(false, "Modulo EMA/ADX alternativo 20:52", group="Modulos")
+mostrarPainel = input.bool(true, "Mostrar painel", group="Visual")
+
+takeDmi3 = input.float(45.5, "DMI3 Take", step=0.25, group="DMI3")
+stopDmi3 = input.float(117.0, "DMI3 Stop", step=0.25, group="DMI3")
+dmi3GapMin = input.float(3.0, "DMI3 gap minimo", step=0.5, group="DMI3")
+
+takeEma = input.float(50.5, "EMA/ADX Take", step=0.25, group="EMA/ADX")
+stopEma = input.float(117.0, "EMA/ADX Stop", step=0.25, group="EMA/ADX")
+emaRapidaLen = input.int(17, "EMA rapida", minval=1, group="EMA/ADX")
+emaLentaLen = input.int(34, "EMA lenta", minval=2, group="EMA/ADX")
+adxMin = input.float(28.0, "ADX minimo", step=0.5, group="EMA/ADX")
+dmiGapEmaMin = input.float(4.0, "Gap minimo DI", step=0.5, group="EMA/ADX")
+
+takeDmi3Ticks = int(math.round(takeDmi3 / syminfo.mintick))
+stopDmi3Ticks = int(math.round(stopDmi3 / syminfo.mintick))
+takeEmaTicks = int(math.round(takeEma / syminfo.mintick))
+stopEmaTicks = int(math.round(stopEma / syminfo.mintick))
+
+// =====================
+// TEMPO
+// =====================
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+eh0348 = hSP == 3 and mSP == 48
+eh0350 = hSP == 3 and mSP == 50
+eh1030 = hSP == 10 and mSP == 30
+eh2052 = hSP == 20 and mSP == 52
+eh2054 = hSP == 20 and mSP == 54
+eh2058 = hSP == 20 and mSP == 58
+
+// =====================
+// INDICADORES COMUNS
+// =====================
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+sma17 = ta.sma(close, 17)
+sma34 = ta.sma(close, 34)
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+roc5 = close - close[5]
+roc10 = close - close[10]
+prevRoc5 = roc5[1]
+body = close - open
+vwapDia = ta.vwap(hlc3)
+[diPlus, diMinus, adx14] = ta.dmi(14, 14)
+dmiGap = math.abs(diPlus - diMinus)
+
+emaRapida = ta.ema(close, emaRapidaLen)
+emaLenta = ta.ema(close, emaLentaLen)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+// =====================
+// MODULO DMI3 TAKE45
+// =====================
+votoMacd = macd >= macdSignal ? 1 : -1
+votoCandle = body >= 0 ? 1 : -1
+votoPrevRoc5Contra = prevRoc5 <= 0 ? 1 : -1
+votoSma1734 = sma17 >= sma34 ? 1 : -1
+votoRoc10 = roc10 >= 0 ? 1 : -1
+votoEma1734 = ema17 >= ema34 ? 1 : -1
+votoRoc5 = roc5 >= 0 ? 1 : -1
+votoVwap = close >= vwapDia ? 1 : -1
+
+score0348 = votoMacd + votoCandle + votoPrevRoc5Contra
+score1030 = votoSma1734 + votoRoc10 + votoPrevRoc5Contra
+score2058 = votoEma1734 + votoRoc5 + votoVwap
+
+dmi3Ok = dmiGap >= dmi3GapMin
+dmi3Buy0348 = usarDmi3Take45 and dmi3Ok and eh0348 and score0348 >= 0 and (dowSP == dayofweek.monday or dowSP == dayofweek.tuesday)
+dmi3Buy1030 = usarDmi3Take45 and dmi3Ok and eh1030 and score1030 >= 0 and dowSP == dayofweek.monday
+dmi3Sell1030 = usarDmi3Take45 and dmi3Ok and eh1030 and score1030 < 0 and dowSP == dayofweek.friday
+dmi3Buy2058 = usarDmi3Take45 and dmi3Ok and eh2058 and score2058 >= 0 and (dowSP == dayofweek.sunday or dowSP == dayofweek.wednesday)
+
+// =====================
+// MODULO EMA/ADX EXTRA
+// =====================
+emaAdxHorario = (eh0350 or eh2054) or (usarEmaAdxAlt and eh2052)
+emaAdxOk = adx14 >= adxMin and dmiGap >= dmiGapEmaMin
+emaAdxBuy = usarEmaAdxExtra and emaAdxHorario and emaAdxOk and emaRapida > emaLenta and diPlus > diMinus
+emaAdxSell = usarEmaAdxExtra and emaAdxHorario and emaAdxOk and emaRapida < emaLenta and diMinus > diPlus
+
+// =====================
+// EXECUCAO
+// =====================
+flat = strategy.position_size == 0
+
+if flat and dmi3Buy0348
+    strategy.entry("DMI3_BUY_0348", strategy.long, alert_message="V71 COMPILADO DMI3 TAKE45 BUY 03:48")
+if flat and dmi3Buy1030
+    strategy.entry("DMI3_BUY_1030", strategy.long, alert_message="V71 COMPILADO DMI3 TAKE45 BUY 10:30")
+if flat and dmi3Buy2058
+    strategy.entry("DMI3_BUY_2058", strategy.long, alert_message="V71 COMPILADO DMI3 TAKE45 BUY 20:58")
+if flat and dmi3Sell1030
+    strategy.entry("DMI3_SELL_1030", strategy.short, alert_message="V71 COMPILADO DMI3 TAKE45 SELL 10:30")
+
+if flat and not (dmi3Buy0348 or dmi3Buy1030 or dmi3Buy2058 or dmi3Sell1030) and emaAdxBuy
+    strategy.entry("EMAADX_BUY", strategy.long, alert_message="V71 COMPILADO EMA ADX BUY")
+if flat and not (dmi3Buy0348 or dmi3Buy1030 or dmi3Buy2058 or dmi3Sell1030) and emaAdxSell
+    strategy.entry("EMAADX_SELL", strategy.short, alert_message="V71 COMPILADO EMA ADX SELL")
+
+strategy.exit("X_DMI3_BUY_0348", from_entry="DMI3_BUY_0348", profit=takeDmi3Ticks, loss=stopDmi3Ticks)
+strategy.exit("X_DMI3_BUY_1030", from_entry="DMI3_BUY_1030", profit=takeDmi3Ticks, loss=stopDmi3Ticks)
+strategy.exit("X_DMI3_BUY_2058", from_entry="DMI3_BUY_2058", profit=takeDmi3Ticks, loss=stopDmi3Ticks)
+strategy.exit("X_DMI3_SELL_1030", from_entry="DMI3_SELL_1030", profit=takeDmi3Ticks, loss=stopDmi3Ticks)
+strategy.exit("X_EMAADX_BUY", from_entry="EMAADX_BUY", profit=takeEmaTicks, loss=stopEmaTicks)
+strategy.exit("X_EMAADX_SELL", from_entry="EMAADX_SELL", profit=takeEmaTicks, loss=stopEmaTicks)
+
+compraCond = dmi3Buy0348 or dmi3Buy1030 or dmi3Buy2058 or emaAdxBuy
+vendaCond = dmi3Sell1030 or emaAdxSell
+
+plotshape(dmi3Buy0348, title="DMI3 BUY 03:48", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.normal, text="D3 0348")
+plotshape(dmi3Buy1030, title="DMI3 BUY 10:30", style=shape.triangleup, location=location.belowbar,
+     color=color.green, size=size.normal, text="D3 1030")
+plotshape(dmi3Buy2058, title="DMI3 BUY 20:58", style=shape.triangleup, location=location.belowbar,
+     color=color.teal, size=size.normal, text="D3 2058")
+plotshape(dmi3Sell1030, title="DMI3 SELL 10:30", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.normal, text="D3 S1030")
+plotshape(emaAdxBuy, title="EMAADX BUY", style=shape.circle, location=location.belowbar,
+     color=color.aqua, size=size.tiny, text="EA BUY")
+plotshape(emaAdxSell, title="EMAADX SELL", style=shape.circle, location=location.abovebar,
+     color=color.orange, size=size.tiny, text="EA SELL")
+
+alertcondition(compraCond, title="V71 Compilado BUY", message="V71 COMPILADO BUY")
+alertcondition(vendaCond, title="V71 Compilado SELL", message="V71 COMPILADO SELL")
+
+var table painel = table.new(position.top_right, 2, 8, bgcolor=color.new(color.black, 20))
+if mostrarPainel and barstate.islast
+    table.cell(painel, 0, 0, "V71", text_color=color.white)
+    table.cell(painel, 1, 0, "COMPILADO PESQUISA", text_color=color.yellow)
+    table.cell(painel, 0, 1, "DMI3", text_color=color.white)
+    table.cell(painel, 1, 1, usarDmi3Take45 ? "ON TP " + str.tostring(takeDmi3) : "OFF", text_color=usarDmi3Take45 ? color.lime : color.gray)
+    table.cell(painel, 0, 2, "DMI3 horarios", text_color=color.white)
+    table.cell(painel, 1, 2, "03:48 / 10:30 / 20:58", text_color=color.white)
+    table.cell(painel, 0, 3, "EMA/ADX", text_color=color.white)
+    table.cell(painel, 1, 3, usarEmaAdxExtra ? "ON TP " + str.tostring(takeEma) : "OFF", text_color=usarEmaAdxExtra ? color.lime : color.gray)
+    table.cell(painel, 0, 4, "EMA/ADX horarios", text_color=color.white)
+    table.cell(painel, 1, 4, usarEmaAdxAlt ? "03:50 / 20:52 / 20:54" : "03:50 / 20:54", text_color=color.white)
+    table.cell(painel, 0, 5, "Filtros", text_color=color.white)
+    table.cell(painel, 1, 5, "DMI3 >= " + str.tostring(dmi3GapMin) + " | ADX >= " + str.tostring(adxMin), text_color=color.white)
+    table.cell(painel, 0, 6, "Duplicidade", text_color=color.white)
+    table.cell(painel, 1, 6, "1 trade por vez", text_color=color.lime)
+    table.cell(painel, 0, 7, "Oficial", text_color=color.white)
+    table.cell(painel, 1, 7, "NAO ALTERADO", text_color=color.orange)
