@@ -1,0 +1,138 @@
+//@version=6
+strategy("V71 Pesquisa LAB TV 3 Horarios",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Laboratorio TradingView. Pesquisa separada, nao altera o V7.1 oficial.
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+
+usar0348 = input.bool(true, "Usar 03:48")
+usar1030 = input.bool(true, "Usar 10:30")
+usar2058 = input.bool(true, "Usar 20:58")
+
+modelo0348 = input.string("MACD_CANDLE_CONTRA", "Modelo 03:48",
+     options=["EMA17_34", "MACD", "DMI", "ROC5", "VWAP", "CANDLE", "MACD_CANDLE_CONTRA", "FIXO_BUY", "FIXO_SELL"])
+modelo1030 = input.string("SMA_ROC_CONTRA", "Modelo 10:30",
+     options=["EMA17_34", "MACD", "DMI", "ROC5", "ROC10", "VWAP", "CANDLE", "SMA_ROC_CONTRA", "FIXO_BUY", "FIXO_SELL"])
+modelo2058 = input.string("EMA_ROC_VWAP", "Modelo 20:58",
+     options=["EMA17_34", "MACD", "DMI", "ROC5", "ROC10", "VWAP", "CANDLE", "EMA_ROC_VWAP", "FIXO_BUY", "FIXO_SELL"])
+
+inverter0348 = input.bool(false, "Inverter 03:48")
+inverter1030 = input.bool(false, "Inverter 10:30")
+inverter2058 = input.bool(false, "Inverter 20:58")
+
+usarFiltroAdx = input.bool(false, "Filtro ADX")
+adxMin = input.float(20.0, "ADX minimo", step=0.5)
+usarFiltroRsi = input.bool(false, "Filtro RSI 35-65")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+eh0348 = usar0348 and hSP == 3 and mSP == 48
+eh1030 = usar1030 and hSP == 10 and mSP == 30
+eh2058 = usar2058 and hSP == 20 and mSP == 58
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+sma17 = ta.sma(close, 17)
+sma34 = ta.sma(close, 34)
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+roc5 = close - close[5]
+roc10 = close - close[10]
+prevRoc5 = roc5[1]
+body = close - open
+vwapDia = ta.vwap(hlc3)
+[diPlus, diMinus, adx] = ta.dmi(14, 9)
+rsi14 = ta.rsi(close, 14)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+votoEma = ema17 >= ema34 ? 1 : -1
+votoSma = sma17 >= sma34 ? 1 : -1
+votoMacd = macd >= macdSignal ? 1 : -1
+votoDmi = diPlus >= diMinus ? 1 : -1
+votoRoc5 = roc5 >= 0 ? 1 : -1
+votoRoc10 = roc10 >= 0 ? 1 : -1
+votoVwap = close >= vwapDia ? 1 : -1
+votoCandle = body >= 0 ? 1 : -1
+votoPrevRocContra = prevRoc5 <= 0 ? 1 : -1
+
+dirPorModelo(modelo) =>
+    int dir = 1
+    if modelo == "EMA17_34"
+        dir := votoEma
+    else if modelo == "MACD"
+        dir := votoMacd
+    else if modelo == "DMI"
+        dir := votoDmi
+    else if modelo == "ROC5"
+        dir := votoRoc5
+    else if modelo == "ROC10"
+        dir := votoRoc10
+    else if modelo == "VWAP"
+        dir := votoVwap
+    else if modelo == "CANDLE"
+        dir := votoCandle
+    else if modelo == "MACD_CANDLE_CONTRA"
+        dir := votoMacd + votoCandle + votoPrevRocContra >= 0 ? 1 : -1
+    else if modelo == "SMA_ROC_CONTRA"
+        dir := votoSma + votoRoc10 + votoPrevRocContra >= 0 ? 1 : -1
+    else if modelo == "EMA_ROC_VWAP"
+        dir := votoEma + votoRoc5 + votoVwap >= 0 ? 1 : -1
+    else if modelo == "FIXO_BUY"
+        dir := 1
+    else if modelo == "FIXO_SELL"
+        dir := -1
+    dir
+
+filtroOk = (not usarFiltroAdx or adx >= adxMin) and (not usarFiltroRsi or (rsi14 >= 35 and rsi14 <= 65))
+
+dir0348 = dirPorModelo(modelo0348) * (inverter0348 ? -1 : 1)
+dir1030 = dirPorModelo(modelo1030) * (inverter1030 ? -1 : 1)
+dir2058 = dirPorModelo(modelo2058) * (inverter2058 ? -1 : 1)
+
+buy0348 = eh0348 and filtroOk and dir0348 == 1
+sell0348 = eh0348 and filtroOk and dir0348 == -1
+buy1030 = eh1030 and filtroOk and dir1030 == 1
+sell1030 = eh1030 and filtroOk and dir1030 == -1
+buy2058 = eh2058 and filtroOk and dir2058 == 1
+sell2058 = eh2058 and filtroOk and dir2058 == -1
+
+if buy0348
+    strategy.entry("BUY_0348", strategy.long, alert_message="V71 LAB BUY 03:48")
+if sell0348
+    strategy.entry("SELL_0348", strategy.short, alert_message="V71 LAB SELL 03:48")
+if buy1030
+    strategy.entry("BUY_1030", strategy.long, alert_message="V71 LAB BUY 10:30")
+if sell1030
+    strategy.entry("SELL_1030", strategy.short, alert_message="V71 LAB SELL 10:30")
+if buy2058
+    strategy.entry("BUY_2058", strategy.long, alert_message="V71 LAB BUY 20:58")
+if sell2058
+    strategy.entry("SELL_2058", strategy.short, alert_message="V71 LAB SELL 20:58")
+
+strategy.exit("TP/SL BUY_0348", from_entry="BUY_0348", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL SELL_0348", from_entry="SELL_0348", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL BUY_1030", from_entry="BUY_1030", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL SELL_1030", from_entry="SELL_1030", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL BUY_2058", from_entry="BUY_2058", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL SELL_2058", from_entry="SELL_2058", profit=takeTicks, loss=stopTicks)
+
+compraCond = buy0348 or buy1030 or buy2058
+vendaCond = sell0348 or sell1030 or sell2058
+plotshape(compraCond, title="BUY", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.normal, text="BUY")
+plotshape(vendaCond, title="SELL", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.normal, text="SELL")
+
+alertcondition(compraCond, title="V71 LAB BUY", message="V71 LAB BUY")
+alertcondition(vendaCond, title="V71 LAB SELL", message="V71 LAB SELL")
