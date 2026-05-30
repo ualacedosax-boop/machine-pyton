@@ -10,7 +10,7 @@ strategy("V71 Pesquisa TV Alta Acertividade Calendario",
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(110.0, "Stop em pontos", step=0.25)
 modo = input.string("81pct_105trades", "Modo",
-     options=["87pct_54trades", "84pct_78trades", "81pct_105trades", "79pct_129trades"])
+     options=["87pct_54trades", "84pct_78trades", "81pct_105trades", "80pct_105trades_alt", "79pct_129trades"])
 
 takeTicks = int(math.round(takePontos / syminfo.mintick))
 stopTicks = int(math.round(stopPontos / syminfo.mintick))
@@ -64,6 +64,9 @@ else if modo == "84pct_78trades"
 else if modo == "81pct_105trades"
     cal0348 := usar0348Seg or usar0348Ter
     cal2058 := usar2058Dom or usar2058Ter
+else if modo == "80pct_105trades_alt"
+    cal0348 := usar0348Seg or usar0348Ter
+    cal2058 := usar2058Dom or usar2058Qua
 else
     cal0348 := usar0348Seg or usar0348Ter
     cal2058 := usar2058Dom or usar2058Ter or usar2058Qua
