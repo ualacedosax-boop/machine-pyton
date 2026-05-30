@@ -17,7 +17,7 @@ usarEmaAdxExtra = input.bool(true, "Modulo EMA/ADX extra 03:50/20:54", group="Mo
 usarEmaAdxAlt = input.bool(false, "Modulo EMA/ADX alternativo 20:52", group="Modulos")
 mostrarPainel = input.bool(true, "Mostrar painel", group="Visual")
 
-takeDmi3 = input.float(45.5, "DMI3 Take", step=0.25, group="DMI3")
+takeDmi3 = input.float(50.5, "DMI3 Take", step=0.25, group="DMI3")
 stopDmi3 = input.float(117.0, "DMI3 Stop", step=0.25, group="DMI3")
 dmi3GapMin = input.float(3.0, "DMI3 gap minimo", step=0.5, group="DMI3")
 
@@ -105,20 +105,18 @@ emaAdxSell = usarEmaAdxExtra and emaAdxHorario and emaAdxOk and emaRapida < emaL
 // =====================
 // EXECUCAO
 // =====================
-flat = strategy.position_size == 0
+if dmi3Buy0348
+    strategy.entry("DMI3_BUY_0348", strategy.long, alert_message="V71 COMPILADO DMI3 BUY 03:48")
+if dmi3Buy1030
+    strategy.entry("DMI3_BUY_1030", strategy.long, alert_message="V71 COMPILADO DMI3 BUY 10:30")
+if dmi3Buy2058
+    strategy.entry("DMI3_BUY_2058", strategy.long, alert_message="V71 COMPILADO DMI3 BUY 20:58")
+if dmi3Sell1030
+    strategy.entry("DMI3_SELL_1030", strategy.short, alert_message="V71 COMPILADO DMI3 SELL 10:30")
 
-if flat and dmi3Buy0348
-    strategy.entry("DMI3_BUY_0348", strategy.long, alert_message="V71 COMPILADO DMI3 TAKE45 BUY 03:48")
-if flat and dmi3Buy1030
-    strategy.entry("DMI3_BUY_1030", strategy.long, alert_message="V71 COMPILADO DMI3 TAKE45 BUY 10:30")
-if flat and dmi3Buy2058
-    strategy.entry("DMI3_BUY_2058", strategy.long, alert_message="V71 COMPILADO DMI3 TAKE45 BUY 20:58")
-if flat and dmi3Sell1030
-    strategy.entry("DMI3_SELL_1030", strategy.short, alert_message="V71 COMPILADO DMI3 TAKE45 SELL 10:30")
-
-if flat and not (dmi3Buy0348 or dmi3Buy1030 or dmi3Buy2058 or dmi3Sell1030) and emaAdxBuy
+if not (dmi3Buy0348 or dmi3Buy1030 or dmi3Buy2058 or dmi3Sell1030) and emaAdxBuy
     strategy.entry("EMAADX_BUY", strategy.long, alert_message="V71 COMPILADO EMA ADX BUY")
-if flat and not (dmi3Buy0348 or dmi3Buy1030 or dmi3Buy2058 or dmi3Sell1030) and emaAdxSell
+if not (dmi3Buy0348 or dmi3Buy1030 or dmi3Buy2058 or dmi3Sell1030) and emaAdxSell
     strategy.entry("EMAADX_SELL", strategy.short, alert_message="V71 COMPILADO EMA ADX SELL")
 
 strategy.exit("X_DMI3_BUY_0348", from_entry="DMI3_BUY_0348", profit=takeDmi3Ticks, loss=stopDmi3Ticks)

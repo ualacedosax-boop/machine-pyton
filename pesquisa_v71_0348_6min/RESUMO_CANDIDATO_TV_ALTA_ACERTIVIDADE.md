@@ -170,7 +170,7 @@ Objetivo:
 - Evitar duplicidade no mesmo candle e manter `pyramiding=0`.
 
 Modulos:
-- DMI3 Take45: 03:48, 10:30 e 20:58.
+- DMI3: 03:48, 10:30 e 20:58, com take 50,5 por padrao.
 - EMA/ADX extra: 03:50 e 20:54.
 - EMA/ADX alternativo 20:52 fica como opcional desligado.
 
@@ -192,3 +192,8 @@ Leitura:
 Auditoria do TradingView:
 - Depois de exportar a Lista de negociacoes do Pine compilado, rodar `pesquisa_v71_0348_6min/auditar_export_tv_compilado_vencedoras.py`.
 - O auditor separa resultado por modulo, horario, 365/90/30 dias.
+
+Correcao apos teste no TV:
+- A primeira versao do compilado nao gerou entradas no TradingView.
+- Foi removida a trava manual `flat`; agora o controle fica por `pyramiding=0`, igual aos Piness que ja geraram entradas.
+- O take DMI3 padrao voltou para 50,5, pois essa versao ja foi validada no TV com 140 trades e 82,14% em 365 dias.
