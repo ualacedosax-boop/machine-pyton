@@ -188,3 +188,7 @@ Leitura:
 - O 20:52 piorou 90 dias e pontos totais, por isso fica desligado por padrao.
 - Para operar com maior acerto, DMI3 Take45 sozinho continua melhor.
 - Para operar com maior frequencia, testar o compilado sem 20:52.
+
+Auditoria do TradingView:
+- Depois de exportar a Lista de negociacoes do Pine compilado, rodar `pesquisa_v71_0348_6min/auditar_export_tv_compilado_vencedoras.py`.
+- O auditor separa resultado por modulo, horario, 365/90/30 dias.
