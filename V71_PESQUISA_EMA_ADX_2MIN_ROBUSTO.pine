@@ -12,6 +12,7 @@ emaRapidaLen = input.int(17, "EMA rapida", minval=1)
 emaLentaLen = input.int(34, "EMA lenta", minval=2)
 adxMin = input.float(28.0, "ADX minimo", step=0.5)
 dmiGapMin = input.float(4.0, "Gap minimo DI", step=0.5)
+modoAltaAcertividade = input.bool(false, "Modo alta acertividade anual")
 
 usar0350 = input.bool(true, "Usar 03:50")
 usar2054 = input.bool(true, "Usar 20:54")
@@ -33,10 +34,14 @@ mSP = minute(time, "America/Sao_Paulo")
 
 horarioRobusto = (usar0350 and hSP == 3 and mSP == 50) or (usar2054 and hSP == 20 and mSP == 54)
 horarioFrequente = usar0348_2052 and ((hSP == 3 and mSP == 48) or (hSP == 20 and mSP == 52))
-horarioValido = horarioRobusto or horarioFrequente
+horarioAltaAcertividade = hSP == 20 and mSP == 54
+horarioValido = modoAltaAcertividade ? horarioAltaAcertividade : (horarioRobusto or horarioFrequente)
 
-compraCond = horarioValido and emaRapida > emaLenta and adx >= adxMin and diPlus > diMinus and dmiGap >= dmiGapMin
-vendaCond = horarioValido and emaRapida < emaLenta and adx >= adxMin and diMinus > diPlus and dmiGap >= dmiGapMin
+adxFiltro = modoAltaAcertividade ? 28.0 : adxMin
+dmiGapFiltro = modoAltaAcertividade ? 0.0 : dmiGapMin
+
+compraCond = horarioValido and emaRapida > emaLenta and adx >= adxFiltro and diPlus > diMinus and dmiGap >= dmiGapFiltro
+vendaCond = horarioValido and emaRapida < emaLenta and adx >= adxFiltro and diMinus > diPlus and dmiGap >= dmiGapFiltro
 
 if compraCond
     strategy.entry("Compra", strategy.long, alert_message="V71 PESQUISA EMA ADX 2M BUY")
