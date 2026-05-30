@@ -176,3 +176,15 @@ Modulos:
 
 Observacao:
 - Como e uma uniao de estrategias, precisa validacao no TradingView em 365/90/30 dias. Unir estrategias aumenta frequencia, mas pode reduzir acerto se algum modulo piorar o conjunto.
+
+Resultado local em candles IBKR 2min:
+- DMI3 Take45 sozinho: 132 trades, 86,36%, +3081,0 pontos, DD -331,5, PF 2,463.
+- EMA/ADX extra sozinho: 139 trades, 75,54%, +1324,5 pontos, DD -827,5, PF 1,333.
+- Compilado DMI3 + EMA/ADX: 230 trades, 81,30%, +3947,5 pontos, DD -632,0, PF 1,785.
+- Compilado com 20:52 ligado: 234 trades, 80,77%, +3814,5 pontos, DD -632,0, PF 1,725.
+
+Leitura:
+- O compilado aumenta bastante a frequencia e melhora pontos totais contra DMI3 sozinho.
+- O 20:52 piorou 90 dias e pontos totais, por isso fica desligado por padrao.
+- Para operar com maior acerto, DMI3 Take45 sozinho continua melhor.
+- Para operar com maior frequencia, testar o compilado sem 20:52.
