@@ -113,3 +113,18 @@ Observacao apos teste visual no TV:
 - Portanto ele nao deve ser considerado pronto para operar.
 - O proximo candidato para validar no TV e `V71_PESQUISA_TV_3H_80PCT_ROBUSTO_FIXO.pine`.
 - Depois de exportar a Lista de negociacoes desse Pine, rodar `pesquisa_v71_0348_6min/auditar_export_tv_3h_robusto.py` para conferir 365/90/30 dias com o resultado real do TradingView.
+
+## Candidato novo por regime DMI em candles IBKR
+
+Arquivo Pine: `V71_PESQUISA_TV_3H_DMI3_ROBUSTO_FIXO.pine`
+
+Regras:
+- Mesmas regras do candidato 3H robusto.
+- Filtro adicional: `abs(DI+ - DI-) >= 3`.
+
+Resultado em simulacao local com candles IBKR 2min, entrada no candle seguinte e stop primeiro:
+- 365 dias: 131 trades, 83,97%, +3098,0 pontos, DD -484,0, PF 2,261.
+- 90 dias: 31 trades, 80,65%, +560,5 pontos.
+- 30 dias: 11 trades, 81,82%, +220,5 pontos.
+
+Leitura: melhor equilibrio local entre frequencia e robustez recente. Precisa confirmacao no TradingView, pois o TV pode recalcular preenchimentos e quantidade de trades.

@@ -16,6 +16,9 @@ def localizar_export():
     padroes = [
         "V71_Pesquisa_TV_3H_80pct_Robusto*.csv",
         "V71 Pesquisa TV 3H 80pct Robusto*.csv",
+        "V71_Pesquisa_TV_3H_DMI3_Robusto*.csv",
+        "V71 Pesquisa TV 3H DMI3 Robusto*.csv",
+        "*3H*DMI3*Robusto*.csv",
         "*3H*80pct*Robusto*.csv",
     ]
     encontrados = []
