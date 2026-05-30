@@ -8,7 +8,7 @@ strategy("V71 Pesquisa TV Alta Acertividade Calendario",
 // Pesquisa baseada no export TradingView.
 // Foca em acerto maior filtrando dias/horarios. Nao altera o V7.1 oficial.
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
-stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+stopPontos = input.float(110.0, "Stop em pontos", step=0.25)
 modo = input.string("81pct_105trades", "Modo",
      options=["87pct_54trades", "84pct_78trades", "81pct_105trades", "79pct_129trades"])
 

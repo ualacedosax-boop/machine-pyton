@@ -14,7 +14,7 @@ Regras:
 - Mesmo take/stop: 50,5 / 117 pontos.
 - Mesma direcao por votos do Pine de pesquisa.
 
-Resultado no export TV:
+Resultado no export TV com stop original 117:
 - 105 trades
 - 81,90% de acerto
 - +5367,0 USD
@@ -22,6 +22,17 @@ Resultado no export TV:
 - Profit factor 2,776
 - 2 meses negativos
 - Menor quartil de validacao: 74,07% de acerto e +984,0 USD
+
+Resultado estimado por excursao com stop 110:
+- 105 trades
+- 81,90% de acerto
+- +5521,0 USD
+- Max DD -509,5 USD
+- Profit factor 2,925
+- 2 meses negativos
+- Menor quartil de validacao: 74,07% de acerto e +1012,0 USD
+
+Leitura: stop 110 melhorou PnL, DD e PF sem reduzir o acerto no teste por excursao. Precisa confirmar no TradingView.
 
 ## Candidato mais robusto por score
 
@@ -32,7 +43,7 @@ Regras:
 - BUY 20:58 somente domingo, terca e quarta.
 - Mesmo take/stop: 50,5 / 117 pontos.
 
-Resultado no export TV:
+Resultado no export TV com stop original 117:
 - 129 trades
 - 79,84% de acerto
 - +5726,5 USD
@@ -40,6 +51,15 @@ Resultado no export TV:
 - Profit factor 2,317
 - 1 mes negativo
 - Menor quartil de validacao: 69,70% de acerto e +709,5 USD
+
+Resultado estimado por excursao com stop 110:
+- 129 trades
+- 79,84% de acerto
+- +5950,5 USD
+- Max DD -679,0 USD
+- Profit factor 2,443
+- 1 mes negativo
+- Menor quartil de validacao: 69,70% de acerto e +765,5 USD
 
 Leitura: fica um pouco abaixo de 80%, mas tem mais trades, maior lucro e apenas 1 mes negativo. Para meta estrita de acerto, usar `81pct_105trades`.
 
