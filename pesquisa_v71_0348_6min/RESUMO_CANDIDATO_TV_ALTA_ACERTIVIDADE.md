@@ -135,7 +135,7 @@ Arquivo Pine: `V71_PESQUISA_TV_3H_DMI10_ALTA_ACERTIVIDADE.pine`
 
 Regras:
 - Mesmas regras do candidato 3H robusto.
-- Filtro adicional: `abs(DI+ - DI-) >= 10`.
+- Filtro adicional: `ADX >= 25` e `abs(DI+ - DI-) >= 10`.
 
 Resultado em simulacao local com candles IBKR 2min:
 - 365 dias: 45 trades, 91,11%, +1602,5 pontos, DD -183,5, PF 4,424.
@@ -143,3 +143,19 @@ Resultado em simulacao local com candles IBKR 2min:
 - 30 dias: 5 trades, 80,00%, +85,0 pontos.
 
 Leitura: e a versao mais defensiva. A vantagem e acerto/DD; a desvantagem e baixa frequencia.
+
+## Variante DMI3 com take 45,5
+
+Arquivo Pine: `V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine`
+
+Regras:
+- Mesmas regras do candidato DMI3.
+- Take reduzido de 50,5 para 45,5 pontos.
+- Stop mantido em 117 pontos.
+
+Resultado em re-simulacao local com candles IBKR 2min:
+- 365 dias: 132 trades, 86,36%, +3081,0 pontos, DD -331,5, PF 2,463.
+- 90 dias: 31 trades, 87,10%, +760,5 pontos.
+- 30 dias: 11 trades, 90,91%, +338,0 pontos.
+
+Leitura: melhorou acerto, DD e resultado recente em relacao ao DMI3 original, sem reduzir frequencia. E o principal candidato novo para validacao no TradingView.

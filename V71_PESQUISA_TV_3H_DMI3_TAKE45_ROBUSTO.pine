@@ -1,16 +1,15 @@
 //@version=6
-strategy("V71 Pesquisa TV 3H DMI10 Alta Acertividade",
+strategy("V71 Pesquisa TV 3H DMI3 Take45 Robusto",
      overlay=true,
      pyramiding=0,
      default_qty_type=strategy.fixed,
      default_qty_value=1)
 
 // Pesquisa separada. Nao altera o V7.1 oficial.
-// Variante de alta acertividade do 3H: menos frequencia, filtro DMI mais forte.
-takePontos = input.float(50.5, "Take em pontos", step=0.25)
+// Variante DMI3 com take menor para aumentar acertividade recente.
+takePontos = input.float(45.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
-adxMin = input.float(25.0, "ADX minimo", step=0.5)
-dmiGapMin = input.float(10.0, "Gap minimo DMI", step=0.5)
+dmiGapMin = input.float(3.0, "Gap minimo DMI", step=0.5)
 mostrarPainel = input.bool(true, "Mostrar painel de auditoria")
 
 takeTicks = int(math.round(takePontos / syminfo.mintick))
@@ -39,7 +38,7 @@ body = close - open
 vwapDia = ta.vwap(hlc3)
 [diPlus, diMinus, adx14] = ta.dmi(14, 14)
 dmiGap = math.abs(diPlus - diMinus)
-regimeOk = adx14 >= adxMin and dmiGap >= dmiGapMin
+regimeOk = dmiGap >= dmiGapMin
 
 plot(ema17, "EMA 17", color=color.purple, linewidth=2)
 plot(ema34, "EMA 34", color=color.blue, linewidth=2)
@@ -66,16 +65,16 @@ compraCond = buy0348 or buy1030 or buy2058
 vendaCond = sell1030
 
 if buy0348
-    strategy.entry("BUY_0348", strategy.long, alert_message="V71 PESQUISA 3H DMI10 BUY 03:48")
+    strategy.entry("BUY_0348", strategy.long, alert_message="V71 PESQUISA 3H DMI3 TAKE45 BUY 03:48")
 
 if buy1030
-    strategy.entry("BUY_1030", strategy.long, alert_message="V71 PESQUISA 3H DMI10 BUY 10:30")
+    strategy.entry("BUY_1030", strategy.long, alert_message="V71 PESQUISA 3H DMI3 TAKE45 BUY 10:30")
 
 if buy2058
-    strategy.entry("BUY_2058", strategy.long, alert_message="V71 PESQUISA 3H DMI10 BUY 20:58")
+    strategy.entry("BUY_2058", strategy.long, alert_message="V71 PESQUISA 3H DMI3 TAKE45 BUY 20:58")
 
 if sell1030
-    strategy.entry("SELL_1030", strategy.short, alert_message="V71 PESQUISA 3H DMI10 SELL 10:30")
+    strategy.entry("SELL_1030", strategy.short, alert_message="V71 PESQUISA 3H DMI3 TAKE45 SELL 10:30")
 
 strategy.exit("TP/SL BUY_0348", from_entry="BUY_0348", profit=takeTicks, loss=stopTicks)
 strategy.exit("TP/SL BUY_1030", from_entry="BUY_1030", profit=takeTicks, loss=stopTicks)
@@ -91,13 +90,13 @@ plotshape(buy2058, title="BUY 20:58", style=shape.triangleup, location=location.
 plotshape(sell1030, title="SELL 10:30", style=shape.triangledown, location=location.abovebar,
      color=color.red, size=size.normal, text="S1030")
 
-alertcondition(compraCond, title="V71 Pesquisa 3H DMI10 BUY", message="V71 PESQUISA 3H DMI10 BUY")
-alertcondition(vendaCond, title="V71 Pesquisa 3H DMI10 SELL", message="V71 PESQUISA 3H DMI10 SELL")
+alertcondition(compraCond, title="V71 Pesquisa 3H DMI3 Take45 BUY", message="V71 PESQUISA 3H DMI3 TAKE45 BUY")
+alertcondition(vendaCond, title="V71 Pesquisa 3H DMI3 Take45 SELL", message="V71 PESQUISA 3H DMI3 TAKE45 SELL")
 
 var table painel = table.new(position.top_right, 2, 7, bgcolor=color.new(color.black, 20))
 if mostrarPainel and barstate.islast
     table.cell(painel, 0, 0, "V71 3H", text_color=color.white)
-    table.cell(painel, 1, 0, "DMI10 ALTA", text_color=color.yellow)
+    table.cell(painel, 1, 0, "DMI3 TAKE45", text_color=color.yellow)
     table.cell(painel, 0, 1, "03:48", text_color=color.white)
     table.cell(painel, 1, 1, "BUY seg/ter", text_color=color.lime)
     table.cell(painel, 0, 2, "10:30", text_color=color.white)
@@ -105,7 +104,7 @@ if mostrarPainel and barstate.islast
     table.cell(painel, 0, 3, "20:58", text_color=color.white)
     table.cell(painel, 1, 3, "BUY dom/qua", text_color=color.lime)
     table.cell(painel, 0, 4, "Filtro", text_color=color.white)
-    table.cell(painel, 1, 4, "ADX >= " + str.tostring(adxMin) + " / DMI >= " + str.tostring(dmiGapMin), text_color=color.white)
+    table.cell(painel, 1, 4, "DMI gap >= " + str.tostring(dmiGapMin), text_color=color.white)
     table.cell(painel, 0, 5, "TP/SL", text_color=color.white)
     table.cell(painel, 1, 5, str.tostring(takePontos) + " / " + str.tostring(stopPontos), text_color=color.white)
     table.cell(painel, 0, 6, "Oficial", text_color=color.white)
