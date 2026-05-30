@@ -128,3 +128,18 @@ Resultado em simulacao local com candles IBKR 2min, entrada no candle seguinte e
 - 30 dias: 11 trades, 81,82%, +220,5 pontos.
 
 Leitura: melhor equilibrio local entre frequencia e robustez recente. Precisa confirmacao no TradingView, pois o TV pode recalcular preenchimentos e quantidade de trades.
+
+## Variante alta acertividade DMI10
+
+Arquivo Pine: `V71_PESQUISA_TV_3H_DMI10_ALTA_ACERTIVIDADE.pine`
+
+Regras:
+- Mesmas regras do candidato 3H robusto.
+- Filtro adicional: `abs(DI+ - DI-) >= 10`.
+
+Resultado em simulacao local com candles IBKR 2min:
+- 365 dias: 45 trades, 91,11%, +1602,5 pontos, DD -183,5, PF 4,424.
+- 90 dias: 11 trades, 81,82%, +220,5 pontos.
+- 30 dias: 5 trades, 80,00%, +85,0 pontos.
+
+Leitura: e a versao mais defensiva. A vantagem e acerto/DD; a desvantagem e baixa frequencia.
