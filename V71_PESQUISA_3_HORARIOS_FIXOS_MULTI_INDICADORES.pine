@@ -1,0 +1,76 @@
+//@version=6
+strategy("V71 Pesquisa 3 Horarios Fixos Multi Indicadores",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. Nao altera o V7.1 oficial.
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+eh0348 = hSP == 3 and mSP == 48
+eh1030 = hSP == 10 and mSP == 30
+eh2058 = hSP == 20 and mSP == 58
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+sma17 = ta.sma(close, 17)
+sma34 = ta.sma(close, 34)
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+roc5 = close - close[5]
+roc10 = close - close[10]
+prevRoc5 = roc5[1]
+body = close - open
+vwapDia = ta.vwap(hlc3)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+votoMacd = macd >= macdSignal ? 1 : -1
+votoCandle = body >= 0 ? 1 : -1
+votoPrevRoc5Contra = prevRoc5 <= 0 ? 1 : -1
+votoSma1734 = sma17 >= sma34 ? 1 : -1
+votoRoc10 = roc10 >= 0 ? 1 : -1
+votoEma1734 = ema17 >= ema34 ? 1 : -1
+votoRoc5 = roc5 >= 0 ? 1 : -1
+votoVwap = close >= vwapDia ? 1 : -1
+
+score0348 = votoMacd + votoCandle + votoPrevRoc5Contra
+score1030 = votoSma1734 + votoRoc10 + votoPrevRoc5Contra
+score2058 = votoEma1734 + votoRoc5 + votoVwap
+
+buy0348 = eh0348 and score0348 >= 0
+sell0348 = eh0348 and score0348 < 0
+buy1030 = eh1030 and score1030 >= 0
+sell1030 = eh1030 and score1030 < 0
+buy2058 = eh2058 and score2058 >= 0
+sell2058 = eh2058 and score2058 < 0
+
+compraCond = buy0348 or buy1030 or buy2058
+vendaCond = sell0348 or sell1030 or sell2058
+
+if compraCond
+    strategy.entry("Compra", strategy.long, alert_message="V71 PESQUISA 3 HORARIOS BUY")
+
+if vendaCond
+    strategy.entry("Venda", strategy.short, alert_message="V71 PESQUISA 3 HORARIOS SELL")
+
+strategy.exit("TP/SL Compra", from_entry="Compra", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL Venda", from_entry="Venda", profit=takeTicks, loss=stopTicks)
+
+plotshape(compraCond, title="BUY", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.normal, text="BUY")
+plotshape(vendaCond, title="SELL", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.normal, text="SELL")
+
+alertcondition(compraCond, title="V71 Pesquisa 3 Horarios BUY", message="V71 PESQUISA 3 HORARIOS BUY")
+alertcondition(vendaCond, title="V71 Pesquisa 3 Horarios SELL", message="V71 PESQUISA 3 HORARIOS SELL")
