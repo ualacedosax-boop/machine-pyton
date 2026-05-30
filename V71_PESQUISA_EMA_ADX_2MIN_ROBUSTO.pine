@@ -1,0 +1,56 @@
+//@version=6
+strategy("V71 Pesquisa EMA ADX 2m Robusto",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. Nao altera o V7.1 oficial.
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+emaRapidaLen = input.int(17, "EMA rapida", minval=1)
+emaLentaLen = input.int(34, "EMA lenta", minval=2)
+adxMin = input.float(28.0, "ADX minimo", step=0.5)
+dmiGapMin = input.float(4.0, "Gap minimo DI", step=0.5)
+
+usar0350 = input.bool(true, "Usar 03:50")
+usar2054 = input.bool(true, "Usar 20:54")
+usar0348_2052 = input.bool(false, "Alternativa frequente 03:48 + 20:52")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+emaRapida = ta.ema(close, emaRapidaLen)
+emaLenta = ta.ema(close, emaLentaLen)
+plot(emaRapida, "EMA rapida", color=color.purple, linewidth=2)
+plot(emaLenta, "EMA lenta", color=color.blue, linewidth=2)
+
+[diPlus, diMinus, adx] = ta.dmi(14, 9)
+dmiGap = math.abs(diPlus - diMinus)
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+
+horarioRobusto = (usar0350 and hSP == 3 and mSP == 50) or (usar2054 and hSP == 20 and mSP == 54)
+horarioFrequente = usar0348_2052 and ((hSP == 3 and mSP == 48) or (hSP == 20 and mSP == 52))
+horarioValido = horarioRobusto or horarioFrequente
+
+compraCond = horarioValido and emaRapida > emaLenta and adx >= adxMin and diPlus > diMinus and dmiGap >= dmiGapMin
+vendaCond = horarioValido and emaRapida < emaLenta and adx >= adxMin and diMinus > diPlus and dmiGap >= dmiGapMin
+
+if compraCond
+    strategy.entry("Compra", strategy.long, alert_message="V71 PESQUISA EMA ADX 2M BUY")
+
+if vendaCond
+    strategy.entry("Venda", strategy.short, alert_message="V71 PESQUISA EMA ADX 2M SELL")
+
+strategy.exit("TP/SL Compra", from_entry="Compra", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL Venda", from_entry="Venda", profit=takeTicks, loss=stopTicks)
+
+plotshape(compraCond, title="BUY", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.normal, text="BUY")
+plotshape(vendaCond, title="SELL", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.normal, text="SELL")
+
+alertcondition(compraCond, title="V71 Pesquisa BUY", message="V71 PESQUISA EMA ADX 2M BUY")
+alertcondition(vendaCond, title="V71 Pesquisa SELL", message="V71 PESQUISA EMA ADX 2M SELL")
