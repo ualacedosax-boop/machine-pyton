@@ -136,3 +136,72 @@ plotshape(vendaCond, title="SELL", style=shape.triangledown, location=location.a
 
 alertcondition(compraCond, title="V71 LAB BUY", message="V71 LAB BUY")
 alertcondition(vendaCond, title="V71 LAB SELL", message="V71 LAB SELL")
+
+mostrarTabela = input.bool(true, "Mostrar tabela por horario")
+var table painel = table.new(position.top_right, 5, 5, border_width=1)
+
+if barstate.islast and mostrarTabela
+    int t0348 = 0
+    int w0348 = 0
+    float p0348 = 0.0
+    int t1030 = 0
+    int w1030 = 0
+    float p1030 = 0.0
+    int t2058 = 0
+    int w2058 = 0
+    float p2058 = 0.0
+
+    for i = 0 to strategy.closedtrades - 1
+        string eid = strategy.closedtrades.entry_id(i)
+        float pr = strategy.closedtrades.profit(i)
+        bool win = pr > 0
+        if str.contains(eid, "0348")
+            t0348 += 1
+            w0348 += win ? 1 : 0
+            p0348 += pr
+        else if str.contains(eid, "1030")
+            t1030 += 1
+            w1030 += win ? 1 : 0
+            p1030 += pr
+        else if str.contains(eid, "2058")
+            t2058 += 1
+            w2058 += win ? 1 : 0
+            p2058 += pr
+
+    float wr0348 = t0348 > 0 ? 100.0 * w0348 / t0348 : 0.0
+    float wr1030 = t1030 > 0 ? 100.0 * w1030 / t1030 : 0.0
+    float wr2058 = t2058 > 0 ? 100.0 * w2058 / t2058 : 0.0
+
+    table.cell(painel, 0, 0, "Horario", text_color=color.white, bgcolor=color.gray)
+    table.cell(painel, 1, 0, "Trades", text_color=color.white, bgcolor=color.gray)
+    table.cell(painel, 2, 0, "Wins", text_color=color.white, bgcolor=color.gray)
+    table.cell(painel, 3, 0, "Win %", text_color=color.white, bgcolor=color.gray)
+    table.cell(painel, 4, 0, "PnL", text_color=color.white, bgcolor=color.gray)
+
+    table.cell(painel, 0, 1, "03:48")
+    table.cell(painel, 1, 1, str.tostring(t0348))
+    table.cell(painel, 2, 1, str.tostring(w0348))
+    table.cell(painel, 3, 1, str.tostring(wr0348, "#.##"))
+    table.cell(painel, 4, 1, str.tostring(p0348, "#.##"), text_color=p0348 >= 0 ? color.lime : color.red)
+
+    table.cell(painel, 0, 2, "10:30")
+    table.cell(painel, 1, 2, str.tostring(t1030))
+    table.cell(painel, 2, 2, str.tostring(w1030))
+    table.cell(painel, 3, 2, str.tostring(wr1030, "#.##"))
+    table.cell(painel, 4, 2, str.tostring(p1030, "#.##"), text_color=p1030 >= 0 ? color.lime : color.red)
+
+    table.cell(painel, 0, 3, "20:58")
+    table.cell(painel, 1, 3, str.tostring(t2058))
+    table.cell(painel, 2, 3, str.tostring(w2058))
+    table.cell(painel, 3, 3, str.tostring(wr2058, "#.##"))
+    table.cell(painel, 4, 3, str.tostring(p2058, "#.##"), text_color=p2058 >= 0 ? color.lime : color.red)
+
+    int tt = t0348 + t1030 + t2058
+    int ww = w0348 + w1030 + w2058
+    float pp = p0348 + p1030 + p2058
+    float wrt = tt > 0 ? 100.0 * ww / tt : 0.0
+    table.cell(painel, 0, 4, "TOTAL", text_color=color.white, bgcolor=color.gray)
+    table.cell(painel, 1, 4, str.tostring(tt), text_color=color.white, bgcolor=color.gray)
+    table.cell(painel, 2, 4, str.tostring(ww), text_color=color.white, bgcolor=color.gray)
+    table.cell(painel, 3, 4, str.tostring(wrt, "#.##"), text_color=color.white, bgcolor=color.gray)
+    table.cell(painel, 4, 4, str.tostring(pp, "#.##"), text_color=pp >= 0 ? color.lime : color.red, bgcolor=color.gray)
