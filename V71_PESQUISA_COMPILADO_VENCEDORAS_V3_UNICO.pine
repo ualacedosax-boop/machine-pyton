@@ -1,0 +1,122 @@
+//@version=6
+strategy("V71 Pesquisa Compilado Vencedoras V3 Unico",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// V3 com nomes unicos para evitar colisao no editor Pine.
+
+v3_takeDmi3 = input.float(50.5, "Take DMI3 em pontos", step=0.25)
+v3_stopDmi3 = input.float(117.0, "Stop DMI3 em pontos", step=0.25)
+v3_gapDmi3Min = input.float(3.0, "Gap minimo DMI3", step=0.5)
+v3_usarEmaAdxExtra = input.bool(true, "Adicionar EMA/ADX 03:50 e 20:54")
+v3_usarEmaAdx2052 = input.bool(false, "Adicionar EMA/ADX 20:52")
+v3_takeEmaAdx = input.float(50.5, "Take EMA/ADX em pontos", step=0.25)
+v3_stopEmaAdx = input.float(117.0, "Stop EMA/ADX em pontos", step=0.25)
+v3_adxMin = input.float(28.0, "ADX minimo EMA/ADX", step=0.5)
+v3_gapEmaMin = input.float(4.0, "Gap minimo EMA/ADX", step=0.5)
+
+v3_takeTicks = int(math.round(v3_takeDmi3 / syminfo.mintick))
+v3_stopTicks = int(math.round(v3_stopDmi3 / syminfo.mintick))
+v3_takeEmaTicks = int(math.round(v3_takeEmaAdx / syminfo.mintick))
+v3_stopEmaTicks = int(math.round(v3_stopEmaAdx / syminfo.mintick))
+
+v3_hSP = hour(time, "America/Sao_Paulo")
+v3_mSP = minute(time, "America/Sao_Paulo")
+v3_dowSP = dayofweek(time, "America/Sao_Paulo")
+
+v3_eh0348 = v3_hSP == 3 and v3_mSP == 48
+v3_eh0350 = v3_hSP == 3 and v3_mSP == 50
+v3_eh1030 = v3_hSP == 10 and v3_mSP == 30
+v3_eh2052 = v3_hSP == 20 and v3_mSP == 52
+v3_eh2054 = v3_hSP == 20 and v3_mSP == 54
+v3_eh2058 = v3_hSP == 20 and v3_mSP == 58
+
+v3_ema17 = ta.ema(close, 17)
+v3_ema34 = ta.ema(close, 34)
+v3_sma17 = ta.sma(close, 17)
+v3_sma34 = ta.sma(close, 34)
+v3_ema12 = ta.ema(close, 12)
+v3_ema26 = ta.ema(close, 26)
+v3_macd = v3_ema12 - v3_ema26
+v3_macdSignal = ta.ema(v3_macd, 9)
+v3_roc5 = close - close[5]
+v3_roc10 = close - close[10]
+v3_prevRoc5 = v3_roc5[1]
+v3_body = close - open
+v3_vwapDia = ta.vwap(hlc3)
+[v3_diPlus, v3_diMinus, v3_adx14] = ta.dmi(14, 14)
+v3_dmiGap = math.abs(v3_diPlus - v3_diMinus)
+
+plot(v3_ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(v3_ema34, "EMA 34", color=color.blue, linewidth=2)
+
+v3_votoMacd = v3_macd >= v3_macdSignal ? 1 : -1
+v3_votoCandle = v3_body >= 0 ? 1 : -1
+v3_votoPrevRoc5Contra = v3_prevRoc5 <= 0 ? 1 : -1
+v3_votoSma1734 = v3_sma17 >= v3_sma34 ? 1 : -1
+v3_votoRoc10 = v3_roc10 >= 0 ? 1 : -1
+v3_votoEma1734 = v3_ema17 >= v3_ema34 ? 1 : -1
+v3_votoRoc5 = v3_roc5 >= 0 ? 1 : -1
+v3_votoVwap = close >= v3_vwapDia ? 1 : -1
+
+v3_score0348 = v3_votoMacd + v3_votoCandle + v3_votoPrevRoc5Contra
+v3_score1030 = v3_votoSma1734 + v3_votoRoc10 + v3_votoPrevRoc5Contra
+v3_score2058 = v3_votoEma1734 + v3_votoRoc5 + v3_votoVwap
+
+v3_dmi3Ok = v3_dmiGap >= v3_gapDmi3Min
+v3_dmi3Buy0348 = v3_dmi3Ok and v3_eh0348 and v3_score0348 >= 0 and (v3_dowSP == dayofweek.monday or v3_dowSP == dayofweek.tuesday)
+v3_dmi3Buy1030 = v3_dmi3Ok and v3_eh1030 and v3_score1030 >= 0 and v3_dowSP == dayofweek.monday
+v3_dmi3Sell1030 = v3_dmi3Ok and v3_eh1030 and v3_score1030 < 0 and v3_dowSP == dayofweek.friday
+v3_dmi3Buy2058 = v3_dmi3Ok and v3_eh2058 and v3_score2058 >= 0 and (v3_dowSP == dayofweek.sunday or v3_dowSP == dayofweek.wednesday)
+
+v3_emaAdxHorario = v3_eh0350 or v3_eh2054 or (v3_usarEmaAdx2052 and v3_eh2052)
+v3_emaAdxOk = v3_usarEmaAdxExtra and v3_emaAdxHorario and v3_adx14 >= v3_adxMin and v3_dmiGap >= v3_gapEmaMin
+v3_emaAdxBuy = v3_emaAdxOk and v3_ema17 > v3_ema34 and v3_diPlus > v3_diMinus
+v3_emaAdxSell = v3_emaAdxOk and v3_ema17 < v3_ema34 and v3_diMinus > v3_diPlus
+
+if v3_dmi3Buy0348
+    strategy.entry("D3B0348", strategy.long)
+
+if v3_dmi3Buy1030
+    strategy.entry("D3B1030", strategy.long)
+
+if v3_dmi3Buy2058
+    strategy.entry("D3B2058", strategy.long)
+
+if v3_dmi3Sell1030
+    strategy.entry("D3S1030", strategy.short)
+
+if not (v3_dmi3Buy0348 or v3_dmi3Buy1030 or v3_dmi3Buy2058 or v3_dmi3Sell1030) and v3_emaAdxBuy
+    strategy.entry("EABUY", strategy.long)
+
+if not (v3_dmi3Buy0348 or v3_dmi3Buy1030 or v3_dmi3Buy2058 or v3_dmi3Sell1030) and v3_emaAdxSell
+    strategy.entry("EASELL", strategy.short)
+
+strategy.exit("XD3B0348", from_entry="D3B0348", profit=v3_takeTicks, loss=v3_stopTicks)
+strategy.exit("XD3B1030", from_entry="D3B1030", profit=v3_takeTicks, loss=v3_stopTicks)
+strategy.exit("XD3B2058", from_entry="D3B2058", profit=v3_takeTicks, loss=v3_stopTicks)
+strategy.exit("XD3S1030", from_entry="D3S1030", profit=v3_takeTicks, loss=v3_stopTicks)
+strategy.exit("XEABUY", from_entry="EABUY", profit=v3_takeEmaTicks, loss=v3_stopEmaTicks)
+strategy.exit("XEASELL", from_entry="EASELL", profit=v3_takeEmaTicks, loss=v3_stopEmaTicks)
+
+v3_compraCond = v3_dmi3Buy0348 or v3_dmi3Buy1030 or v3_dmi3Buy2058 or v3_emaAdxBuy
+v3_vendaCond = v3_dmi3Sell1030 or v3_emaAdxSell
+
+plotshape(v3_dmi3Buy0348, title="DMI3 BUY 03:48", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.normal, text="D3 0348")
+plotshape(v3_dmi3Buy1030, title="DMI3 BUY 10:30", style=shape.triangleup, location=location.belowbar,
+     color=color.green, size=size.normal, text="D3 1030")
+plotshape(v3_dmi3Buy2058, title="DMI3 BUY 20:58", style=shape.triangleup, location=location.belowbar,
+     color=color.teal, size=size.normal, text="D3 2058")
+plotshape(v3_dmi3Sell1030, title="DMI3 SELL 10:30", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.normal, text="D3 S1030")
+plotshape(v3_emaAdxBuy, title="EMA/ADX BUY", style=shape.circle, location=location.belowbar,
+     color=color.aqua, size=size.tiny, text="EA BUY")
+plotshape(v3_emaAdxSell, title="EMA/ADX SELL", style=shape.circle, location=location.abovebar,
+     color=color.orange, size=size.tiny, text="EA SELL")
+
+alertcondition(v3_compraCond, title="V71 Compilado V3 BUY", message="V71 COMPILADO V3 BUY")
+alertcondition(v3_vendaCond, title="V71 Compilado V3 SELL", message="V71 COMPILADO V3 SELL")

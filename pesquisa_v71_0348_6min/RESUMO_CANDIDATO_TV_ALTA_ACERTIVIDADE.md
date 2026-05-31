@@ -208,3 +208,12 @@ Motivo:
 - Mantem DMI3 50,5/117 por padrao e adiciona EMA/ADX 03:50/20:54.
 
 Este e o arquivo recomendado para novo teste do compilado.
+
+## Compilado V3 unico
+
+Arquivo Pine: `V71_PESQUISA_COMPILADO_VENCEDORAS_V3_UNICO.pine`
+
+Motivo:
+- O TradingView acusou variavel duplicada `usarEmaAdxExtra`.
+- A V3 usa prefixo `v3_` em todas as variaveis para evitar colisao ao colar no editor.
+- Recomendacao: apagar todo o conteudo do editor Pine antes de colar a V3.
