@@ -1,0 +1,137 @@
+//@version=6
+strategy("V71 Pesquisa Compilado Vencedoras V4 Balanceado",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Base: DMI3 vencedor validado no TradingView.
+// Extra: somente EMA/ADX BUY, mais seletivo para recuperar acerto anual.
+
+v4_takeDmi3 = input.float(50.5, "Take DMI3 em pontos", step=0.25)
+v4_stopDmi3 = input.float(117.0, "Stop DMI3 em pontos", step=0.25)
+v4_gapDmi3Min = input.float(3.0, "Gap minimo DMI3", step=0.5)
+
+v4_usarEmaAdxBuyExtra = input.bool(true, "Adicionar EMA/ADX BUY extra")
+v4_takeEmaAdx = input.float(50.5, "Take EMA/ADX em pontos", step=0.25)
+v4_stopEmaAdx = input.float(117.0, "Stop EMA/ADX em pontos", step=0.25)
+v4_adxMin = input.float(30.0, "ADX minimo EMA/ADX BUY", step=0.5)
+v4_gapEmaMin = input.float(6.0, "Gap minimo EMA/ADX BUY", step=0.5)
+v4_usar0350Extra = input.bool(true, "Usar EMA/ADX BUY 03:50")
+v4_usar2054Extra = input.bool(true, "Usar EMA/ADX BUY 20:54")
+v4_mostrarPainel = input.bool(true, "Mostrar painel")
+
+v4_takeTicks = int(math.round(v4_takeDmi3 / syminfo.mintick))
+v4_stopTicks = int(math.round(v4_stopDmi3 / syminfo.mintick))
+v4_takeEmaTicks = int(math.round(v4_takeEmaAdx / syminfo.mintick))
+v4_stopEmaTicks = int(math.round(v4_stopEmaAdx / syminfo.mintick))
+
+v4_hSP = hour(time, "America/Sao_Paulo")
+v4_mSP = minute(time, "America/Sao_Paulo")
+v4_dowSP = dayofweek(time, "America/Sao_Paulo")
+
+v4_eh0348 = v4_hSP == 3 and v4_mSP == 48
+v4_eh0350 = v4_hSP == 3 and v4_mSP == 50
+v4_eh1030 = v4_hSP == 10 and v4_mSP == 30
+v4_eh2054 = v4_hSP == 20 and v4_mSP == 54
+v4_eh2058 = v4_hSP == 20 and v4_mSP == 58
+
+v4_ema17 = ta.ema(close, 17)
+v4_ema34 = ta.ema(close, 34)
+v4_sma17 = ta.sma(close, 17)
+v4_sma34 = ta.sma(close, 34)
+v4_ema12 = ta.ema(close, 12)
+v4_ema26 = ta.ema(close, 26)
+v4_macd = v4_ema12 - v4_ema26
+v4_macdSignal = ta.ema(v4_macd, 9)
+v4_roc5 = close - close[5]
+v4_roc10 = close - close[10]
+v4_prevRoc5 = v4_roc5[1]
+v4_body = close - open
+v4_vwapDia = ta.vwap(hlc3)
+[v4_diPlus, v4_diMinus, v4_adx14] = ta.dmi(14, 14)
+v4_dmiGap = math.abs(v4_diPlus - v4_diMinus)
+
+plot(v4_ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(v4_ema34, "EMA 34", color=color.blue, linewidth=2)
+
+v4_votoMacd = v4_macd >= v4_macdSignal ? 1 : -1
+v4_votoCandle = v4_body >= 0 ? 1 : -1
+v4_votoPrevRoc5Contra = v4_prevRoc5 <= 0 ? 1 : -1
+v4_votoSma1734 = v4_sma17 >= v4_sma34 ? 1 : -1
+v4_votoRoc10 = v4_roc10 >= 0 ? 1 : -1
+v4_votoEma1734 = v4_ema17 >= v4_ema34 ? 1 : -1
+v4_votoRoc5 = v4_roc5 >= 0 ? 1 : -1
+v4_votoVwap = close >= v4_vwapDia ? 1 : -1
+
+v4_score0348 = v4_votoMacd + v4_votoCandle + v4_votoPrevRoc5Contra
+v4_score1030 = v4_votoSma1734 + v4_votoRoc10 + v4_votoPrevRoc5Contra
+v4_score2058 = v4_votoEma1734 + v4_votoRoc5 + v4_votoVwap
+
+v4_dmi3Ok = v4_dmiGap >= v4_gapDmi3Min
+v4_dmi3Buy0348 = v4_dmi3Ok and v4_eh0348 and v4_score0348 >= 0 and (v4_dowSP == dayofweek.monday or v4_dowSP == dayofweek.tuesday)
+v4_dmi3Buy1030 = v4_dmi3Ok and v4_eh1030 and v4_score1030 >= 0 and v4_dowSP == dayofweek.monday
+v4_dmi3Sell1030 = v4_dmi3Ok and v4_eh1030 and v4_score1030 < 0 and v4_dowSP == dayofweek.friday
+v4_dmi3Buy2058 = v4_dmi3Ok and v4_eh2058 and v4_score2058 >= 0 and (v4_dowSP == dayofweek.sunday or v4_dowSP == dayofweek.wednesday)
+
+v4_existeDmi3Agora = v4_dmi3Buy0348 or v4_dmi3Buy1030 or v4_dmi3Buy2058 or v4_dmi3Sell1030
+v4_emaAdxHorarioBuy = (v4_usar0350Extra and v4_eh0350) or (v4_usar2054Extra and v4_eh2054)
+v4_emaAdxBuy = v4_usarEmaAdxBuyExtra and not v4_existeDmi3Agora and v4_emaAdxHorarioBuy and v4_adx14 >= v4_adxMin and v4_dmiGap >= v4_gapEmaMin and v4_ema17 > v4_ema34 and v4_diPlus > v4_diMinus
+
+if v4_dmi3Buy0348
+    strategy.entry("D3B0348", strategy.long, alert_message="V71 V4 DMI3 BUY 03:48")
+
+if v4_dmi3Buy1030
+    strategy.entry("D3B1030", strategy.long, alert_message="V71 V4 DMI3 BUY 10:30")
+
+if v4_dmi3Buy2058
+    strategy.entry("D3B2058", strategy.long, alert_message="V71 V4 DMI3 BUY 20:58")
+
+if v4_dmi3Sell1030
+    strategy.entry("D3S1030", strategy.short, alert_message="V71 V4 DMI3 SELL 10:30")
+
+if v4_emaAdxBuy
+    strategy.entry("EABUY", strategy.long, alert_message="V71 V4 EMAADX BUY EXTRA")
+
+strategy.exit("XD3B0348", from_entry="D3B0348", profit=v4_takeTicks, loss=v4_stopTicks)
+strategy.exit("XD3B1030", from_entry="D3B1030", profit=v4_takeTicks, loss=v4_stopTicks)
+strategy.exit("XD3B2058", from_entry="D3B2058", profit=v4_takeTicks, loss=v4_stopTicks)
+strategy.exit("XD3S1030", from_entry="D3S1030", profit=v4_takeTicks, loss=v4_stopTicks)
+strategy.exit("XEABUY", from_entry="EABUY", profit=v4_takeEmaTicks, loss=v4_stopEmaTicks)
+
+v4_compraCond = v4_dmi3Buy0348 or v4_dmi3Buy1030 or v4_dmi3Buy2058 or v4_emaAdxBuy
+v4_vendaCond = v4_dmi3Sell1030
+
+plotshape(v4_dmi3Buy0348, title="DMI3 BUY 03:48", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.normal, text="D3 0348")
+plotshape(v4_dmi3Buy1030, title="DMI3 BUY 10:30", style=shape.triangleup, location=location.belowbar,
+     color=color.green, size=size.normal, text="D3 1030")
+plotshape(v4_dmi3Buy2058, title="DMI3 BUY 20:58", style=shape.triangleup, location=location.belowbar,
+     color=color.teal, size=size.normal, text="D3 2058")
+plotshape(v4_dmi3Sell1030, title="DMI3 SELL 10:30", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.normal, text="D3 S1030")
+plotshape(v4_emaAdxBuy, title="EMA/ADX BUY extra", style=shape.circle, location=location.belowbar,
+     color=color.aqua, size=size.tiny, text="EA BUY")
+
+alertcondition(v4_compraCond, title="V71 Compilado V4 BUY", message="V71 COMPILADO V4 BUY")
+alertcondition(v4_vendaCond, title="V71 Compilado V4 SELL", message="V71 COMPILADO V4 SELL")
+
+var table v4_painel = table.new(position.top_right, 2, 8, bgcolor=color.new(color.black, 20))
+if v4_mostrarPainel and barstate.islast
+    table.cell(v4_painel, 0, 0, "V71 V4", text_color=color.white)
+    table.cell(v4_painel, 1, 0, "COMPILADO", text_color=color.yellow)
+    table.cell(v4_painel, 0, 1, "Base", text_color=color.white)
+    table.cell(v4_painel, 1, 1, "DMI3 03:48/10:30/20:58", text_color=color.lime)
+    table.cell(v4_painel, 0, 2, "Extra", text_color=color.white)
+    table.cell(v4_painel, 1, 2, "EMA/ADX BUY 03:50/20:54", text_color=color.aqua)
+    table.cell(v4_painel, 0, 3, "ADX extra", text_color=color.white)
+    table.cell(v4_painel, 1, 3, str.tostring(v4_adxMin), text_color=color.white)
+    table.cell(v4_painel, 0, 4, "Gap extra", text_color=color.white)
+    table.cell(v4_painel, 1, 4, str.tostring(v4_gapEmaMin), text_color=color.white)
+    table.cell(v4_painel, 0, 5, "TP/SL", text_color=color.white)
+    table.cell(v4_painel, 1, 5, str.tostring(v4_takeDmi3) + " / " + str.tostring(v4_stopDmi3), text_color=color.white)
+    table.cell(v4_painel, 0, 6, "Objetivo", text_color=color.white)
+    table.cell(v4_painel, 1, 6, "mais entradas com >80%", text_color=color.white)
+    table.cell(v4_painel, 0, 7, "Oficial", text_color=color.white)
+    table.cell(v4_painel, 1, 7, "NAO ALTERADO", text_color=color.orange)
