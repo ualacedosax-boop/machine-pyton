@@ -18,6 +18,7 @@ r_stopTicks = int(math.round(r_stopPontos / syminfo.mintick))
 
 r_hSP = hour(time, "America/Sao_Paulo")
 r_mSP = minute(time, "America/Sao_Paulo")
+r_minSP = r_hSP * 60 + r_mSP
 r_dowSP = dayofweek(time, "America/Sao_Paulo")
 r_dayKey = year(time, "America/Sao_Paulo") * 10000 + month(time, "America/Sao_Paulo") * 100 + dayofmonth(time, "America/Sao_Paulo")
 
@@ -29,11 +30,14 @@ if na(r_dayKeyPrev) or r_dayKey != r_dayKeyPrev
     r_baseHoje := false
     r_fallbackHoje := false
 
-r_eh0346 = r_hSP == 3 and r_mSP == 46
-r_eh0348 = r_hSP == 3 and r_mSP == 48
-r_eh1030 = r_hSP == 10 and r_mSP == 30
-r_eh2052 = r_hSP == 20 and r_mSP == 52
-r_eh2058 = r_hSP == 20 and r_mSP == 58
+r_emJanela(minutoAtual, alvoMinutoDia, toleranciaMin) =>
+    math.abs(minutoAtual - alvoMinutoDia) <= toleranciaMin
+
+r_eh0346 = r_emJanela(r_minSP, 3 * 60 + 46, 1)
+r_eh0348 = r_emJanela(r_minSP, 3 * 60 + 48, 1)
+r_eh1030 = r_emJanela(r_minSP, 10 * 60 + 30, 1)
+r_eh2052 = r_emJanela(r_minSP, 20 * 60 + 52, 1)
+r_eh2058 = r_emJanela(r_minSP, 20 * 60 + 58, 2)
 
 r_ema17 = ta.ema(close, 17)
 r_ema34 = ta.ema(close, 34)
@@ -175,7 +179,7 @@ plotshape(r_sellEntry, title="SELL", style=shape.triangledown, location=location
 alertcondition(r_buyEntry, title="V71 Regime V3B BUY", message="V71 REGIME V3B BUY")
 alertcondition(r_sellEntry, title="V71 Regime V3B SELL", message="V71 REGIME V3B SELL")
 
-var table r_painel = table.new(position.top_right, 2, 7, bgcolor=color.new(color.black, 20))
+var table r_painel = table.new(position.top_right, 2, 9, bgcolor=color.new(color.black, 20))
 if r_mostrarPainel and barstate.islast
     table.cell(r_painel, 0, 0, "V71 Pesquisa", text_color=color.white)
     table.cell(r_painel, 1, 0, "REGIME V3B", text_color=color.yellow)
@@ -191,3 +195,7 @@ if r_mostrarPainel and barstate.islast
     table.cell(r_painel, 1, 5, "NAO ALTERADO", text_color=color.orange)
     table.cell(r_painel, 0, 6, "Status", text_color=color.white)
     table.cell(r_painel, 1, 6, "validar no TV", text_color=color.aqua)
+    table.cell(r_painel, 0, 7, "Hora SP", text_color=color.white)
+    table.cell(r_painel, 1, 7, str.tostring(r_hSP) + ":" + (r_mSP < 10 ? "0" : "") + str.tostring(r_mSP), text_color=color.white)
+    table.cell(r_painel, 0, 8, "Janela 20:58", text_color=color.white)
+    table.cell(r_painel, 1, 8, r_eh2058 ? "SIM" : "NAO", text_color=r_eh2058 ? color.lime : color.gray)
