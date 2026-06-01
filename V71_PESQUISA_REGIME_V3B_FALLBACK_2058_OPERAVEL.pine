@@ -38,6 +38,7 @@ r_eh0348 = r_emJanela(r_minSP, 3 * 60 + 48, 1)
 r_eh1030 = r_emJanela(r_minSP, 10 * 60 + 30, 1)
 r_eh2052 = r_emJanela(r_minSP, 20 * 60 + 52, 1)
 r_eh2058 = r_emJanela(r_minSP, 20 * 60 + 58, 2)
+r_depois2058 = r_minSP >= 20 * 60 + 58 and r_minSP <= 21 * 60 + 30
 
 r_ema17 = ta.ema(close, 17)
 r_ema34 = ta.ema(close, 34)
@@ -112,7 +113,9 @@ r_fbGapOk = true
 r_fbForcaOk = r_fbTV ? true : math.abs(r_votoTotal) >= 2
 r_fbVwapOk = r_fbFrequente ? ((r_votoTotal >= 0 and close >= r_vwap) or (r_votoTotal < 0 and close <= r_vwap)) : true
 r_fbRangeOk = r_fbRefino ? r_range30 <= 120 : (r_fbFrequente ? r_range30 <= 85 : true)
-r_fbBase = not r_baseHoje and not r_fallbackHoje and r_eh2058 and r_fbDowOk and r_fbAdxOk and r_fbGapOk and r_fbForcaOk and r_fbVwapOk and r_fbRangeOk
+r_fbHorarioOk = r_fbTV ? r_depois2058 : r_eh2058
+r_fbDisponivel = r_fbTV ? not r_fallbackHoje : (not r_baseHoje and not r_fallbackHoje)
+r_fbBase = r_fbDisponivel and r_fbHorarioOk and r_fbDowOk and r_fbAdxOk and r_fbGapOk and r_fbForcaOk and r_fbVwapOk and r_fbRangeOk
 r_fbBuy = r_fbBase and r_votoTotal >= 0
 r_fbSell = r_fbBase and r_votoTotal < 0
 
@@ -197,5 +200,5 @@ if r_mostrarPainel and barstate.islast
     table.cell(r_painel, 1, 6, "validar no TV", text_color=color.aqua)
     table.cell(r_painel, 0, 7, "Hora SP", text_color=color.white)
     table.cell(r_painel, 1, 7, str.tostring(r_hSP) + ":" + (r_mSP < 10 ? "0" : "") + str.tostring(r_mSP), text_color=color.white)
-    table.cell(r_painel, 0, 8, "Janela 20:58", text_color=color.white)
-    table.cell(r_painel, 1, 8, r_eh2058 ? "SIM" : "NAO", text_color=r_eh2058 ? color.lime : color.gray)
+    table.cell(r_painel, 0, 8, "Depois 20:58", text_color=color.white)
+    table.cell(r_painel, 1, 8, r_depois2058 ? "SIM" : "NAO", text_color=r_depois2058 ? color.lime : color.gray)
