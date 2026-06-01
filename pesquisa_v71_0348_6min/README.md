@@ -59,18 +59,19 @@ Perfis locais esperados:
 
 | Perfil | Trades 365d | Winrate | Pontos | DD | PF | 30d |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Refino 223 | 223 | 86.55% | 6236.5 | -367.0 | 2.78 | 19 trades, 89.47% |
 | Conservador 224 | 224 | 86.16% | 6119.5 | -367.0 | 2.69 | 19 trades, 89.47% |
 | Frequente 230 | 230 | 85.22% | 5920.0 | -566.5 | 2.49 | 20 trades, 85.00% |
 
 Observacao:
 
-O perfil Conservador 224 e o primeiro candidato a validar no TradingView. O perfil Frequente 230 aumenta um pouco a frequencia, mas aceita drawdown maior.
+O perfil Refino 223 e o primeiro candidato a validar no TradingView. Ele manteve o fallback operavel das 20:58, filtrou sexta/sabado e limitou o range recente. O Conservador 224 e o Frequente 230 ficam como comparacao.
 
 ## Validacao no TradingView
 
 1. Abrir `MNQ1!` no timeframe de 2 minutos.
 2. Colar o Pine `V71_PESQUISA_REGIME_V3B_FALLBACK_2058_OPERAVEL.pine`.
-3. Testar primeiro o perfil `Conservador 224`.
+3. Testar primeiro o perfil `Refino 223`.
 4. Conferir 365, 90 e 30 dias.
 5. Exportar a aba `Lista de negociacoes` do TradingView em CSV.
 6. Rodar:
@@ -95,4 +96,4 @@ O auditor compara o CSV do TradingView com os alvos locais e gera:
 
 - DMI3 robusto validado no TradingView: 140 trades, 82.14%, PF 1.985 em 365 dias.
 - Compilado V3 validado no TradingView: 269 trades, 75.84%, PF 1.645 em 365 dias.
-- V3B local busca o meio termo: perto de 224-230 trades, acima de 85%, com fallback operavel.
+- V3B local busca o meio termo: perto de 223-230 trades, acima de 85%, com fallback operavel.

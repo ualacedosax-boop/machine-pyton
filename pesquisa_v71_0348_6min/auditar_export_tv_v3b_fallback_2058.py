@@ -217,6 +217,17 @@ def checar_alvos(resumo):
     return pd.DataFrame(
         [
             {
+                "referencia": "Refino local",
+                "trades_ref": 223,
+                "winrate_ref": 86.55,
+                "pontos_ref": 6236.5,
+                "trades_tv": row["trades"],
+                "winrate_tv": row["winrate"],
+                "pontos_tv_aprox": row["pontos_aprox"],
+                "diff_trades": row["trades"] - 223,
+                "diff_winrate": row["winrate"] - 86.55,
+            },
+            {
                 "referencia": "Conservador local",
                 "trades_ref": 224,
                 "winrate_ref": 86.16,
