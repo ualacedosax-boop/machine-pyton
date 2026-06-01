@@ -79,6 +79,12 @@ O perfil Conservador 224 e o primeiro candidato a validar no TradingView. O perf
 python .\pesquisa_v71_0348_6min\auditar_export_tv_v3b_fallback_2058.py
 ```
 
+Ou, informando manualmente o CSV exportado:
+
+```powershell
+python .\pesquisa_v71_0348_6min\auditar_export_tv_v3b_fallback_2058.py "C:\Users\ualac\Downloads\arquivo_exportado.csv"
+```
+
 O auditor compara o CSV do TradingView com os alvos locais e gera:
 
 - `auditoria_export_tv_v3b_fallback_2058.xlsx`

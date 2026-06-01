@@ -1,4 +1,7 @@
 from pathlib import Path
+import re
+import sys
+import unicodedata
 
 import numpy as np
 import pandas as pd
@@ -13,6 +16,12 @@ ARQ_RESUMO = SAIDA_DIR / "auditoria_export_tv_v3b_fallback_2058_resumo.csv"
 
 
 def localizar_export():
+    if len(sys.argv) > 1:
+        caminho = Path(sys.argv[1])
+        if caminho.exists():
+            return caminho
+        raise FileNotFoundError(f"Arquivo informado nao existe: {caminho}")
+
     padroes = [
         "V71_Pesquisa_Regime_V3B_Fallback_2058_Operavel*.csv",
         "V71 Pesquisa Regime V3B Fallback 2058 Operavel*.csv",
@@ -28,6 +37,44 @@ def localizar_export():
             "Exporte a aba Lista de negociacoes do TV em CSV e rode novamente."
         )
     return max(encontrados, key=lambda p: p.stat().st_mtime)
+
+
+def ler_csv_tv(csv_path):
+    erros = []
+    for encoding in ["utf-8-sig", "utf-8", "latin1"]:
+        try:
+            return pd.read_csv(csv_path, sep=None, engine="python", encoding=encoding)
+        except Exception as exc:
+            erros.append(f"{encoding}: {exc}")
+    raise ValueError("Nao consegui ler o CSV do TradingView. Tentativas: " + " | ".join(erros))
+
+
+def chave_coluna(nome):
+    texto = str(nome).strip().lower()
+    texto = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode("ascii")
+    return re.sub(r"[^a-z0-9]+", " ", texto).strip()
+
+
+def numero_tv(valor):
+    texto = str(valor).strip()
+    if texto == "" or texto.lower() in {"nan", "none"}:
+        return np.nan
+    texto = re.sub(r"[^0-9,\.\-]", "", texto)
+    if texto.count(",") == 1 and texto.count(".") >= 1 and texto.rfind(",") > texto.rfind("."):
+        texto = texto.replace(".", "").replace(",", ".")
+    elif texto.count(",") == 1 and texto.count(".") == 0:
+        texto = texto.replace(",", ".")
+    elif texto.count(".") > 1:
+        partes = texto.split(".")
+        texto = "".join(partes[:-1]) + "." + partes[-1]
+    return pd.to_numeric(texto, errors="coerce")
+
+
+def parse_data_tv(serie):
+    datas = pd.to_datetime(serie, errors="coerce")
+    if datas.notna().sum() < max(1, len(serie) // 2):
+        datas = pd.to_datetime(serie, errors="coerce", dayfirst=True)
+    return datas
 
 
 def max_drawdown(pnl):
@@ -103,12 +150,12 @@ def normalizar_modulo(sinal):
 
 
 def detectar_colunas(df):
-    cols = {c.lower().strip(): c for c in df.columns}
+    cols = {chave_coluna(c): c for c in df.columns}
     obrigatorias = {
         "tipo": cols.get("tipo"),
-        "data": cols.get("data e hora") or cols.get("date/time") or cols.get("data/hora"),
-        "trade": cols.get("trade number") or cols.get("numero da negociacao") or cols.get("número da negociação"),
-        "pnl": cols.get("net pnl usd") or cols.get("lucro liquido usd") or cols.get("lucro líquido usd"),
+        "data": cols.get("data e hora") or cols.get("date time") or cols.get("data hora"),
+        "trade": cols.get("trade number") or cols.get("numero da negociacao") or cols.get("n da negociacao"),
+        "pnl": cols.get("net pnl usd") or cols.get("lucro liquido usd") or cols.get("resultado liquido usd"),
         "sinal": cols.get("sinal") or cols.get("signal"),
     }
     faltando = [k for k, v in obrigatorias.items() if v is None and k not in {"trade", "sinal"}]
@@ -118,16 +165,16 @@ def detectar_colunas(df):
 
 
 def consolidar(csv_path):
-    df = pd.read_csv(csv_path)
+    df = ler_csv_tv(csv_path)
     c = detectar_colunas(df)
     entradas = df[df[c["tipo"]].astype(str).str.contains("Entrada|Entry", case=False, na=False)].copy()
-    entradas["Data e hora"] = pd.to_datetime(entradas[c["data"]], errors="coerce")
+    entradas["Data e hora"] = parse_data_tv(entradas[c["data"]])
     entradas = entradas.dropna(subset=["Data e hora"])
     if c["trade"]:
         entradas = entradas.sort_values(c["trade"])
     else:
         entradas = entradas.sort_values("Data e hora")
-    entradas["pnl"] = pd.to_numeric(entradas[c["pnl"]], errors="coerce").fillna(0.0)
+    entradas["pnl"] = entradas[c["pnl"]].map(numero_tv).fillna(0.0)
     entradas["direcao"] = entradas[c["tipo"]].astype(str).str.extract(r"(long|short)", expand=False).map(
         {"long": "BUY", "short": "SELL"}
     )
