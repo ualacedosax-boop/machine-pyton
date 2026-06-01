@@ -10,7 +10,7 @@ strategy("V71 Pesquisa Regime V3B Fallback 2058 Operavel",
 
 r_takePontos = input.float(50.5, "Take em pontos", step=0.25)
 r_stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
-r_perfilFallback = input.string("Refino 223", "Perfil fallback", options=["Refino 223", "Conservador 224", "Frequente 230"])
+r_perfilFallback = input.string("TV Destravar", "Perfil fallback", options=["TV Destravar", "Refino 223", "Conservador 224", "Frequente 230"])
 r_mostrarPainel = input.bool(true, "Mostrar painel")
 
 r_takeTicks = int(math.round(r_takePontos / syminfo.mintick))
@@ -98,13 +98,14 @@ r_reg2058Buy = not r_baseAgora and r_eh2058 and r_tendBuy and r_dmiGap >= 10 and
 r_baseBuyCond = r_dmi3Buy0348 or r_dmi3Buy1030 or r_dmi3Buy2058 or r_reg0348Buy or r_reg1030Buy or r_reg2052Buy or r_reg2058Buy
 r_baseSellCond = r_dmi3Sell1030 or r_reg0346Sell or r_reg1030Sell or r_reg2052SellA or r_reg2052SellB
 
+r_fbTV = r_perfilFallback == "TV Destravar"
 r_fbRefino = r_perfilFallback == "Refino 223"
 r_fbConservador = r_perfilFallback == "Conservador 224"
 r_fbFrequente = r_perfilFallback == "Frequente 230"
 r_fbDowOk = not r_fbRefino or (r_dowSP == dayofweek.monday or r_dowSP == dayofweek.sunday or r_dowSP == dayofweek.thursday or r_dowSP == dayofweek.tuesday or r_dowSP == dayofweek.wednesday)
 r_fbAdxOk = (r_fbRefino or r_fbConservador) ? r_adx14 >= 20 : true
 r_fbGapOk = true
-r_fbForcaOk = math.abs(r_votoTotal) >= 2
+r_fbForcaOk = r_fbTV ? true : math.abs(r_votoTotal) >= 2
 r_fbVwapOk = r_fbFrequente ? ((r_votoTotal >= 0 and close >= r_vwap) or (r_votoTotal < 0 and close <= r_vwap)) : true
 r_fbRangeOk = r_fbRefino ? r_range30 <= 120 : (r_fbFrequente ? r_range30 <= 85 : true)
 r_fbBase = not r_baseHoje and not r_fallbackHoje and r_eh2058 and r_fbDowOk and r_fbAdxOk and r_fbGapOk and r_fbForcaOk and r_fbVwapOk and r_fbRangeOk
