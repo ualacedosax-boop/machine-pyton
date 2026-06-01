@@ -1,0 +1,189 @@
+//@version=6
+strategy("V71 Pesquisa Regime V3B Fallback 2058 Operavel",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// V3B: V2 robusto + fallback somente as 20:58, sem olhar o futuro.
+
+r_takePontos = input.float(50.5, "Take em pontos", step=0.25)
+r_stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+r_perfilFallback = input.string("Conservador 224", "Perfil fallback", options=["Conservador 224", "Frequente 230"])
+r_mostrarPainel = input.bool(true, "Mostrar painel")
+
+r_takeTicks = int(math.round(r_takePontos / syminfo.mintick))
+r_stopTicks = int(math.round(r_stopPontos / syminfo.mintick))
+
+r_hSP = hour(time, "America/Sao_Paulo")
+r_mSP = minute(time, "America/Sao_Paulo")
+r_dowSP = dayofweek(time, "America/Sao_Paulo")
+r_dayKey = year(time, "America/Sao_Paulo") * 10000 + month(time, "America/Sao_Paulo") * 100 + dayofmonth(time, "America/Sao_Paulo")
+
+var int r_dayKeyPrev = na
+var bool r_baseHoje = false
+var bool r_fallbackHoje = false
+if na(r_dayKeyPrev) or r_dayKey != r_dayKeyPrev
+    r_dayKeyPrev := r_dayKey
+    r_baseHoje := false
+    r_fallbackHoje := false
+
+r_eh0346 = r_hSP == 3 and r_mSP == 46
+r_eh0348 = r_hSP == 3 and r_mSP == 48
+r_eh1030 = r_hSP == 10 and r_mSP == 30
+r_eh2052 = r_hSP == 20 and r_mSP == 52
+r_eh2058 = r_hSP == 20 and r_mSP == 58
+
+r_ema17 = ta.ema(close, 17)
+r_ema34 = ta.ema(close, 34)
+r_ema200 = ta.ema(close, 200)
+r_sma17 = ta.sma(close, 17)
+r_sma34 = ta.sma(close, 34)
+r_ema12 = ta.ema(close, 12)
+r_ema26 = ta.ema(close, 26)
+r_macd = r_ema12 - r_ema26
+r_macdSignal = ta.ema(r_macd, 9)
+r_roc5 = close - close[5]
+r_roc10 = close - close[10]
+r_prevRoc5Contra = r_roc5[1] <= 0 ? 1 : -1
+r_body = close - open
+r_vwap = ta.vwap(hlc3)
+r_rsi14 = ta.rsi(close, 14)
+[r_diPlus, r_diMinus, r_adx14] = ta.dmi(14, 14)
+r_dmiGap = math.abs(r_diPlus - r_diMinus)
+
+r_range30 = ta.highest(high, 15) - ta.lowest(low, 15)
+r_ret60 = close - close[30]
+r_distVwap = close - r_vwap
+
+plot(r_ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(r_ema34, "EMA 34", color=color.blue, linewidth=2)
+
+r_votoMacd = r_macd >= r_macdSignal ? 1 : -1
+r_votoCandle = r_body >= 0 ? 1 : -1
+r_votoSma1734 = r_sma17 >= r_sma34 ? 1 : -1
+r_votoRoc10 = r_roc10 >= 0 ? 1 : -1
+r_votoEma1734 = r_ema17 >= r_ema34 ? 1 : -1
+r_votoRoc5 = r_roc5 >= 0 ? 1 : -1
+r_votoVwap = close >= r_vwap ? 1 : -1
+r_votoDmi = r_diPlus >= r_diMinus ? 1 : -1
+r_votoEma200 = close >= r_ema200 ? 1 : -1
+r_votoRsi = r_rsi14 >= 50 ? 1 : -1
+r_votoTotal = r_votoEma1734 + r_votoSma1734 + r_votoMacd + r_votoRoc5 + r_votoRoc10 + r_votoVwap + r_votoDmi + r_votoCandle + r_votoEma200 + r_votoRsi
+
+r_score0348 = r_votoMacd + r_votoCandle + r_prevRoc5Contra
+r_score1030 = r_votoSma1734 + r_votoRoc10 + r_prevRoc5Contra
+r_score2058 = r_votoEma1734 + r_votoRoc5 + r_votoVwap
+
+r_dmi3Ok = r_dmiGap >= 3
+r_dmi3Buy0348 = r_dmi3Ok and r_eh0348 and r_score0348 >= 0 and (r_dowSP == dayofweek.monday or r_dowSP == dayofweek.tuesday)
+r_dmi3Buy1030 = r_dmi3Ok and r_eh1030 and r_score1030 >= 0 and r_dowSP == dayofweek.monday
+r_dmi3Sell1030 = r_dmi3Ok and r_eh1030 and r_score1030 < 0 and r_dowSP == dayofweek.friday
+r_dmi3Buy2058 = r_dmi3Ok and r_eh2058 and r_score2058 >= 0 and (r_dowSP == dayofweek.sunday or r_dowSP == dayofweek.wednesday)
+r_baseAgora = r_dmi3Buy0348 or r_dmi3Buy1030 or r_dmi3Sell1030 or r_dmi3Buy2058
+
+r_tendBuy = r_ema17 >= r_ema34 and r_diPlus >= r_diMinus
+r_tendSell = r_ema17 < r_ema34 and r_diMinus > r_diPlus
+
+r_reg0346Sell = not r_baseAgora and r_eh0346 and r_tendSell and r_dmiGap >= 6 and r_distVwap >= -7.26
+r_reg0348Buy = not r_baseAgora and r_eh0348 and r_tendBuy and r_adx14 >= 25 and r_dmiGap >= 3 and r_ret60 <= 17.25
+r_reg1030Buy = false
+r_reg1030Sell = not r_baseAgora and r_eh1030 and r_tendSell and r_adx14 >= 25 and r_range30 <= 62.5
+r_reg2052Buy = not r_baseAgora and r_eh2052 and r_tendBuy and r_adx14 >= 25 and r_range30 <= 18.44
+r_reg2052SellA = not r_baseAgora and r_eh2052 and r_tendSell and r_adx14 >= 20 and r_dmiGap >= 10 and r_ret60 >= -27.75
+r_reg2052SellB = false
+r_reg2058Buy = not r_baseAgora and r_eh2058 and r_tendBuy and r_dmiGap >= 10 and r_dmiGap <= 13.35
+
+r_baseBuyCond = r_dmi3Buy0348 or r_dmi3Buy1030 or r_dmi3Buy2058 or r_reg0348Buy or r_reg1030Buy or r_reg2052Buy or r_reg2058Buy
+r_baseSellCond = r_dmi3Sell1030 or r_reg0346Sell or r_reg1030Sell or r_reg2052SellA or r_reg2052SellB
+
+r_fbConservador = r_perfilFallback == "Conservador 224"
+r_fbAdxOk = r_fbConservador ? r_adx14 >= 20 : true
+r_fbGapOk = true
+r_fbForcaOk = math.abs(r_votoTotal) >= 2
+r_fbVwapOk = r_fbConservador ? true : ((r_votoTotal >= 0 and close >= r_vwap) or (r_votoTotal < 0 and close <= r_vwap))
+r_fbRangeOk = r_fbConservador ? true : r_range30 <= 85
+r_fbBase = not r_baseHoje and not r_fallbackHoje and r_eh2058 and r_fbAdxOk and r_fbGapOk and r_fbForcaOk and r_fbVwapOk and r_fbRangeOk
+r_fbBuy = r_fbBase and r_votoTotal >= 0
+r_fbSell = r_fbBase and r_votoTotal < 0
+
+r_flat = strategy.position_size == 0
+
+if r_flat and r_dmi3Buy0348
+    r_baseHoje := true
+    strategy.entry("D3B0348", strategy.long, alert_message="V71 REGIME V3B DMI3 BUY 03:48")
+else if r_flat and r_dmi3Buy1030
+    r_baseHoje := true
+    strategy.entry("D3B1030", strategy.long, alert_message="V71 REGIME V3B DMI3 BUY 10:30")
+else if r_flat and r_dmi3Buy2058
+    r_baseHoje := true
+    strategy.entry("D3B2058", strategy.long, alert_message="V71 REGIME V3B DMI3 BUY 20:58")
+else if r_flat and r_dmi3Sell1030
+    r_baseHoje := true
+    strategy.entry("D3S1030", strategy.short, alert_message="V71 REGIME V3B DMI3 SELL 10:30")
+else if r_flat and r_reg0346Sell
+    r_baseHoje := true
+    strategy.entry("R0346S", strategy.short, alert_message="V71 REGIME V3B SELL 03:46")
+else if r_flat and r_reg0348Buy
+    r_baseHoje := true
+    strategy.entry("R0348B", strategy.long, alert_message="V71 REGIME V3B BUY 03:48")
+else if r_flat and r_reg1030Sell
+    r_baseHoje := true
+    strategy.entry("R1030S", strategy.short, alert_message="V71 REGIME V3B SELL 10:30")
+else if r_flat and r_reg2052Buy
+    r_baseHoje := true
+    strategy.entry("R2052B", strategy.long, alert_message="V71 REGIME V3B BUY 20:52")
+else if r_flat and r_reg2052SellA
+    r_baseHoje := true
+    strategy.entry("R2052SA", strategy.short, alert_message="V71 REGIME V3B SELL 20:52 A")
+else if r_flat and r_reg2058Buy
+    r_baseHoje := true
+    strategy.entry("R2058B", strategy.long, alert_message="V71 REGIME V3B BUY 20:58")
+else if r_flat and r_fbBuy
+    r_fallbackHoje := true
+    strategy.entry("FBB", strategy.long, alert_message="V71 REGIME V3B FALLBACK BUY 20:58")
+else if r_flat and r_fbSell
+    r_fallbackHoje := true
+    strategy.entry("FBS", strategy.short, alert_message="V71 REGIME V3B FALLBACK SELL 20:58")
+
+strategy.exit("XD3B0348", from_entry="D3B0348", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XD3B1030", from_entry="D3B1030", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XD3B2058", from_entry="D3B2058", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XD3S1030", from_entry="D3S1030", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XR0346S", from_entry="R0346S", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XR0348B", from_entry="R0348B", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XR1030S", from_entry="R1030S", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XR2052B", from_entry="R2052B", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XR2052SA", from_entry="R2052SA", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XR2058B", from_entry="R2058B", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XFBB", from_entry="FBB", profit=r_takeTicks, loss=r_stopTicks)
+strategy.exit("XFBS", from_entry="FBS", profit=r_takeTicks, loss=r_stopTicks)
+
+r_buyEntry = r_flat and (r_baseBuyCond or r_fbBuy)
+r_sellEntry = r_flat and (r_baseSellCond or r_fbSell)
+
+plotshape(r_buyEntry, title="BUY", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.small, text="BUY")
+plotshape(r_sellEntry, title="SELL", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.small, text="SELL")
+
+alertcondition(r_buyEntry, title="V71 Regime V3B BUY", message="V71 REGIME V3B BUY")
+alertcondition(r_sellEntry, title="V71 Regime V3B SELL", message="V71 REGIME V3B SELL")
+
+var table r_painel = table.new(position.top_right, 2, 7, bgcolor=color.new(color.black, 20))
+if r_mostrarPainel and barstate.islast
+    table.cell(r_painel, 0, 0, "V71 Pesquisa", text_color=color.white)
+    table.cell(r_painel, 1, 0, "REGIME V3B", text_color=color.yellow)
+    table.cell(r_painel, 0, 1, "Base", text_color=color.white)
+    table.cell(r_painel, 1, 1, "V2 robusto", text_color=color.lime)
+    table.cell(r_painel, 0, 2, "Fallback", text_color=color.white)
+    table.cell(r_painel, 1, 2, "somente 20:58", text_color=color.white)
+    table.cell(r_painel, 0, 3, "Perfil", text_color=color.white)
+    table.cell(r_painel, 1, 3, r_perfilFallback, text_color=color.aqua)
+    table.cell(r_painel, 0, 4, "TP/SL", text_color=color.white)
+    table.cell(r_painel, 1, 4, str.tostring(r_takePontos) + " / " + str.tostring(r_stopPontos), text_color=color.white)
+    table.cell(r_painel, 0, 5, "Oficial", text_color=color.white)
+    table.cell(r_painel, 1, 5, "NAO ALTERADO", text_color=color.orange)
+    table.cell(r_painel, 0, 6, "Status", text_color=color.white)
+    table.cell(r_painel, 1, 6, "validar no TV", text_color=color.aqua)
