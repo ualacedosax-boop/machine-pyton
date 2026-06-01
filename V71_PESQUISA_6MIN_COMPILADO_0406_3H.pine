@@ -9,12 +9,16 @@ strategy("V71 Pesquisa 6MIN Compilado 0406 3H",
 // Pesquisa separada. NAO altera o V7.1 oficial.
 // Usar no MNQ1! em 6 minutos.
 // Combina a reversao 04:06 de 6m com os blocos 03:48 / 10:30 / 20:58 DMI3.
+// Perfil padrao volta para filtros fortes; o perfil de frequencia fica apenas para pesquisa.
 
-perfil = input.string("Compilado 6m", "Perfil",
-     options=["Compilado 6m", "0406 Reversao", "3H DMI3", "Frequencia 6m"])
+perfil = input.string("Alta Acertividade 6m", "Perfil",
+     options=["Alta Acertividade 6m", "Compilado 6m", "0406 Reversao", "3H DMI3", "Frequencia 6m"])
 takePts = input.float(50.5, "Take em pontos", step=0.25)
 stopPts = input.float(117.0, "Stop em pontos", step=0.25)
 dmiGapMin = input.float(3.0, "DMI gap minimo", step=0.5)
+adxAltaMin = input.float(20.0, "Alta: ADX minimo", step=0.5)
+dmiGapAltaMin = input.float(4.0, "Alta: DMI gap minimo", step=0.5)
+votoAltaMin = input.int(3, "Alta: forca voto", minval=0, maxval=10)
 adxFreqMin = input.float(20.0, "Frequencia: ADX minimo", step=0.5)
 votoFreqMin = input.int(2, "Frequencia: forca voto", minval=0, maxval=10)
 rangeRatioMax = input.float(1.5, "04:06 range ratio max", step=0.1)
@@ -101,19 +105,25 @@ candleBuy = close >= open
 mesmoSentidoCandle = revBuy ? candleBuy : revSell ? not candleBuy : false
 filtro0406Robusto = rangeRatio10 <= rangeRatioMax
 filtro0406Alta = filtro0406Robusto and extremoRev >= extremoMin and not mesmoSentidoCandle
-filtro0406 = usarFiltro0406Alta ? filtro0406Alta : filtro0406Robusto
+perfilAlta = perfil == "Alta Acertividade 6m"
+filtro0406 = perfilAlta ? filtro0406Alta : (usarFiltro0406Alta ? filtro0406Alta : filtro0406Robusto)
 
-usa0406 = perfil == "Compilado 6m" or perfil == "0406 Reversao"
-usa3H = perfil == "Compilado 6m" or perfil == "3H DMI3"
+usa0406 = perfilAlta or perfil == "Compilado 6m" or perfil == "0406 Reversao"
+usa3H = perfilAlta or perfil == "Compilado 6m" or perfil == "3H DMI3"
 usaFreq = perfil == "Frequencia 6m"
 
 buy0406 = usa0406 and slot0406 and revBuy and filtro0406
 sell0406 = usa0406 and slot0406 and revSell and filtro0406
 
-buy0348Dmi = usa3H and regimeOk and slot0348 and score0348 >= 0 and (dowSP == dayofweek.monday or dowSP == dayofweek.tuesday)
-buy1030Dmi = usa3H and regimeOk and slot1030 and score1030 >= 0 and dowSP == dayofweek.monday
-sell1030Dmi = usa3H and regimeOk and slot1030 and score1030 < 0 and dowSP == dayofweek.friday
-buy2058Dmi = usa3H and regimeOk and slot2058 and score2058 >= 0 and (dowSP == dayofweek.sunday or dowSP == dayofweek.wednesday)
+regimeAltaOk = dmiGap >= dmiGapAltaMin and adx14 >= adxAltaMin and math.abs(votoTotal) >= votoAltaMin
+regime3HOk = perfilAlta ? regimeAltaOk : regimeOk
+altaBuyOk = not perfilAlta or (diPlus >= diMinus and close >= ema34 and votoTotal >= votoAltaMin)
+altaSellOk = not perfilAlta or (diMinus > diPlus and close <= ema34 and votoTotal <= -votoAltaMin)
+
+buy0348Dmi = usa3H and regime3HOk and slot0348 and score0348 >= (perfilAlta ? 1 : 0) and altaBuyOk and (dowSP == dayofweek.monday or dowSP == dayofweek.tuesday)
+buy1030Dmi = usa3H and regime3HOk and slot1030 and score1030 >= (perfilAlta ? 1 : 0) and altaBuyOk and dowSP == dayofweek.monday
+sell1030Dmi = usa3H and regime3HOk and slot1030 and score1030 < 0 and altaSellOk and dowSP == dayofweek.friday
+buy2058Dmi = usa3H and regime3HOk and slot2058 and score2058 >= (perfilAlta ? 1 : 0) and altaBuyOk and (dowSP == dayofweek.sunday or dowSP == dayofweek.wednesday)
 
 freqBase = usaFreq and regimeOk and adx14 >= adxFreqMin and math.abs(votoTotal) >= votoFreqMin
 buyFreq = freqBase and (slot0348 or slot1030 or slot2058) and votoTotal >= 0
