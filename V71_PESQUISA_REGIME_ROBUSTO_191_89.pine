@@ -87,31 +87,31 @@ r_reg2058Buy = not r_baseAgora and r_eh2058 and r_tendBuy and r_dmiGap >= 10 and
 
 r_buyCond = r_dmi3Buy0348 or r_dmi3Buy1030 or r_dmi3Buy2058 or r_reg0348Buy or r_reg1030Buy or r_reg2052Buy or r_reg2058Buy
 r_sellCond = r_dmi3Sell1030 or r_reg0346Sell or r_reg1030Sell or r_reg2052SellA or r_reg2052SellB
+r_flat = strategy.position_size == 0
 
-if r_dmi3Buy0348
+if r_flat and r_dmi3Buy0348
     strategy.entry("D3B0348", strategy.long, alert_message="V71 REGIME DMI3 BUY 03:48")
-if r_dmi3Buy1030
+else if r_flat and r_dmi3Buy1030
     strategy.entry("D3B1030", strategy.long, alert_message="V71 REGIME DMI3 BUY 10:30")
-if r_dmi3Buy2058
+else if r_flat and r_dmi3Buy2058
     strategy.entry("D3B2058", strategy.long, alert_message="V71 REGIME DMI3 BUY 20:58")
-if r_dmi3Sell1030
+else if r_flat and r_dmi3Sell1030
     strategy.entry("D3S1030", strategy.short, alert_message="V71 REGIME DMI3 SELL 10:30")
-
-if r_reg0346Sell
+else if r_flat and r_reg0346Sell
     strategy.entry("R0346S", strategy.short, alert_message="V71 REGIME SELL 03:46")
-if r_reg0348Buy
+else if r_flat and r_reg0348Buy
     strategy.entry("R0348B", strategy.long, alert_message="V71 REGIME BUY 03:48")
-if r_reg1030Buy
+else if r_flat and r_reg1030Buy
     strategy.entry("R1030B", strategy.long, alert_message="V71 REGIME BUY 10:30")
-if r_reg1030Sell
+else if r_flat and r_reg1030Sell
     strategy.entry("R1030S", strategy.short, alert_message="V71 REGIME SELL 10:30")
-if r_reg2052Buy
+else if r_flat and r_reg2052Buy
     strategy.entry("R2052B", strategy.long, alert_message="V71 REGIME BUY 20:52")
-if r_reg2052SellA
+else if r_flat and r_reg2052SellA
     strategy.entry("R2052SA", strategy.short, alert_message="V71 REGIME SELL 20:52 A")
-if r_reg2052SellB
+else if r_flat and r_reg2052SellB
     strategy.entry("R2052SB", strategy.short, alert_message="V71 REGIME SELL 20:52 B")
-if r_reg2058Buy
+else if r_flat and r_reg2058Buy
     strategy.entry("R2058B", strategy.long, alert_message="V71 REGIME BUY 20:58")
 
 strategy.exit("XD3B0348", from_entry="D3B0348", profit=r_takeTicks, loss=r_stopTicks)
@@ -127,13 +127,16 @@ strategy.exit("XR2052SA", from_entry="R2052SA", profit=r_takeTicks, loss=r_stopT
 strategy.exit("XR2052SB", from_entry="R2052SB", profit=r_takeTicks, loss=r_stopTicks)
 strategy.exit("XR2058B", from_entry="R2058B", profit=r_takeTicks, loss=r_stopTicks)
 
-plotshape(r_buyCond, title="BUY", style=shape.triangleup, location=location.belowbar,
+r_buyEntry = r_flat and r_buyCond
+r_sellEntry = r_flat and r_sellCond
+
+plotshape(r_buyEntry, title="BUY", style=shape.triangleup, location=location.belowbar,
      color=color.lime, size=size.small, text="BUY")
-plotshape(r_sellCond, title="SELL", style=shape.triangledown, location=location.abovebar,
+plotshape(r_sellEntry, title="SELL", style=shape.triangledown, location=location.abovebar,
      color=color.red, size=size.small, text="SELL")
 
-alertcondition(r_buyCond, title="V71 Regime Robusto BUY", message="V71 REGIME ROBUSTO BUY")
-alertcondition(r_sellCond, title="V71 Regime Robusto SELL", message="V71 REGIME ROBUSTO SELL")
+alertcondition(r_buyEntry, title="V71 Regime Robusto BUY", message="V71 REGIME ROBUSTO BUY")
+alertcondition(r_sellEntry, title="V71 Regime Robusto SELL", message="V71 REGIME ROBUSTO SELL")
 
 var table r_painel = table.new(position.top_right, 2, 7, bgcolor=color.new(color.black, 20))
 if r_mostrarPainel and barstate.islast
