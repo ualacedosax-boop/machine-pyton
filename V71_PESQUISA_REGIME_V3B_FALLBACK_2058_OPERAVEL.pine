@@ -7,10 +7,11 @@ strategy("V71 Pesquisa Regime V3B Fallback 2058 Operavel",
 
 // Pesquisa separada. NAO altera o V7.1 oficial.
 // V3B: V2 robusto + fallback somente as 20:58, sem olhar o futuro.
+// Usar no MNQ1! em 2 minutos para buscar os perfis locais Refino 223 / Conservador 224 / Frequente 230.
 
 r_takePontos = input.float(50.5, "Take em pontos", step=0.25)
 r_stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
-r_perfilFallback = input.string("TV Destravar", "Perfil fallback", options=["TV Destravar", "Refino 223", "Conservador 224", "Frequente 230"])
+r_perfilFallback = input.string("Refino 223", "Perfil fallback", options=["Refino 223", "Conservador 224", "Frequente 230", "TV Destravar"])
 r_mostrarPainel = input.bool(true, "Mostrar painel")
 
 r_takeTicks = int(math.round(r_takePontos / syminfo.mintick))
@@ -197,7 +198,7 @@ if r_mostrarPainel and barstate.islast
     table.cell(r_painel, 0, 5, "Oficial", text_color=color.white)
     table.cell(r_painel, 1, 5, "NAO ALTERADO", text_color=color.orange)
     table.cell(r_painel, 0, 6, "Status", text_color=color.white)
-    table.cell(r_painel, 1, 6, "validar no TV", text_color=color.aqua)
+    table.cell(r_painel, 1, 6, r_fbTV ? "diagnostico" : "alvo local", text_color=r_fbTV ? color.orange : color.aqua)
     table.cell(r_painel, 0, 7, "Hora SP", text_color=color.white)
     table.cell(r_painel, 1, 7, str.tostring(r_hSP) + ":" + (r_mSP < 10 ? "0" : "") + str.tostring(r_mSP), text_color=color.white)
     table.cell(r_painel, 0, 8, "Depois 20:58", text_color=color.white)

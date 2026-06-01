@@ -54,6 +54,8 @@ Status:
 - TP/SL: 50.5 / 117 pontos.
 - Base: Regime V2 robusto.
 - Fallback: somente as 20:58, para evitar decisao com informacao futura.
+- Nao comparar com `V71_TESTE_TV_ENTRADA_FORCADA_2058.pine`: esse arquivo e apenas diagnostico e afrouxa filtros.
+- Nao comparar com os Pines 6 minutos: a tabela abaixo pertence a V3B de 2 minutos.
 
 Perfis locais esperados:
 
