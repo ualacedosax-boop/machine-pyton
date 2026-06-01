@@ -73,8 +73,8 @@ O perfil Refino 223 e o primeiro candidato a validar no TradingView. Ele manteve
 
 1. Abrir `MNQ1!` no timeframe de 2 minutos.
 2. Colar o Pine `V71_PESQUISA_REGIME_V3B_FALLBACK_2058_OPERAVEL.pine`.
-3. Testar primeiro o perfil `Refino 223`.
-4. Conferir 365, 90 e 30 dias.
+3. Se o TradingView nao gerar entradas, testar a escada nesta ordem: `01 Solto TV`, `02 Moderado`, `03 Forte`, `Refino 223`.
+4. Quando um degrau gerar entradas, conferir 365, 90 e 30 dias antes de apertar para o proximo.
 5. Exportar a aba `Lista de negociacoes` do TradingView em CSV.
 6. Rodar:
 

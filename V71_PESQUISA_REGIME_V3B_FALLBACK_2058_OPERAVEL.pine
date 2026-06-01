@@ -8,10 +8,11 @@ strategy("V71 Pesquisa Regime V3B Fallback 2058 Operavel",
 // Pesquisa separada. NAO altera o V7.1 oficial.
 // V3B: V2 robusto + fallback somente as 20:58, sem olhar o futuro.
 // Usar no MNQ1! em 2 minutos para buscar os perfis locais Refino 223 / Conservador 224 / Frequente 230.
+// Perfis 01/02/03 servem para calibrar o TradingView: comeca solto e aperta aos poucos.
 
 r_takePontos = input.float(50.5, "Take em pontos", step=0.25)
 r_stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
-r_perfilFallback = input.string("Refino 223", "Perfil fallback", options=["Refino 223", "Conservador 224", "Frequente 230", "TV Destravar"])
+r_perfilFallback = input.string("01 Solto TV", "Perfil fallback", options=["01 Solto TV", "02 Moderado", "03 Forte", "Refino 223", "Conservador 224", "Frequente 230", "TV Destravar"])
 r_mostrarPainel = input.bool(true, "Mostrar painel")
 
 r_takeTicks = int(math.round(r_takePontos / syminfo.mintick))
@@ -104,18 +105,22 @@ r_reg2058Buy = not r_baseAgora and r_eh2058 and r_tendBuy and r_dmiGap >= 10 and
 r_baseBuyCond = r_dmi3Buy0348 or r_dmi3Buy1030 or r_dmi3Buy2058 or r_reg0348Buy or r_reg1030Buy or r_reg2052Buy or r_reg2058Buy
 r_baseSellCond = r_dmi3Sell1030 or r_reg0346Sell or r_reg1030Sell or r_reg2052SellA or r_reg2052SellB
 
+r_fbSolto = r_perfilFallback == "01 Solto TV"
+r_fbModerado = r_perfilFallback == "02 Moderado"
+r_fbForte = r_perfilFallback == "03 Forte"
 r_fbTV = r_perfilFallback == "TV Destravar"
 r_fbRefino = r_perfilFallback == "Refino 223"
 r_fbConservador = r_perfilFallback == "Conservador 224"
 r_fbFrequente = r_perfilFallback == "Frequente 230"
-r_fbDowOk = not r_fbRefino or (r_dowSP == dayofweek.monday or r_dowSP == dayofweek.sunday or r_dowSP == dayofweek.thursday or r_dowSP == dayofweek.tuesday or r_dowSP == dayofweek.wednesday)
-r_fbAdxOk = (r_fbRefino or r_fbConservador) ? r_adx14 >= 20 : true
+r_fbUsaDepois2058 = r_fbTV or r_fbSolto or r_fbModerado or r_fbForte
+r_fbDowOk = (r_fbRefino or r_fbForte) ? (r_dowSP == dayofweek.monday or r_dowSP == dayofweek.sunday or r_dowSP == dayofweek.thursday or r_dowSP == dayofweek.tuesday or r_dowSP == dayofweek.wednesday) : true
+r_fbAdxOk = (r_fbRefino or r_fbConservador) ? r_adx14 >= 20 : r_fbForte ? r_adx14 >= 15 : r_fbModerado ? r_adx14 >= 10 : true
 r_fbGapOk = true
-r_fbForcaOk = r_fbTV ? true : math.abs(r_votoTotal) >= 2
-r_fbVwapOk = r_fbFrequente ? ((r_votoTotal >= 0 and close >= r_vwap) or (r_votoTotal < 0 and close <= r_vwap)) : true
-r_fbRangeOk = r_fbRefino ? r_range30 <= 120 : (r_fbFrequente ? r_range30 <= 85 : true)
-r_fbHorarioOk = r_fbTV ? r_depois2058 : r_eh2058
-r_fbDisponivel = r_fbTV ? not r_fallbackHoje : (not r_baseHoje and not r_fallbackHoje)
+r_fbForcaOk = r_fbTV or r_fbSolto ? true : math.abs(r_votoTotal) >= 2
+r_fbVwapOk = r_fbFrequente or r_fbForte ? ((r_votoTotal >= 0 and close >= r_vwap) or (r_votoTotal < 0 and close <= r_vwap)) : true
+r_fbRangeOk = r_fbRefino ? r_range30 <= 120 : r_fbFrequente ? r_range30 <= 85 : r_fbForte ? r_range30 <= 140 : r_fbModerado ? r_range30 <= 180 : true
+r_fbHorarioOk = r_fbUsaDepois2058 ? r_depois2058 : r_eh2058
+r_fbDisponivel = (r_fbTV or r_fbSolto) ? not r_fallbackHoje : (not r_baseHoje and not r_fallbackHoje)
 r_fbBase = r_fbDisponivel and r_fbHorarioOk and r_fbDowOk and r_fbAdxOk and r_fbGapOk and r_fbForcaOk and r_fbVwapOk and r_fbRangeOk
 r_fbBuy = r_fbBase and r_votoTotal >= 0
 r_fbSell = r_fbBase and r_votoTotal < 0
@@ -183,6 +188,8 @@ plotshape(r_sellEntry, title="SELL", style=shape.triangledown, location=location
 alertcondition(r_buyEntry, title="V71 Regime V3B BUY", message="V71 REGIME V3B BUY")
 alertcondition(r_sellEntry, title="V71 Regime V3B SELL", message="V71 REGIME V3B SELL")
 
+r_statusPainel = r_fbTV ? "diagnostico" : (r_fbSolto or r_fbModerado or r_fbForte ? "calibracao" : "alvo local")
+
 var table r_painel = table.new(position.top_right, 2, 9, bgcolor=color.new(color.black, 20))
 if r_mostrarPainel and barstate.islast
     table.cell(r_painel, 0, 0, "V71 Pesquisa", text_color=color.white)
@@ -198,7 +205,7 @@ if r_mostrarPainel and barstate.islast
     table.cell(r_painel, 0, 5, "Oficial", text_color=color.white)
     table.cell(r_painel, 1, 5, "NAO ALTERADO", text_color=color.orange)
     table.cell(r_painel, 0, 6, "Status", text_color=color.white)
-    table.cell(r_painel, 1, 6, r_fbTV ? "diagnostico" : "alvo local", text_color=r_fbTV ? color.orange : color.aqua)
+    table.cell(r_painel, 1, 6, r_statusPainel, text_color=r_fbTV ? color.orange : ((r_fbSolto or r_fbModerado or r_fbForte) ? color.yellow : color.aqua))
     table.cell(r_painel, 0, 7, "Hora SP", text_color=color.white)
     table.cell(r_painel, 1, 7, str.tostring(r_hSP) + ":" + (r_mSP < 10 ? "0" : "") + str.tostring(r_mSP), text_color=color.white)
     table.cell(r_painel, 0, 8, "Depois 20:58", text_color=color.white)
