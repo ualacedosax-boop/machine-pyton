@@ -41,6 +41,7 @@ r_eh1030 = r_emJanela(r_minSP, 10 * 60 + 30, 1)
 r_eh2052 = r_emJanela(r_minSP, 20 * 60 + 52, 1)
 r_eh2058 = r_emJanela(r_minSP, 20 * 60 + 58, 2)
 r_depois2058 = r_minSP >= 20 * 60 + 58 and r_minSP <= 21 * 60 + 30
+r_depois2058Livre = r_minSP >= 20 * 60 + 58
 
 r_ema17 = ta.ema(close, 17)
 r_ema34 = ta.ema(close, 34)
@@ -78,6 +79,7 @@ r_votoDmi = r_diPlus >= r_diMinus ? 1 : -1
 r_votoEma200 = close >= r_ema200 ? 1 : -1
 r_votoRsi = r_rsi14 >= 50 ? 1 : -1
 r_votoTotal = r_votoEma1734 + r_votoSma1734 + r_votoMacd + r_votoRoc5 + r_votoRoc10 + r_votoVwap + r_votoDmi + r_votoCandle + r_votoEma200 + r_votoRsi
+r_votoTotalSeguro = nz(r_votoTotal, 1)
 
 r_score0348 = r_votoMacd + r_votoCandle + r_prevRoc5Contra
 r_score1030 = r_votoSma1734 + r_votoRoc10 + r_prevRoc5Contra
@@ -116,14 +118,14 @@ r_fbUsaDepois2058 = r_fbTV or r_fbSolto or r_fbModerado or r_fbForte
 r_fbDowOk = (r_fbRefino or r_fbForte) ? (r_dowSP == dayofweek.monday or r_dowSP == dayofweek.sunday or r_dowSP == dayofweek.thursday or r_dowSP == dayofweek.tuesday or r_dowSP == dayofweek.wednesday) : true
 r_fbAdxOk = (r_fbRefino or r_fbConservador) ? r_adx14 >= 20 : r_fbForte ? r_adx14 >= 15 : r_fbModerado ? r_adx14 >= 10 : true
 r_fbGapOk = true
-r_fbForcaOk = r_fbTV or r_fbSolto ? true : math.abs(r_votoTotal) >= 2
-r_fbVwapOk = r_fbFrequente or r_fbForte ? ((r_votoTotal >= 0 and close >= r_vwap) or (r_votoTotal < 0 and close <= r_vwap)) : true
+r_fbForcaOk = r_fbTV or r_fbSolto ? true : math.abs(r_votoTotalSeguro) >= 2
+r_fbVwapOk = r_fbFrequente or r_fbForte ? ((r_votoTotalSeguro >= 0 and close >= r_vwap) or (r_votoTotalSeguro < 0 and close <= r_vwap)) : true
 r_fbRangeOk = r_fbRefino ? r_range30 <= 120 : r_fbFrequente ? r_range30 <= 85 : r_fbForte ? r_range30 <= 140 : r_fbModerado ? r_range30 <= 180 : true
-r_fbHorarioOk = r_fbUsaDepois2058 ? r_depois2058 : r_eh2058
-r_fbDisponivel = (r_fbTV or r_fbSolto) ? not r_fallbackHoje : (not r_baseHoje and not r_fallbackHoje)
+r_fbHorarioOk = r_fbUsaDepois2058 ? r_depois2058Livre : r_eh2058
+r_fbDisponivel = (r_fbTV or r_fbSolto or r_fbModerado or r_fbForte) ? not r_fallbackHoje : (not r_baseHoje and not r_fallbackHoje)
 r_fbBase = r_fbDisponivel and r_fbHorarioOk and r_fbDowOk and r_fbAdxOk and r_fbGapOk and r_fbForcaOk and r_fbVwapOk and r_fbRangeOk
-r_fbBuy = r_fbBase and r_votoTotal >= 0
-r_fbSell = r_fbBase and r_votoTotal < 0
+r_fbBuy = r_fbBase and r_votoTotalSeguro >= 0
+r_fbSell = r_fbBase and r_votoTotalSeguro < 0
 
 r_flat = strategy.position_size == 0
 
@@ -209,4 +211,4 @@ if r_mostrarPainel and barstate.islast
     table.cell(r_painel, 0, 7, "Hora SP", text_color=color.white)
     table.cell(r_painel, 1, 7, str.tostring(r_hSP) + ":" + (r_mSP < 10 ? "0" : "") + str.tostring(r_mSP), text_color=color.white)
     table.cell(r_painel, 0, 8, "Depois 20:58", text_color=color.white)
-    table.cell(r_painel, 1, 8, r_depois2058 ? "SIM" : "NAO", text_color=r_depois2058 ? color.lime : color.gray)
+    table.cell(r_painel, 1, 8, r_depois2058Livre ? "SIM" : "NAO", text_color=r_depois2058Livre ? color.lime : color.gray)
