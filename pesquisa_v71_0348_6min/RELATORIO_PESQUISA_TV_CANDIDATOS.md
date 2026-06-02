@@ -56,6 +56,13 @@ Arquivo de conferencia local:
 
 Esse arquivo mostra as primeiras entradas esperadas por perfil. O CSV local ignorado pelo Git, `validacao_regime_refino_93_trades.csv`, contem a lista completa de entradas para comparar com o export do TradingView.
 
+Auditorias complementares:
+
+- `pesquisa_v71_0348_6min/AUDITORIA_REGIME_REFINO_93_FRAGILIDADE.md`
+- `pesquisa_v71_0348_6min/ABLACAO_REGIME_REFINO_93.md`
+
+A ablacao testou todas as combinacoes dos modulos atuais do Refino 93. Dentro dessa familia, nao apareceu nenhum cenario com 220 a 260 trades nos ultimos 365 dias e winrate acima de 80%; portanto, para buscar 230 a 250 trades com 85%+, a proxima etapa precisa procurar novos horarios/indicadores em vez de apenas apertar os filtros atuais.
+
 Ponto forte:
 
 - o perfil equilibrado tem a melhor relacao atual entre acerto, DD e PF nos ultimos 365 dias.
@@ -65,6 +72,7 @@ Ponto fraco:
 
 - ainda nao chega em 230 a 250 trades por ano.
 - a validacao precisa ser confirmada no TradingView, porque pequenas diferencas de dado/execucao podem mudar os numeros.
+- a meta de 230 a 250 trades com 85%+ nao apareceu em nenhuma combinacao dos modulos atuais.
 
 ## Candidato 2: 04:06 reversao multiano
 
