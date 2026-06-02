@@ -1,0 +1,119 @@
+//@version=6
+strategy("V71 DEBUG 2058 Escada Filtros TV 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Diagnostico separado. NAO altera o V7.1 oficial.
+// Parte do Pine puro que ja rodou no TradingView e aperta um filtro por vez.
+
+perfil = input.string("02 Sem SexSab EMA", "Perfil",
+     options=["01 Puro EMA", "02 Sem SexSab EMA", "03 Sem SexSab Voto", "04 ADX20 Voto", "05 ADX20 Voto2", "06 Completo Range120"])
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarPainel = input.bool(true, "Mostrar painel")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+minSP = hSP * 60 + mSP
+dowSP = dayofweek(time, "America/Sao_Paulo")
+dayKey = year(time, "America/Sao_Paulo") * 10000 + month(time, "America/Sao_Paulo") * 100 + dayofmonth(time, "America/Sao_Paulo")
+
+var int dayKeyPrev = na
+var bool entrouHoje = false
+if na(dayKeyPrev) or dayKey != dayKeyPrev
+    dayKeyPrev := dayKey
+    entrouHoje := false
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+ema200 = ta.ema(close, 200)
+sma17 = ta.sma(close, 17)
+sma34 = ta.sma(close, 34)
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+roc5 = close - close[5]
+roc10 = close - close[10]
+body = close - open
+vwapDia = ta.vwap(hlc3)
+rsi14 = ta.rsi(close, 14)
+[diPlus, diMinus, adx14] = ta.dmi(14, 14)
+dmiGap = math.abs(diPlus - diMinus)
+range30 = ta.highest(high, 15) - ta.lowest(low, 15)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+votoMacd = macd >= macdSignal ? 1 : -1
+votoCandle = body >= 0 ? 1 : -1
+votoSma1734 = sma17 >= sma34 ? 1 : -1
+votoRoc5 = roc5 >= 0 ? 1 : -1
+votoRoc10 = roc10 >= 0 ? 1 : -1
+votoVwap = close >= vwapDia ? 1 : -1
+votoDmi = diPlus >= diMinus ? 1 : -1
+votoEma200 = close >= ema200 ? 1 : -1
+votoRsi = rsi14 >= 50 ? 1 : -1
+votoTotal = votoMacd + votoCandle + votoSma1734 + votoRoc5 + votoRoc10 + votoVwap + votoDmi + votoEma200 + votoRsi
+votoSeguro = nz(votoTotal, ema17 >= ema34 ? 1 : -1)
+
+p1 = perfil == "01 Puro EMA"
+p2 = perfil == "02 Sem SexSab EMA"
+p3 = perfil == "03 Sem SexSab Voto"
+p4 = perfil == "04 ADX20 Voto"
+p5 = perfil == "05 ADX20 Voto2"
+p6 = perfil == "06 Completo Range120"
+
+horarioLiberado = minSP >= 20 * 60 + 58
+dowOk = p1 ? true : (dowSP != dayofweek.friday and dowSP != dayofweek.saturday)
+adxOk = p1 or p2 or p3 ? true : adx14 >= 20
+votoOk = p1 or p2 or p3 or p4 ? true : math.abs(votoSeguro) >= 2
+rangeOk = p6 ? range30 <= 120 : true
+filtroOk = horarioLiberado and dowOk and adxOk and votoOk and rangeOk
+
+direcaoBuy = (p1 or p2) ? ema17 >= ema34 : votoSeguro >= 0
+entrada = strategy.position_size == 0 and not entrouHoje and filtroOk
+
+if entrada and direcaoBuy
+    entrouHoje := true
+    strategy.entry("E2058_BUY", strategy.long, alert_message="V71 DEBUG 2058 ESCADA BUY")
+else if entrada
+    entrouHoje := true
+    strategy.entry("E2058_SELL", strategy.short, alert_message="V71 DEBUG 2058 ESCADA SELL")
+
+strategy.exit("X_E2058_BUY", from_entry="E2058_BUY", profit=takeTicks, loss=stopTicks)
+strategy.exit("X_E2058_SELL", from_entry="E2058_SELL", profit=takeTicks, loss=stopTicks)
+
+plotshape(entrada and direcaoBuy, title="BUY", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.small, text="BUY")
+plotshape(entrada and not direcaoBuy, title="SELL", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.small, text="SELL")
+
+alertcondition(entrada and direcaoBuy, title="V71 Debug Escada BUY", message="V71 DEBUG 2058 ESCADA BUY")
+alertcondition(entrada and not direcaoBuy, title="V71 Debug Escada SELL", message="V71 DEBUG 2058 ESCADA SELL")
+
+var table painel = table.new(position.top_right, 2, 9, bgcolor=color.new(color.black, 20))
+if mostrarPainel and barstate.islast
+    table.cell(painel, 0, 0, "V71 DEBUG", text_color=color.white)
+    table.cell(painel, 1, 0, "ESCADA 2058", text_color=color.yellow)
+    table.cell(painel, 0, 1, "Perfil", text_color=color.white)
+    table.cell(painel, 1, 1, perfil, text_color=color.aqua)
+    table.cell(painel, 0, 2, "Hora SP", text_color=color.white)
+    table.cell(painel, 1, 2, str.tostring(hSP) + ":" + (mSP < 10 ? "0" : "") + str.tostring(mSP), text_color=color.white)
+    table.cell(painel, 0, 3, "Liberado", text_color=color.white)
+    table.cell(painel, 1, 3, horarioLiberado ? "SIM" : "NAO", text_color=horarioLiberado ? color.lime : color.gray)
+    table.cell(painel, 0, 4, "DOW OK", text_color=color.white)
+    table.cell(painel, 1, 4, dowOk ? "SIM" : "NAO", text_color=dowOk ? color.lime : color.gray)
+    table.cell(painel, 0, 5, "ADX / Gap", text_color=color.white)
+    table.cell(painel, 1, 5, str.tostring(adx14, "#.##") + " / " + str.tostring(dmiGap, "#.##"), text_color=color.white)
+    table.cell(painel, 0, 6, "Voto / Range", text_color=color.white)
+    table.cell(painel, 1, 6, str.tostring(votoSeguro) + " / " + str.tostring(range30, "#.##"), text_color=votoSeguro >= 0 ? color.lime : color.red)
+    table.cell(painel, 0, 7, "Entrou hoje", text_color=color.white)
+    table.cell(painel, 1, 7, entrouHoje ? "SIM" : "NAO", text_color=entrouHoje ? color.lime : color.gray)
+    table.cell(painel, 0, 8, "Oficial", text_color=color.white)
+    table.cell(painel, 1, 8, "NAO ALTERADO", text_color=color.orange)
