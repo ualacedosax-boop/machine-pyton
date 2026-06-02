@@ -1,0 +1,73 @@
+//@version=6
+strategy("V71 DEBUG Destrava 2058 Puro TV 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Diagnostico puro. NAO altera o V7.1 oficial.
+// Se este nao gerar trades no MNQ1! 2m, o problema nao e filtro V3B.
+
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarPainel = input.bool(true, "Mostrar painel")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+minSP = hSP * 60 + mSP
+dayKey = year(time, "America/Sao_Paulo") * 10000 + month(time, "America/Sao_Paulo") * 100 + dayofmonth(time, "America/Sao_Paulo")
+
+var int dayKeyPrev = na
+var bool entrouHoje = false
+if na(dayKeyPrev) or dayKey != dayKeyPrev
+    dayKeyPrev := dayKey
+    entrouHoje := false
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+horarioLiberado = minSP >= 20 * 60 + 58
+flat = strategy.position_size == 0
+direcaoBuy = ema17 >= ema34
+entrada = flat and not entrouHoje and horarioLiberado
+
+if entrada and direcaoBuy
+    entrouHoje := true
+    strategy.entry("DBG_BUY", strategy.long, alert_message="V71 DEBUG DESTRAVA BUY")
+else if entrada
+    entrouHoje := true
+    strategy.entry("DBG_SELL", strategy.short, alert_message="V71 DEBUG DESTRAVA SELL")
+
+strategy.exit("X_DBG_BUY", from_entry="DBG_BUY", profit=takeTicks, loss=stopTicks)
+strategy.exit("X_DBG_SELL", from_entry="DBG_SELL", profit=takeTicks, loss=stopTicks)
+
+plotshape(entrada and direcaoBuy, title="DBG BUY", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.small, text="DBG BUY")
+plotshape(entrada and not direcaoBuy, title="DBG SELL", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.small, text="DBG SELL")
+
+alertcondition(entrada and direcaoBuy, title="V71 Debug BUY", message="V71 DEBUG DESTRAVA BUY")
+alertcondition(entrada and not direcaoBuy, title="V71 Debug SELL", message="V71 DEBUG DESTRAVA SELL")
+
+var table painel = table.new(position.top_right, 2, 7, bgcolor=color.new(color.black, 20))
+if mostrarPainel and barstate.islast
+    table.cell(painel, 0, 0, "V71 DEBUG", text_color=color.white)
+    table.cell(painel, 1, 0, "PURO 2058", text_color=color.yellow)
+    table.cell(painel, 0, 1, "Hora SP", text_color=color.white)
+    table.cell(painel, 1, 1, str.tostring(hSP) + ":" + (mSP < 10 ? "0" : "") + str.tostring(mSP), text_color=color.white)
+    table.cell(painel, 0, 2, "Liberado", text_color=color.white)
+    table.cell(painel, 1, 2, horarioLiberado ? "SIM" : "NAO", text_color=horarioLiberado ? color.lime : color.gray)
+    table.cell(painel, 0, 3, "Entrou hoje", text_color=color.white)
+    table.cell(painel, 1, 3, entrouHoje ? "SIM" : "NAO", text_color=entrouHoje ? color.lime : color.gray)
+    table.cell(painel, 0, 4, "Direcao", text_color=color.white)
+    table.cell(painel, 1, 4, direcaoBuy ? "BUY" : "SELL", text_color=direcaoBuy ? color.lime : color.red)
+    table.cell(painel, 0, 5, "TP/SL", text_color=color.white)
+    table.cell(painel, 1, 5, str.tostring(takePontos) + " / " + str.tostring(stopPontos), text_color=color.white)
+    table.cell(painel, 0, 6, "Oficial", text_color=color.white)
+    table.cell(painel, 1, 6, "NAO ALTERADO", text_color=color.orange)
