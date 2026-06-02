@@ -1,0 +1,122 @@
+//@version=6
+strategy("V71 Pesquisa TV Calendario Top Tokens 3H",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Regras extraidas da auditoria TV por horario/dia/direcao.
+// Use no MNQ1! em 2 minutos com Backtesting Profundo.
+
+perfil = input.string("04 Robusto 136 82pct", "Perfil",
+     options=["01 Alta 54 87pct", "02 Forte 81 82pct", "03 Balanceado 112 83pct", "04 Robusto 136 82pct", "05 Expandido 160 80pct", "06 Meta 213 78pct"])
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarPainel = input.bool(true, "Mostrar painel")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+eh0348 = hSP == 3 and mSP == 48
+eh1030 = hSP == 10 and mSP == 30
+eh2058 = hSP == 20 and mSP == 58
+
+seg = dowSP == dayofweek.monday
+ter = dowSP == dayofweek.tuesday
+qua = dowSP == dayofweek.wednesday
+sex = dowSP == dayofweek.friday
+dom = dowSP == dayofweek.sunday
+
+p1 = perfil == "01 Alta 54 87pct"
+p2 = perfil == "02 Forte 81 82pct"
+p3 = perfil == "03 Balanceado 112 83pct"
+p4 = perfil == "04 Robusto 136 82pct"
+p5 = perfil == "05 Expandido 160 80pct"
+p6 = perfil == "06 Meta 213 78pct"
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+// Blocos validados localmente:
+// 01: 03:48 BUY segunda + 20:58 BUY domingo.
+// 02: adiciona 03:48 BUY terca.
+// 03: adiciona 10:30 BUY segunda.
+// 04: adiciona 10:30 SELL sexta.
+// 05: adiciona 20:58 BUY quarta.
+// 06: perfil de frequencia, adiciona 20:58 BUY terca e 20:58 SELL segunda.
+
+buy0348 = eh0348 and ((p1 and seg) or (p2 and (seg or ter)) or (p3 and (seg or ter)) or (p4 and (seg or ter)) or (p5 and (seg or ter)) or (p6 and (seg or ter)))
+sell0348 = false
+buy1030 = eh1030 and ((p3 and seg) or (p4 and seg) or (p5 and seg) or (p6 and seg))
+sell1030 = eh1030 and ((p4 and sex) or (p5 and sex) or (p6 and sex))
+buy2058 = eh2058 and ((p1 and dom) or (p2 and dom) or (p3 and dom) or (p4 and dom) or (p5 and (dom or qua)) or (p6 and (dom or ter or qua)))
+sell2058 = eh2058 and p6 and seg
+
+entradaLiberada = strategy.position_size == 0
+entraBuy0348 = entradaLiberada and buy0348
+entraSell0348 = entradaLiberada and sell0348
+entraBuy1030 = entradaLiberada and buy1030
+entraSell1030 = entradaLiberada and sell1030
+entraBuy2058 = entradaLiberada and buy2058
+entraSell2058 = entradaLiberada and sell2058
+
+if entraBuy0348
+    strategy.entry("B0348", strategy.long, alert_message="V71 PESQUISA CALENDARIO BUY 03:48")
+else if entraSell0348
+    strategy.entry("S0348", strategy.short, alert_message="V71 PESQUISA CALENDARIO SELL 03:48")
+else if entraBuy1030
+    strategy.entry("B1030", strategy.long, alert_message="V71 PESQUISA CALENDARIO BUY 10:30")
+else if entraSell1030
+    strategy.entry("S1030", strategy.short, alert_message="V71 PESQUISA CALENDARIO SELL 10:30")
+else if entraBuy2058
+    strategy.entry("B2058", strategy.long, alert_message="V71 PESQUISA CALENDARIO BUY 20:58")
+else if entraSell2058
+    strategy.entry("S2058", strategy.short, alert_message="V71 PESQUISA CALENDARIO SELL 20:58")
+
+strategy.exit("TP/SL B0348", from_entry="B0348", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL S0348", from_entry="S0348", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL B1030", from_entry="B1030", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL S1030", from_entry="S1030", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL B2058", from_entry="B2058", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL S2058", from_entry="S2058", profit=takeTicks, loss=stopTicks)
+
+plotshape(entraBuy0348, title="BUY 03:48", style=shape.triangleup, location=location.belowbar, color=color.lime, size=size.normal, text="B0348")
+plotshape(entraSell0348, title="SELL 03:48", style=shape.triangledown, location=location.abovebar, color=color.red, size=size.normal, text="S0348")
+plotshape(entraBuy1030, title="BUY 10:30", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.normal, text="B1030")
+plotshape(entraSell1030, title="SELL 10:30", style=shape.triangledown, location=location.abovebar, color=color.maroon, size=size.normal, text="S1030")
+plotshape(entraBuy2058, title="BUY 20:58", style=shape.triangleup, location=location.belowbar, color=color.teal, size=size.normal, text="B2058")
+plotshape(entraSell2058, title="SELL 20:58", style=shape.triangledown, location=location.abovebar, color=color.fuchsia, size=size.normal, text="S2058")
+
+compraCond = entraBuy0348 or entraBuy1030 or entraBuy2058
+vendaCond = entraSell0348 or entraSell1030 or entraSell2058
+alertcondition(compraCond, title="V71 Pesquisa Calendario BUY", message="V71 PESQUISA CALENDARIO BUY")
+alertcondition(vendaCond, title="V71 Pesquisa Calendario SELL", message="V71 PESQUISA CALENDARIO SELL")
+
+esperado = p1 ? "54 tr / 87.0% / PF 3.26" : p2 ? "81 tr / 82.7% / PF 2.70" : p3 ? "112 tr / 83.0% / PF 2.55" : p4 ? "136 tr / 82.4% / PF 2.38" : p5 ? "160 tr / 80.6% / PF 2.14" : "213 tr / 78.4% / PF 2.06"
+blocos = p1 ? "B0348 seg + B2058 dom" : p2 ? "B0348 seg/ter + B2058 dom" : p3 ? "B0348 seg/ter + B1030 seg + B2058 dom" : p4 ? "B0348 seg/ter + B1030 seg + S1030 sex + B2058 dom" : p5 ? "P4 + B2058 qua" : "P5 + B2058 ter + S2058 seg"
+
+var table painel = table.new(position.top_right, 2, 8, bgcolor=color.new(color.black, 20))
+if mostrarPainel and barstate.islast
+    table.cell(painel, 0, 0, "V71 PESQUISA", text_color=color.white)
+    table.cell(painel, 1, 0, "CALENDARIO 3H", text_color=color.yellow)
+    table.cell(painel, 0, 1, "Perfil", text_color=color.white)
+    table.cell(painel, 1, 1, perfil, text_color=color.aqua)
+    table.cell(painel, 0, 2, "Esperado local", text_color=color.white)
+    table.cell(painel, 1, 2, esperado, text_color=color.lime)
+    table.cell(painel, 0, 3, "Blocos", text_color=color.white)
+    table.cell(painel, 1, 3, blocos, text_color=color.white)
+    table.cell(painel, 0, 4, "Hora SP", text_color=color.white)
+    table.cell(painel, 1, 4, str.tostring(hSP) + ":" + (mSP < 10 ? "0" : "") + str.tostring(mSP), text_color=color.white)
+    table.cell(painel, 0, 5, "Entrada livre", text_color=color.white)
+    table.cell(painel, 1, 5, entradaLiberada ? "SIM" : "NAO", text_color=entradaLiberada ? color.lime : color.red)
+    table.cell(painel, 0, 6, "TP/SL", text_color=color.white)
+    table.cell(painel, 1, 6, str.tostring(takePontos) + " / " + str.tostring(stopPontos), text_color=color.white)
+    table.cell(painel, 0, 7, "Oficial", text_color=color.white)
+    table.cell(painel, 1, 7, "NAO ALTERADO", text_color=color.orange)
