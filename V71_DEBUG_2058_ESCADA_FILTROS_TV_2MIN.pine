@@ -8,8 +8,8 @@ strategy("V71 DEBUG 2058 Escada Filtros TV 2m",
 // Diagnostico separado. NAO altera o V7.1 oficial.
 // Parte do Pine puro que ja rodou no TradingView e aperta um filtro por vez.
 
-perfil = input.string("04 ADX20 EMA", "Perfil",
-     options=["01 Puro EMA", "02 Sem SexSab EMA", "03 Sem SexSab Voto", "04 ADX20 EMA", "05 ADX20 Voto2", "06 Completo Range120"])
+perfil = input.string("05 ADX20 EMA Janela12", "Perfil",
+     options=["01 Puro EMA", "02 Sem SexSab EMA", "03 Sem SexSab Voto", "04 ADX20 EMA", "05 ADX20 EMA Janela12", "06 ADX25 EMA Janela12"])
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
 mostrarPainel = input.bool(true, "Mostrar painel")
@@ -66,17 +66,17 @@ p1 = perfil == "01 Puro EMA"
 p2 = perfil == "02 Sem SexSab EMA"
 p3 = perfil == "03 Sem SexSab Voto"
 p4 = perfil == "04 ADX20 EMA"
-p5 = perfil == "05 ADX20 Voto2"
-p6 = perfil == "06 Completo Range120"
+p5 = perfil == "05 ADX20 EMA Janela12"
+p6 = perfil == "06 ADX25 EMA Janela12"
 
 horarioLiberado = minSP >= 20 * 60 + 58
+janela12 = minSP >= 20 * 60 + 58 and minSP <= 21 * 60 + 10
 dowOk = p1 ? true : (dowSP != dayofweek.friday and dowSP != dayofweek.saturday)
-adxOk = p1 or p2 or p3 ? true : adx14 >= 20
-votoOk = p1 or p2 or p3 or p4 ? true : math.abs(votoSeguro) >= 2
-rangeOk = p6 ? range30 <= 120 : true
-filtroOk = horarioLiberado and dowOk and adxOk and votoOk and rangeOk
+adxOk = p1 or p2 or p3 ? true : p6 ? adx14 >= 25 : adx14 >= 20
+horarioOk = p5 or p6 ? janela12 : horarioLiberado
+filtroOk = horarioOk and dowOk and adxOk
 
-direcaoBuy = (p1 or p2 or p4) ? ema17 >= ema34 : votoSeguro >= 0
+direcaoBuy = p3 ? votoSeguro >= 0 : ema17 >= ema34
 entrada = strategy.position_size == 0 and not entrouHoje and filtroOk
 
 if entrada and direcaoBuy
@@ -106,7 +106,7 @@ if mostrarPainel and barstate.islast
     table.cell(painel, 0, 2, "Hora SP", text_color=color.white)
     table.cell(painel, 1, 2, str.tostring(hSP) + ":" + (mSP < 10 ? "0" : "") + str.tostring(mSP), text_color=color.white)
     table.cell(painel, 0, 3, "Liberado", text_color=color.white)
-    table.cell(painel, 1, 3, horarioLiberado ? "SIM" : "NAO", text_color=horarioLiberado ? color.lime : color.gray)
+    table.cell(painel, 1, 3, horarioOk ? "SIM" : "NAO", text_color=horarioOk ? color.lime : color.gray)
     table.cell(painel, 0, 4, "DOW OK", text_color=color.white)
     table.cell(painel, 1, 4, dowOk ? "SIM" : "NAO", text_color=dowOk ? color.lime : color.gray)
     table.cell(painel, 0, 5, "ADX / Gap", text_color=color.white)
