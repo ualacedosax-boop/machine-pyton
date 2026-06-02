@@ -1,0 +1,166 @@
+//@version=6
+strategy("V71 Pesquisa Regime 191 89 Multiano TV 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Candidato robusto multiano local:
+// all 2024-2026: 453 trades, 79.69%, +7466.5 pontos.
+// 2024: +127.5 pontos; 2025: +5548.0; 2026: +1791.0.
+// Ultimos 365d: 191 trades, 89.01%, +6128.0, DD -468.0, PF 3.49.
+// Validar no MNQ1! 2 minutos com Backtesting Profundo.
+
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarPainel = input.bool(true, "Mostrar painel")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+eh0346 = hSP == 3 and mSP == 46
+eh0348 = hSP == 3 and mSP == 48
+eh1030 = hSP == 10 and mSP == 30
+eh2052 = hSP == 20 and mSP == 52
+eh2058 = hSP == 20 and mSP == 58
+
+seg = dowSP == dayofweek.monday
+ter = dowSP == dayofweek.tuesday
+qua = dowSP == dayofweek.wednesday
+sex = dowSP == dayofweek.friday
+dom = dowSP == dayofweek.sunday
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+ema200 = ta.ema(close, 200)
+sma17 = ta.sma(close, 17)
+sma34 = ta.sma(close, 34)
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+roc5 = close - close[5]
+roc10 = close - close[10]
+prevRoc5 = roc5[1]
+body = close - open
+vwapDia = ta.vwap(hlc3)
+[diPlus, diMinus, adx14] = ta.dmi(14, 14)
+dmiGap = math.abs(diPlus - diMinus)
+ema200Slope10 = ema200 - ema200[10]
+range30 = ta.highest(high, 15) - ta.lowest(low, 15)
+ret30 = close - close[15]
+ret60 = close - close[30]
+distVwap = close - vwapDia
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+votoMacd = macd >= macdSignal ? 1 : -1
+votoCandle = body >= 0 ? 1 : -1
+votoPrevRoc5Contra = prevRoc5 <= 0 ? 1 : -1
+votoSma1734 = sma17 >= sma34 ? 1 : -1
+votoRoc10 = roc10 >= 0 ? 1 : -1
+votoEma1734 = ema17 >= ema34 ? 1 : -1
+votoRoc5 = roc5 >= 0 ? 1 : -1
+votoVwap = close >= vwapDia ? 1 : -1
+
+score0348 = votoMacd + votoCandle + votoPrevRoc5Contra
+score1030 = votoSma1734 + votoRoc10 + votoPrevRoc5Contra
+score2058 = votoEma1734 + votoRoc5 + votoVwap
+
+baseDmiOk = dmiGap >= 3
+baseB0348 = eh0348 and baseDmiOk and score0348 >= 0 and (seg or ter)
+baseB1030 = eh1030 and baseDmiOk and score1030 >= 0 and seg
+baseS1030 = eh1030 and baseDmiOk and score1030 < 0 and sex
+baseB2058 = eh2058 and baseDmiOk and score2058 >= 0 and (dom or qua)
+
+regimeS0346 = eh0346 and ema17 < ema34 and diMinus > diPlus and dmiGap >= 6 and distVwap >= -7.26
+regimeB0348 = eh0348 and ema17 >= ema34 and diPlus >= diMinus and adx14 >= 25 and dmiGap >= 3 and ret60 <= 17.25
+regimeB1030 = eh1030 and ema17 >= ema34 and diPlus >= diMinus and adx14 >= 30 and ema200Slope10 >= 5.67
+regimeS1030 = eh1030 and ema17 < ema34 and diMinus > diPlus and adx14 >= 25 and range30 <= 62.5
+regimeB2052 = eh2052 and ema17 >= ema34 and diPlus >= diMinus and adx14 >= 25 and range30 <= 18.44
+regimeS2052a = eh2052 and ema17 < ema34 and diMinus > diPlus and adx14 >= 20 and dmiGap >= 10 and ret60 >= -27.75
+regimeS2052b = eh2052 and ema17 < ema34 and diMinus > diPlus and adx14 >= 30 and ret30 >= -3.25
+regimeB2058 = eh2058 and ema17 >= ema34 and diPlus >= diMinus and dmiGap >= 10 and dmiGap <= 13.35
+
+entradaLiberada = strategy.position_size == 0
+baseAtual = baseB0348 or baseB1030 or baseS1030 or baseB2058
+entraBaseB0348 = entradaLiberada and baseB0348
+entraBaseB1030 = entradaLiberada and baseB1030
+entraBaseS1030 = entradaLiberada and baseS1030
+entraBaseB2058 = entradaLiberada and baseB2058
+entraRegimeS0346 = entradaLiberada and not baseAtual and regimeS0346
+entraRegimeB0348 = entradaLiberada and not baseAtual and regimeB0348
+entraRegimeB1030 = entradaLiberada and not baseAtual and regimeB1030
+entraRegimeS1030 = entradaLiberada and not baseAtual and regimeS1030
+entraRegimeB2052 = entradaLiberada and not baseAtual and regimeB2052
+entraRegimeS2052 = entradaLiberada and not baseAtual and (regimeS2052a or regimeS2052b)
+entraRegimeB2058 = entradaLiberada and not baseAtual and regimeB2058
+
+if entraRegimeS0346
+    strategy.entry("S0346", strategy.short, alert_message="V71 PESQUISA MULTIANO SELL 03:46")
+else if entraBaseB0348
+    strategy.entry("B0348", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 03:48")
+else if entraRegimeB0348
+    strategy.entry("B0348", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 03:48")
+else if entraBaseB1030
+    strategy.entry("B1030", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 10:30")
+else if entraBaseS1030
+    strategy.entry("S1030", strategy.short, alert_message="V71 PESQUISA MULTIANO SELL 10:30")
+else if entraRegimeB1030
+    strategy.entry("B1030", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 10:30")
+else if entraRegimeS1030
+    strategy.entry("S1030", strategy.short, alert_message="V71 PESQUISA MULTIANO SELL 10:30")
+else if entraRegimeB2052
+    strategy.entry("B2052", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 20:52")
+else if entraRegimeS2052
+    strategy.entry("S2052", strategy.short, alert_message="V71 PESQUISA MULTIANO SELL 20:52")
+else if entraBaseB2058
+    strategy.entry("B2058", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 20:58")
+else if entraRegimeB2058
+    strategy.entry("B2058", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 20:58")
+
+strategy.exit("TP/SL S0346", from_entry="S0346", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL B0348", from_entry="B0348", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL B1030", from_entry="B1030", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL S1030", from_entry="S1030", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL B2052", from_entry="B2052", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL S2052", from_entry="S2052", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL B2058", from_entry="B2058", profit=takeTicks, loss=stopTicks)
+
+plotshape(entraRegimeS0346, title="SELL 03:46", style=shape.triangledown, location=location.abovebar, color=color.red, size=size.normal, text="S0346")
+plotshape(entraBaseB0348 or entraRegimeB0348, title="BUY 03:48", style=shape.triangleup, location=location.belowbar, color=color.lime, size=size.normal, text="B0348")
+plotshape(entraBaseB1030 or entraRegimeB1030, title="BUY 10:30", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.normal, text="B1030")
+plotshape(entraBaseS1030 or entraRegimeS1030, title="SELL 10:30", style=shape.triangledown, location=location.abovebar, color=color.maroon, size=size.normal, text="S1030")
+plotshape(entraRegimeB2052, title="BUY 20:52", style=shape.triangleup, location=location.belowbar, color=color.teal, size=size.normal, text="B2052")
+plotshape(entraRegimeS2052, title="SELL 20:52", style=shape.triangledown, location=location.abovebar, color=color.fuchsia, size=size.normal, text="S2052")
+plotshape(entraBaseB2058 or entraRegimeB2058, title="BUY 20:58", style=shape.triangleup, location=location.belowbar, color=color.aqua, size=size.normal, text="B2058")
+
+compraCond = entraBaseB0348 or entraRegimeB0348 or entraBaseB1030 or entraRegimeB1030 or entraRegimeB2052 or entraBaseB2058 or entraRegimeB2058
+vendaCond = entraRegimeS0346 or entraBaseS1030 or entraRegimeS1030 or entraRegimeS2052
+alertcondition(compraCond, title="V71 Pesquisa Multiano BUY", message="V71 PESQUISA MULTIANO BUY")
+alertcondition(vendaCond, title="V71 Pesquisa Multiano SELL", message="V71 PESQUISA MULTIANO SELL")
+
+var table painel = table.new(position.top_right, 2, 8, bgcolor=color.new(color.black, 20))
+if mostrarPainel and barstate.islast
+    table.cell(painel, 0, 0, "V71 PESQUISA", text_color=color.white)
+    table.cell(painel, 1, 0, "MULTIANO 191/89", text_color=color.yellow)
+    table.cell(painel, 0, 1, "365d local", text_color=color.white)
+    table.cell(painel, 1, 1, "191 tr / 89.01% / PF 3.49", text_color=color.lime)
+    table.cell(painel, 0, 2, "2024/25/26", text_color=color.white)
+    table.cell(painel, 1, 2, "+127 / +5548 / +1791", text_color=color.white)
+    table.cell(painel, 0, 3, "Hora SP", text_color=color.white)
+    table.cell(painel, 1, 3, str.tostring(hSP) + ":" + (mSP < 10 ? "0" : "") + str.tostring(mSP), text_color=color.white)
+    table.cell(painel, 0, 4, "ADX / Gap", text_color=color.white)
+    table.cell(painel, 1, 4, str.tostring(adx14, "#.##") + " / " + str.tostring(dmiGap, "#.##"), text_color=color.white)
+    table.cell(painel, 0, 5, "Range/Ret", text_color=color.white)
+    table.cell(painel, 1, 5, str.tostring(range30, "#.##") + " / " + str.tostring(ret60, "#.##"), text_color=color.white)
+    table.cell(painel, 0, 6, "TP/SL", text_color=color.white)
+    table.cell(painel, 1, 6, str.tostring(takePontos) + " / " + str.tostring(stopPontos), text_color=color.white)
+    table.cell(painel, 0, 7, "Oficial", text_color=color.white)
+    table.cell(painel, 1, 7, "NAO ALTERADO", text_color=color.orange)
