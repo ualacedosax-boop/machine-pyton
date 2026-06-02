@@ -8,7 +8,7 @@ strategy("V71 DEBUG 2058 Escada Filtros TV 2m",
 // Diagnostico separado. NAO altera o V7.1 oficial.
 // Parte do Pine puro que ja rodou no TradingView e aperta um filtro por vez.
 
-perfil = input.string("05 ADX20 EMA Janela12", "Perfil",
+perfil = input.string("06 ADX25 EMA Janela12", "Perfil",
      options=["01 Puro EMA", "02 Sem SexSab EMA", "03 Sem SexSab Voto", "04 ADX20 EMA", "05 ADX20 EMA Janela12", "06 ADX25 EMA Janela12"])
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
