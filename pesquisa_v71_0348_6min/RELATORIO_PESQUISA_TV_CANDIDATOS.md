@@ -19,12 +19,48 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 1 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano com acerto alto |
-| 2 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` | 191 | 89.01% nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Melhor 365d, mas 2024 ficou fraco |
-| 3 | 04:06 reversao sem filtro | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` perfil 01 | 373 | 80.16% | 6441.5 | -550.5 | 1.74 | Frequencia alta e anos positivos, mas abaixo do alvo de acerto |
-| 4 | Calendario top tokens | 2m | `V71_PESQUISA_TV_CALENDARIO_TOP_TOKENS_3H.pine` | 54 a 160 | 80% a 87% | variavel | variavel | variavel | Bom para estudar blocos de horario, nao final |
+| 1 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Melhor candidato novo para teste no TradingView |
+| 2 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples |
+| 3 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` | 191 | 89.01% nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Melhor frequencia com acerto alto, mas 2024 ficou fraco |
+| 4 | 04:06 reversao sem filtro | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` perfil 01 | 373 | 80.16% | 6441.5 | -550.5 | 1.74 | Frequencia alta e anos positivos, mas abaixo do alvo de acerto |
+| 5 | Calendario top tokens | 2m | `V71_PESQUISA_TV_CALENDARIO_TOP_TOKENS_3H.pine` | 54 a 160 | 80% a 87% | variavel | variavel | variavel | Bom para estudar blocos de horario, nao final |
 
-## Candidato 1: 04:06 reversao multiano
+## Candidato novo: Regime refino 93
+
+Arquivo:
+
+`V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine`
+
+Teste no TradingView:
+
+- simbolo: `MNQ1!`
+- timeframe: `2m`
+- modo: Backtesting Profundo
+- perfil recomendado: `02 Equilibrado 139 94pct`
+
+Metricas locais:
+
+| Perfil | Periodo | Trades | Winrate | Pontos | DD | PF |
+|---|---|---:|---:|---:|---:|---:|
+| 01 Refino 157 | 365d | 157 | 92.99% | 6086.0 | -234.0 | 5.73 |
+| 01 Refino 157 | 2024 | 146 | 69.86% | 3.0 | -1064.0 | 1.00 |
+| 02 Equilibrado 139 | 365d | 139 | 94.24% | 5679.5 | -183.5 | 7.07 |
+| 02 Equilibrado 139 | 2024 | 127 | 71.65% | 383.5 | -697.0 | 1.09 |
+| 02 Equilibrado 139 | 2025 | 155 | 90.32% | 5315.0 | -234.0 | 4.03 |
+| 02 Equilibrado 139 | 2026 | 45 | 91.11% | 1602.5 | -183.5 | 4.42 |
+| 03 Frequente 191 | 365d | 191 | 89.01% | 6128.0 | -468.0 | 3.49 |
+
+Ponto forte:
+
+- o perfil equilibrado tem a melhor relacao atual entre acerto, DD e PF nos ultimos 365 dias.
+- ele melhora a fragilidade do perfil 157 em 2024.
+
+Ponto fraco:
+
+- ainda nao chega em 230 a 250 trades por ano.
+- a validacao precisa ser confirmada no TradingView, porque pequenas diferencas de dado/execucao podem mudar os numeros.
+
+## Candidato 2: 04:06 reversao multiano
 
 Arquivo:
 
@@ -54,7 +90,7 @@ Ponto fraco:
 
 - frequencia menor que a meta de 230 a 250 trades por ano.
 
-## Candidato 2: Regime 191/89 multiano
+## Candidato 3: Regime 191/89 multiano
 
 Arquivo:
 
@@ -84,7 +120,7 @@ Ponto fraco:
 
 - 2024 quase empatou, com DD alto. Nao deve ser promovido sem validacao no TradingView.
 
-## Candidato 3: 04:06 reversao sem filtro
+## Candidato 4: 04:06 reversao sem filtro
 
 Mesmo arquivo do candidato 1, perfil:
 
@@ -111,6 +147,10 @@ Ponto fraco:
 
 Melhor candidato para teste serio agora:
 
+`V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine`, perfil `02 Equilibrado 139 94pct`.
+
+Melhor candidato simples por robustez multiano:
+
 `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine`, perfil `02 Multiano 86pct`.
 
 Melhor candidato para tentar mais frequencia:
@@ -125,8 +165,8 @@ Regra pratica:
 
 ## Proximo teste recomendado no TradingView
 
-1. Testar `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` em `MNQ1!`, `6m`, perfil `02 Multiano 86pct`.
+1. Testar `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` em `MNQ1!`, `2m`, perfil `02 Equilibrado 139 94pct`.
 2. Conferir 365 dias, 90 dias e 30 dias.
-3. Testar `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` em `MNQ1!`, `2m`.
-4. Comparar com as metricas locais acima.
-
+3. Testar no mesmo Pine os perfis `01 Refino 157 93pct` e `03 Frequente 191 89pct`.
+4. Testar `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` em `MNQ1!`, `6m`, perfil `02 Multiano 86pct`.
+5. Comparar com as metricas locais acima.
