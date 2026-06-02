@@ -10,7 +10,7 @@ strategy("V71 Pesquisa V3B Escada TV 2m",
 // Este arquivo tem nome novo para evitar cache/input antigo do TradingView.
 // Comece no perfil 01 e aperte aos poucos ate chegar no perfil 05.
 
-perfil = input.string("02 Solto DMI", "Perfil",
+perfil = input.string("03 Moderado", "Perfil",
      options=["01 Entrada Forcada", "02 Solto DMI", "03 Moderado", "04 Forte", "05 Refino Aproximado"])
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
