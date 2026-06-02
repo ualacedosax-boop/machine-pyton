@@ -50,6 +50,12 @@ Metricas locais:
 | 02 Equilibrado 139 | 2026 | 45 | 91.11% | 1602.5 | -183.5 | 4.42 |
 | 03 Frequente 191 | 365d | 191 | 89.01% | 6128.0 | -468.0 | 3.49 |
 
+Arquivo de conferencia local:
+
+`pesquisa_v71_0348_6min/VALIDACAO_REGIME_REFINO_93.md`
+
+Esse arquivo mostra as primeiras entradas esperadas por perfil. O CSV local ignorado pelo Git, `validacao_regime_refino_93_trades.csv`, contem a lista completa de entradas para comparar com o export do TradingView.
+
 Ponto forte:
 
 - o perfil equilibrado tem a melhor relacao atual entre acerto, DD e PF nos ultimos 365 dias.
@@ -169,4 +175,5 @@ Regra pratica:
 2. Conferir 365 dias, 90 dias e 30 dias.
 3. Testar no mesmo Pine os perfis `01 Refino 157 93pct` e `03 Frequente 191 89pct`.
 4. Testar `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` em `MNQ1!`, `6m`, perfil `02 Multiano 86pct`.
-5. Comparar com as metricas locais acima.
+5. Comparar as primeiras entradas com `VALIDACAO_REGIME_REFINO_93.md`.
+6. Comparar as metricas locais acima com o relatorio do TradingView.

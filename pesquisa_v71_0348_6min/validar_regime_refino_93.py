@@ -11,6 +11,7 @@ BASE_DIR = Path(r"C:\Users\ualac\Documents\2025\Mercado\machine-pyton")
 SAIDA_DIR = BASE_DIR / "pesquisa_v71_0348_6min"
 ARQ_RESUMO = SAIDA_DIR / "validacao_regime_refino_93_resumo.csv"
 ARQ_TRADES = SAIDA_DIR / "validacao_regime_refino_93_trades.csv"
+ARQ_MARKDOWN = SAIDA_DIR / "VALIDACAO_REGIME_REFINO_93.md"
 
 
 PERFIS = {
@@ -172,9 +173,76 @@ def main():
     print(resumo_final.to_string(index=False))
     resumo_final.to_csv(ARQ_RESUMO, index=False)
     trades_final.to_csv(ARQ_TRADES, index=False)
+    escrever_markdown(resumo_final, trades_final)
     print("\nArquivos:")
     print(ARQ_RESUMO)
     print(ARQ_TRADES)
+    print(ARQ_MARKDOWN)
+
+
+def escrever_markdown(resumo, trades):
+    linhas = [
+        "# Validacao Regime Refino 93",
+        "",
+        "Pesquisa separada. Nao altera o V7.1 oficial.",
+        "",
+        "## Como testar no TradingView",
+        "",
+        "- Simbolo: `MNQ1!`",
+        "- Timeframe: `2m`",
+        "- Modo: Backtesting Profundo",
+        "- Pine: `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine`",
+        "- Perfil recomendado primeiro: `02 Equilibrado 139 94pct`",
+        "",
+        "## Resumo local",
+        "",
+        "| Perfil | Periodo | Trades | Winrate | Pontos | DD | PF |",
+        "|---|---|---:|---:|---:|---:|---:|",
+    ]
+    for row in resumo.itertuples(index=False):
+        linhas.append(
+            f"| {row.perfil} | {row.periodo} | {row.trades} | "
+            f"{row.winrate:.2f}% | {row.pontos:.1f} | {row.dd:.1f} | {row.pf:.2f} |"
+        )
+
+    linhas.extend(
+        [
+            "",
+            "## Conferencia das entradas",
+            "",
+            "O arquivo local `validacao_regime_refino_93_trades.csv` contem as entradas esperadas.",
+            "Use as colunas `perfil`, `modulo`, `datahora_sinal`, `datahora_entrada`, `direcao`, `resultado` e `pontos` para comparar com o export do TradingView.",
+            "",
+            "A diferenca mais comum entre Python e TradingView costuma vir de:",
+            "",
+            "- dados historicos diferentes;",
+            "- fuso/horario do candle;",
+            "- modo de execucao da ordem no TradingView;",
+            "- arredondamento de tick;",
+            "- divergencia no VWAP/ADX/DMI.",
+            "",
+            "## Primeiras entradas por perfil",
+            "",
+        ]
+    )
+    for perfil in sorted(trades["perfil"].unique()):
+        base = trades[trades["perfil"].eq(perfil)].head(12)
+        linhas.extend(
+            [
+                f"### {perfil}",
+                "",
+                "| Sinal | Entrada | Modulo | Direcao | Resultado | Pontos |",
+                "|---|---|---|---|---|---:|",
+            ]
+        )
+        for row in base.itertuples(index=False):
+            linhas.append(
+                f"| {row.datahora_sinal} | {row.datahora_entrada} | {row.modulo} | "
+                f"{row.direcao} | {row.resultado} | {float(row.pontos):.1f} |"
+            )
+        linhas.append("")
+
+    ARQ_MARKDOWN.write_text("\n".join(linhas) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
