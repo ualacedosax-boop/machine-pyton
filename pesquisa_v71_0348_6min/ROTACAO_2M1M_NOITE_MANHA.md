@@ -84,12 +84,21 @@ Resultado:
 | Ultimos 90d | 51 | 64.71% | -879 USD | -2366 USD | 0.791 | Reprovado |
 | Ultimos 30d | 22 | 68.18% | -123 USD | -1270 USD | 0.925 | Reprovado |
 
+Perfil separado `01 Noite 20:54 SELL`:
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Ultimos 365d | 80 | 73.75% | +1045 USD | -1462 USD | 1.213 | Anual fraco; nao promover |
+| Ultimos 90d | 20 | 75.00% | +345 USD | -706 USD | 1.295 | Positivo, mas acerto baixo |
+| Ultimos 30d | 10 | 80.00% | +340 USD | -472 USD | 1.726 | Recente bom para diagnostico |
+
 Leitura:
 
 - o combo nao deve ser promovido.
 - o TradingView gerou mais trades que a simulacao local de 365d, em parte porque a base local terminava em `2026-05-20` e o teste do TV foi ate `2026-06-03`.
-- a proxima validacao deve testar os blocos separados: `01 Noite 20:54 SELL` e `02 Manha 10:30 SELL`.
-- se apenas um bloco confirmar, refazer a busca do bloco que caiu antes de tentar juntar novamente.
+- a noite separada ficou positiva em 30d/90d, mas nao passou no 365d.
+- a proxima validacao deve testar o bloco `02 Manha 10:30 SELL`.
+- se a manha confirmar melhor que a noite, manter a manha e refazer a busca da noite.
 
 ## Leitura
 

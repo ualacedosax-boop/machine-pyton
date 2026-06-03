@@ -70,6 +70,14 @@ Teste TradingView do perfil `03 Combo Noite+Manha`:
 | Ultimos 90d | 51 | 64.71% | -879 USD | -2366 USD | 0.791 | Reprovado |
 | Ultimos 30d | 22 | 68.18% | -123 USD | -1270 USD | 0.925 | Reprovado |
 
+Teste TradingView do perfil `01 Noite 20:54 SELL`:
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| Ultimos 365d | 80 | 73.75% | +1045 USD | -1462 USD | 1.213 | Anual fraco; nao promover |
+| Ultimos 90d | 20 | 75.00% | +345 USD | -706 USD | 1.295 | Positivo, mas acerto baixo |
+| Ultimos 30d | 10 | 80.00% | +340 USD | -472 USD | 1.726 | Recente bom para diagnostico |
+
 Leitura:
 
 - o teste fora da amostra por rotacao ficou forte: 7 de 8 folds positivos e sem fold de teste negativo quando o treino passava.
@@ -77,7 +85,8 @@ Leitura:
 - o 30d local ficou positivo, diferente dos perfis 04/05 do rewrite TVSafe que ficaram negativos.
 - o combo foi testado no TradingView e reprovou no 90d/30d.
 - o TV executou mais trades que o local porque a base local da busca terminava em `2026-05-20`, enquanto o TV testou ate `2026-06-03`; ainda assim, o resultado deve ser tratado como reprova.
-- proximo passo: testar `01 Noite 20:54 SELL` e `02 Manha 10:30 SELL` separados para identificar qual bloco contaminou o combo.
+- o perfil `01 Noite 20:54 SELL` foi positivo no 30d/90d, mas reprovou no 365d por acerto baixo e DD alto.
+- proximo passo: testar `02 Manha 10:30 SELL` separado para decidir se a manha tambem esta contaminada.
 
 ## Candidato novo: Calendario DOW 230-85
 
@@ -525,6 +534,7 @@ Regra pratica:
 - o perfil 04 do Rewrite TVSafe tambem operou, mas reprovou no 90d e 30d;
 - o perfil 05 do Rewrite TVSafe tambem operou, mas reprovou no 90d e 30d;
 - a busca por rotacao 2M/1M achou um combo novo `20:54 SELL + 10:30 SELL`, mas o perfil `03 Combo` reprovou no TV;
+- o perfil `01 Noite 20:54 SELL` da rotacao ficou positivo no recente, mas nao passou no anual;
 - o Regime 191/89 deve ficar pausado: o smoke minimo funciona, mas as versoes com logica de regime travaram no TradingView;
 - o Regime Refino 93 tambem deve ficar pausado: travou no TradingView;
 - o DMI3 Take45 tambem deve ficar pausado no teste direto: travou no TradingView;
@@ -541,9 +551,9 @@ Regra pratica:
 4. Pausar o DMI3 Take45 direto: tambem travou no TradingView.
 5. Usar o resultado do `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` apenas como prova de execucao; o modo smoke ficou perto de 48% e nao e estrategia.
 6. O perfil `03 Combo Noite+Manha` da rotacao reprovou no TradingView.
-7. Testar separado `01 Noite 20:54 SELL`.
-8. Depois testar separado `02 Manha 10:30 SELL`.
-9. Se a noite confirmar e a manha cair, manter a noite e refazer a busca da manha.
-10. Se a manha confirmar e a noite cair, manter a manha e refazer a busca da noite.
+7. O perfil `01 Noite 20:54 SELL` ficou positivo no 30d/90d, mas reprovou no 365d.
+8. Testar separado `02 Manha 10:30 SELL`.
+9. Se a manha confirmar melhor que a noite, manter a manha e refazer a busca da noite.
+10. Se a manha tambem cair, reescrever usando o export/lista de trades do TradingView.
 11. Se ambos cairem, reescrever usando o export/lista de trades do TradingView.
 12. Manter o V7.1 oficial sem alteracao.
