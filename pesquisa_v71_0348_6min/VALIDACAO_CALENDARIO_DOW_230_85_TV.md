@@ -54,8 +54,21 @@ Pesquisa separada. Nao altera o V7.1 oficial.
 ## Observacoes
 
 - O TradingView pode divergir por dados, contrato continuo, horario e regra de execucao.
+- Resultado informado no TradingView para o perfil 01 ficou abaixo do local e reprova esse perfil como primeira escolha.
 - Se o TV ficar perto dos numeros locais, o perfil 04 vira o primeiro teste recomendado para equilibrio anual com frequencia alta.
 - O perfil 05 deve ser testado em seguida se o foco for acerto/DD, aceitando menor frequencia.
 - O perfil 02 continua sendo o melhor teste para operabilidade recente.
 - A auditoria anterior mostrou fragilidade na faixa 230-250; a busca multifaixa achou o perfil 04 com todos os anos 80%+, mas ainda e pesquisa, nao oficial.
 - Nenhum perfil deve substituir o oficial sem aprovacao explicita.
+
+## Resultado informado no TradingView
+
+Print recebido em teste no `MNQ1!`, timeframe `2m`, Backtesting Profundo. O painel do Pine indicava `Perfil 01 MAX365`.
+
+| Perfil | Periodo TV | Trades | Winrate | PnL TV | DD TV | PF TV | Leitura |
+|---|---|---:|---:|---:|---:|---:|---|
+| 01 Max 365d | Ultimos 365d | 240 | 81.25% | +9165.00 USD | 1105.00 USD | 1.87 | Reprovado vs expectativa local de 87.55% e PF 3.04 |
+| 01 Max 365d | Ultimos 90d | 61 | 70.49% | +131.00 USD | 1105.00 USD | 1.031 | Muito fraco no recorte recente |
+| 01 Max 365d | Ultimos 30d | 20 | 75.00% | +345.00 USD | 543.00 USD | 1.295 | Abaixo da meta |
+
+Proximo teste recomendado no TradingView: perfil `04 Robusto anual 222tr 85pct`. Depois testar `05 Alta acerto 147tr 89pct`.

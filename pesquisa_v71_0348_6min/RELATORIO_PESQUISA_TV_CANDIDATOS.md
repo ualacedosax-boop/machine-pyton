@@ -21,7 +21,7 @@ O objetivo e encontrar uma configuracao com:
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
 | 1 | Calendario DOW robusto anual - perfil 04 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 222 | 85.59% nos ultimos 365d | 5851.0 | -351.0 | 2.56 | Melhor equilibrio novo: alta frequencia e todos os anos 80%+ |
 | 2 | Calendario DOW alta acerto - perfil 05 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 147 | 89.80% nos ultimos 365d | 4911.0 | -183.5 | 3.80 | Melhor acerto robusto multiano nesta familia |
-| 3 | Calendario DOW 230-85 - perfil 01 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 233 | 87.55% nos ultimos 365d | 6909.0 | -316.5 | 3.04 | Melhor pontuacao anual local; 2024 abaixo de 80% |
+| 3 | Calendario DOW 230-85 - perfil 01 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 240 TV | 81.25% TV nos ultimos 365d | +9165 USD TV | -1105 USD TV | 1.87 TV | Reprovado no TradingView apesar do local forte |
 | 4 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Melhor acerto/DD, mas com frequencia menor e 2024 fraco |
 | 5 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples |
 | 6 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` | 191 | 89.01% nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Frequencia maior, mas 2024 ficou fraco |
@@ -119,6 +119,7 @@ Ponto fraco:
 
 - os anos completos 2024 e 2025 ficam abaixo de 85%, embora positivos.
 - a auditoria encontrou 1.863 candidatos na faixa 230-250 trades e 85%+ em 365d, mas nenhum manteve todos os anos acima de 80%; a solucao multifaixa achou robustez anual abrindo mao de pelo menos 8 trades na faixa.
+- o perfil 01 foi testado no TradingView e caiu para 81.25% nos ultimos 365 dias, PF 1.87, 90d com 70.49% e PF 1.031; portanto nao deve ser priorizado.
 - por usar calendario por dia da semana, precisa ser confirmado no TradingView antes de qualquer decisao operacional.
 - ainda nao deve substituir o oficial.
 
@@ -268,7 +269,7 @@ Melhor candidato simples por robustez multiano:
 
 `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine`, perfil `02 Multiano 86pct`.
 
-Melhor candidato para tentar mais frequencia/pontuacao:
+Melhor candidato para tentar mais frequencia/pontuacao, mas com ressalva:
 
 `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine`, perfil `01 Max 365d 233tr 87pct`.
 
@@ -276,7 +277,7 @@ Regra pratica:
 
 - se o TradingView confirmar o perfil 04 perto de 222 trades, 85.59% e anos 80%+, ele vira a melhor linha de pesquisa equilibrada;
 - se o TradingView confirmar o perfil 05 perto de 147 trades, 89.80% e anos 80%+, ele vira a melhor linha de alta acertividade/DD;
-- se o TradingView confirmar o perfil 01 perto de 233 trades e 87%, ele vira a melhor linha de pesquisa de frequencia/pontuacao;
+- o perfil 01 ja foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
 - se o TradingView confirmar o 04:06 multiano perto de 86%, ele vira a linha mais segura de pesquisa;
 - se o TradingView confirmar o regime 191/89 nos ultimos 365 dias, ele vira candidato de alta performance, mas ainda precisa controle de risco por causa de 2024;
 - nenhum candidato deve substituir o oficial sem aprovacao explicita.
