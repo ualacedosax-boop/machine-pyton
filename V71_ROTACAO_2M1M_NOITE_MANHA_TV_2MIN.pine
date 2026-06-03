@@ -1,0 +1,75 @@
+//@version=6
+strategy("V71 Rotacao 2M1M Noite Manha TV 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Candidato criado por rotacao: treina 2 meses e testa o terceiro.
+// Use no MNQ1! em 2 minutos com Backtesting Profundo.
+
+perfil = input.string("03 Combo Noite+Manha", "Perfil",
+     options=["01 Noite 20:54 SELL", "02 Manha 10:30 SELL", "03 Combo Noite+Manha"])
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarSinais = input.bool(true, "Mostrar sinais")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+ema200 = ta.ema(close, 200)
+
+roc5 = close - close[5]
+prevRoc5 = roc5[1]
+distEma200 = close - ema200
+
+typ = hlc3
+newDaySP = ta.change(dayofmonth(time, "America/Sao_Paulo")) != 0
+var float cumPV = na
+var float cumVol = na
+if newDaySP or na(cumPV)
+    cumPV := typ * volume
+    cumVol := volume
+else
+    cumPV += typ * volume
+    cumVol += volume
+vwapSP = cumVol != 0 ? cumPV / cumVol : na
+distVwap = close - vwapSP
+
+range20Hi = ta.highest(high, 20)
+range20Lo = ta.lowest(low, 20)
+range20Den = range20Hi - range20Lo
+posRange20 = range20Den != 0 ? (close - range20Lo) / range20Den : na
+
+pNoite = perfil == "01 Noite 20:54 SELL"
+pManha = perfil == "02 Manha 10:30 SELL"
+pCombo = perfil == "03 Combo Noite+Manha"
+
+noite2054Sell = hSP == 20 and mSP == 54 and distEma200 <= 49.5526 and prevRoc5 <= -3.25
+manha1030Sell = hSP == 10 and mSP == 30 and distVwap <= 9.7502 and posRange20 <= 0.8351
+
+sellSignal = strategy.position_size == 0 and (
+     ((pNoite or pCombo) and noite2054Sell) or
+     ((pManha or pCombo) and manha1030Sell))
+
+if sellSignal
+    strategy.entry("S", strategy.short, alert_message="V71 ROTACAO 2M1M SELL")
+
+strategy.exit("TP/SL S", from_entry="S", profit=takeTicks, loss=stopTicks)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+plot(ema200, "EMA 200", color=color.gray, linewidth=1)
+
+plotshape(mostrarSinais and noite2054Sell and (pNoite or pCombo), title="SELL Noite 20:54",
+     style=shape.triangledown, location=location.abovebar, color=color.fuchsia, size=size.small, text="N2054")
+plotshape(mostrarSinais and manha1030Sell and (pManha or pCombo), title="SELL Manha 10:30",
+     style=shape.triangledown, location=location.abovebar, color=color.red, size=size.small, text="M1030")
+
+alertcondition(sellSignal, title="V71 Rotacao 2M1M SELL", message="V71 ROTACAO 2M1M SELL")
