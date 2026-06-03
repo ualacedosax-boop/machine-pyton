@@ -289,8 +289,11 @@ Regra pratica:
 
 1. Nao promover a familia Calendario DOW atual: perfis 01, 04 e 05 ficaram abaixo de 85% no TradingView.
 2. Testar `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` em `MNQ1!`, `2m`, Backtesting Profundo.
-3. Conferir se 365 dias fica proximo de 191 trades, 89.01%, +6128 pontos, DD -468.0 e PF 3.49.
-4. Conferir se 90 dias fica proximo de 40 trades, 85.00%, +1015 pontos e PF 2.45.
-5. Conferir se 30 dias fica proximo de 13 trades, 84.62%, +321.5 pontos e PF 2.37.
-6. Se o Regime 191/89 tambem cair para perto de 80%-82% no TV, testar o `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` perfil `02 Equilibrado 139 94pct`.
-7. Manter o V7.1 oficial sem alteracao.
+3. Comecar no modo `01 Diagnostico horarios`; se nao houver entradas, o problema e horario/sessao/dados do grafico.
+4. Se o diagnostico tiver entradas, testar o modo `02 Base DMI3`; se nao houver entradas, o problema esta nos filtros DMI/base.
+5. Se a base tiver entradas, testar o modo `03 Regime 191/89`.
+6. Conferir se 365 dias fica proximo de 191 trades, 89.01%, +6128 pontos, DD -468.0 e PF 3.49.
+7. Conferir se 90 dias fica proximo de 40 trades, 85.00%, +1015 pontos e PF 2.45.
+8. Conferir se 30 dias fica proximo de 13 trades, 84.62%, +321.5 pontos e PF 2.37.
+9. Se o Regime 191/89 tambem cair para perto de 80%-82% no TV, testar o `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` perfil `02 Equilibrado 139 94pct`.
+10. Manter o V7.1 oficial sem alteracao.

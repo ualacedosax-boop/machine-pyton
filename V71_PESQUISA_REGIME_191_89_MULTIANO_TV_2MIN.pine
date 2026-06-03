@@ -14,6 +14,9 @@ strategy("V71 Pesquisa Regime 191 89 Multiano TV 2m",
 
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+modoTV = input.string("01 Diagnostico horarios", "Modo TV",
+     options=["01 Diagnostico horarios", "02 Base DMI3", "03 Regime 191/89"])
+toleranciaMin = input.int(1, "Tolerancia horario min", minval=0, maxval=2)
 mostrarPainel = input.bool(true, "Mostrar painel")
 
 takeTicks = int(math.round(takePontos / syminfo.mintick))
@@ -21,13 +24,17 @@ stopTicks = int(math.round(stopPontos / syminfo.mintick))
 
 hSP = hour(time, "America/Sao_Paulo")
 mSP = minute(time, "America/Sao_Paulo")
+minSP = hSP * 60 + mSP
 dowSP = dayofweek(time, "America/Sao_Paulo")
 
-eh0346 = hSP == 3 and mSP == 46
-eh0348 = hSP == 3 and mSP == 48
-eh1030 = hSP == 10 and mSP == 30
-eh2052 = hSP == 20 and mSP == 52
-eh2058 = hSP == 20 and mSP == 58
+emJanela(alvoMinutoDia) =>
+    math.abs(minSP - alvoMinutoDia) <= toleranciaMin
+
+eh0346 = emJanela(3 * 60 + 46)
+eh0348 = emJanela(3 * 60 + 48)
+eh1030 = emJanela(10 * 60 + 30)
+eh2052 = emJanela(20 * 60 + 52)
+eh2058 = emJanela(20 * 60 + 58)
 
 seg = dowSP == dayofweek.monday
 ter = dowSP == dayofweek.tuesday
@@ -68,6 +75,8 @@ votoRoc10 = roc10 >= 0 ? 1 : -1
 votoEma1734 = ema17 >= ema34 ? 1 : -1
 votoRoc5 = roc5 >= 0 ? 1 : -1
 votoVwap = close >= vwapDia ? 1 : -1
+votoDmi = diPlus >= diMinus ? 1 : -1
+votoTotalDiag = votoEma1734 + votoDmi + votoVwap
 
 score0348 = votoMacd + votoCandle + votoPrevRoc5Contra
 score1030 = votoSma1734 + votoRoc10 + votoPrevRoc5Contra
@@ -88,21 +97,34 @@ regimeS2052a = eh2052 and ema17 < ema34 and diMinus > diPlus and adx14 >= 20 and
 regimeS2052b = eh2052 and ema17 < ema34 and diMinus > diPlus and adx14 >= 30 and ret30 >= -3.25
 regimeB2058 = eh2058 and ema17 >= ema34 and diPlus >= diMinus and dmiGap >= 10 and dmiGap <= 13.35
 
+modoDiag = modoTV == "01 Diagnostico horarios"
+modoBase = modoTV == "02 Base DMI3"
+modoRegime = modoTV == "03 Regime 191/89"
+horarioAlvo = eh0346 or eh0348 or eh1030 or eh2052 or eh2058
+diagBuy = horarioAlvo and votoTotalDiag >= 0
+diagSell = horarioAlvo and votoTotalDiag < 0
+
 entradaLiberada = strategy.position_size == 0
 baseAtual = baseB0348 or baseB1030 or baseS1030 or baseB2058
-entraBaseB0348 = entradaLiberada and baseB0348
-entraBaseB1030 = entradaLiberada and baseB1030
-entraBaseS1030 = entradaLiberada and baseS1030
-entraBaseB2058 = entradaLiberada and baseB2058
-entraRegimeS0346 = entradaLiberada and not baseAtual and regimeS0346
-entraRegimeB0348 = entradaLiberada and not baseAtual and regimeB0348
-entraRegimeB1030 = entradaLiberada and not baseAtual and regimeB1030
-entraRegimeS1030 = entradaLiberada and not baseAtual and regimeS1030
-entraRegimeB2052 = entradaLiberada and not baseAtual and regimeB2052
-entraRegimeS2052 = entradaLiberada and not baseAtual and (regimeS2052a or regimeS2052b)
-entraRegimeB2058 = entradaLiberada and not baseAtual and regimeB2058
+entraDiagBuy = entradaLiberada and modoDiag and diagBuy
+entraDiagSell = entradaLiberada and modoDiag and diagSell
+entraBaseB0348 = entradaLiberada and (modoBase or modoRegime) and baseB0348
+entraBaseB1030 = entradaLiberada and (modoBase or modoRegime) and baseB1030
+entraBaseS1030 = entradaLiberada and (modoBase or modoRegime) and baseS1030
+entraBaseB2058 = entradaLiberada and (modoBase or modoRegime) and baseB2058
+entraRegimeS0346 = entradaLiberada and modoRegime and not baseAtual and regimeS0346
+entraRegimeB0348 = entradaLiberada and modoRegime and not baseAtual and regimeB0348
+entraRegimeB1030 = entradaLiberada and modoRegime and not baseAtual and regimeB1030
+entraRegimeS1030 = entradaLiberada and modoRegime and not baseAtual and regimeS1030
+entraRegimeB2052 = entradaLiberada and modoRegime and not baseAtual and regimeB2052
+entraRegimeS2052 = entradaLiberada and modoRegime and not baseAtual and (regimeS2052a or regimeS2052b)
+entraRegimeB2058 = entradaLiberada and modoRegime and not baseAtual and regimeB2058
 
-if entraRegimeS0346
+if entraDiagBuy
+    strategy.entry("DBG_B", strategy.long, alert_message="V71 PESQUISA DIAG BUY")
+else if entraDiagSell
+    strategy.entry("DBG_S", strategy.short, alert_message="V71 PESQUISA DIAG SELL")
+else if entraRegimeS0346
     strategy.entry("S0346", strategy.short, alert_message="V71 PESQUISA MULTIANO SELL 03:46")
 else if entraBaseB0348
     strategy.entry("B0348", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 03:48")
@@ -126,6 +148,8 @@ else if entraRegimeB2058
     strategy.entry("B2058", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 20:58")
 
 strategy.exit("TP/SL S0346", from_entry="S0346", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL DBG_B", from_entry="DBG_B", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL DBG_S", from_entry="DBG_S", profit=takeTicks, loss=stopTicks)
 strategy.exit("TP/SL B0348", from_entry="B0348", profit=takeTicks, loss=stopTicks)
 strategy.exit("TP/SL B1030", from_entry="B1030", profit=takeTicks, loss=stopTicks)
 strategy.exit("TP/SL S1030", from_entry="S1030", profit=takeTicks, loss=stopTicks)
@@ -134,6 +158,8 @@ strategy.exit("TP/SL S2052", from_entry="S2052", profit=takeTicks, loss=stopTick
 strategy.exit("TP/SL B2058", from_entry="B2058", profit=takeTicks, loss=stopTicks)
 
 plotshape(entraRegimeS0346, title="SELL 03:46", style=shape.triangledown, location=location.abovebar, color=color.red, size=size.normal, text="S0346")
+plotshape(entraDiagBuy, title="DIAG BUY", style=shape.circle, location=location.belowbar, color=color.lime, size=size.tiny, text="DBG")
+plotshape(entraDiagSell, title="DIAG SELL", style=shape.circle, location=location.abovebar, color=color.red, size=size.tiny, text="DBG")
 plotshape(entraBaseB0348 or entraRegimeB0348, title="BUY 03:48", style=shape.triangleup, location=location.belowbar, color=color.lime, size=size.normal, text="B0348")
 plotshape(entraBaseB1030 or entraRegimeB1030, title="BUY 10:30", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.normal, text="B1030")
 plotshape(entraBaseS1030 or entraRegimeS1030, title="SELL 10:30", style=shape.triangledown, location=location.abovebar, color=color.maroon, size=size.normal, text="S1030")
@@ -143,23 +169,23 @@ plotshape(entraBaseB2058 or entraRegimeB2058, title="BUY 20:58", style=shape.tri
 
 compraCond = entraBaseB0348 or entraRegimeB0348 or entraBaseB1030 or entraRegimeB1030 or entraRegimeB2052 or entraBaseB2058 or entraRegimeB2058
 vendaCond = entraRegimeS0346 or entraBaseS1030 or entraRegimeS1030 or entraRegimeS2052
-alertcondition(compraCond, title="V71 Pesquisa Multiano BUY", message="V71 PESQUISA MULTIANO BUY")
-alertcondition(vendaCond, title="V71 Pesquisa Multiano SELL", message="V71 PESQUISA MULTIANO SELL")
+alertcondition(compraCond or entraDiagBuy, title="V71 Pesquisa Multiano BUY", message="V71 PESQUISA MULTIANO BUY")
+alertcondition(vendaCond or entraDiagSell, title="V71 Pesquisa Multiano SELL", message="V71 PESQUISA MULTIANO SELL")
 
 var table painel = table.new(position.top_right, 2, 8, bgcolor=color.new(color.black, 20))
 if mostrarPainel and barstate.islast
     table.cell(painel, 0, 0, "V71 PESQUISA", text_color=color.white)
     table.cell(painel, 1, 0, "MULTIANO 191/89", text_color=color.yellow)
-    table.cell(painel, 0, 1, "365d local", text_color=color.white)
-    table.cell(painel, 1, 1, "191 tr / 89.01% / PF 3.49", text_color=color.lime)
-    table.cell(painel, 0, 2, "2024/25/26", text_color=color.white)
-    table.cell(painel, 1, 2, "+127 / +5548 / +1791", text_color=color.white)
+    table.cell(painel, 0, 1, "Modo", text_color=color.white)
+    table.cell(painel, 1, 1, modoTV, text_color=modoDiag ? color.yellow : color.lime)
+    table.cell(painel, 0, 2, "365d local", text_color=color.white)
+    table.cell(painel, 1, 2, "191 tr / 89.01% / PF 3.49", text_color=color.lime)
     table.cell(painel, 0, 3, "Hora SP", text_color=color.white)
     table.cell(painel, 1, 3, str.tostring(hSP) + ":" + (mSP < 10 ? "0" : "") + str.tostring(mSP), text_color=color.white)
     table.cell(painel, 0, 4, "ADX / Gap", text_color=color.white)
     table.cell(painel, 1, 4, str.tostring(adx14, "#.##") + " / " + str.tostring(dmiGap, "#.##"), text_color=color.white)
-    table.cell(painel, 0, 5, "Range/Ret", text_color=color.white)
-    table.cell(painel, 1, 5, str.tostring(range30, "#.##") + " / " + str.tostring(ret60, "#.##"), text_color=color.white)
+    table.cell(painel, 0, 5, "Alvo/Score", text_color=color.white)
+    table.cell(painel, 1, 5, (horarioAlvo ? "SIM" : "NAO") + " / " + str.tostring(votoTotalDiag), text_color=horarioAlvo ? color.lime : color.gray)
     table.cell(painel, 0, 6, "TP/SL", text_color=color.white)
     table.cell(painel, 1, 6, str.tostring(takePontos) + " / " + str.tostring(stopPontos), text_color=color.white)
     table.cell(painel, 0, 7, "Oficial", text_color=color.white)
