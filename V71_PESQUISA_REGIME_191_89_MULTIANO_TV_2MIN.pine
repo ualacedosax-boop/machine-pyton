@@ -109,6 +109,7 @@ diagSell = horarioAlvo and votoTotalDiag < 0
 entradaLiberada = strategy.position_size == 0
 baseAtual = baseB0348 or baseB1030 or baseS1030 or baseB2058
 var int forcaBar = na
+var int diagBar = na
 entraForcaBuy = entradaLiberada and modoForca and forcaBuy
 entraDiagBuy = entradaLiberada and modoDiag and diagBuy
 entraDiagSell = entradaLiberada and modoDiag and diagSell
@@ -128,8 +129,10 @@ if entraForcaBuy
     forcaBar := bar_index
     strategy.entry("FORCA_B", strategy.long, alert_message="V71 PESQUISA FORCAR TESTE BUY")
 else if entraDiagBuy
+    diagBar := bar_index
     strategy.entry("DBG_B", strategy.long, alert_message="V71 PESQUISA DIAG BUY")
 else if entraDiagSell
+    diagBar := bar_index
     strategy.entry("DBG_S", strategy.short, alert_message="V71 PESQUISA DIAG SELL")
 else if entraRegimeS0346
     strategy.entry("S0346", strategy.short, alert_message="V71 PESQUISA MULTIANO SELL 03:46")
@@ -156,6 +159,9 @@ else if entraRegimeB2058
 
 if modoForca and strategy.position_size > 0 and not na(forcaBar) and bar_index > forcaBar
     strategy.close("FORCA_B", comment="FECHA TESTE")
+if modoDiag and strategy.position_size != 0 and not na(diagBar) and bar_index > diagBar
+    strategy.close("DBG_B", comment="FECHA DIAG")
+    strategy.close("DBG_S", comment="FECHA DIAG")
 
 strategy.exit("TP/SL S0346", from_entry="S0346", profit=takeTicks, loss=stopTicks)
 strategy.exit("TP/SL FORCA_B", from_entry="FORCA_B", profit=takeTicks, loss=stopTicks)

@@ -292,7 +292,7 @@ Regra pratica:
 3. Comecar no modo `00 Forcar teste`; se nao houver entradas, o problema e aplicacao/configuracao da estrategia no grafico.
 4. Se ainda nao houver entradas no modo forcado, testar o arquivo minimo `V71_TESTE_TV_SMOKE_FORCA_ENTRADA.pine`.
 5. Se o smoke test tambem nao gerar trades, o problema nao e a logica V71; e execucao/configuracao do TradingView.
-6. Se o modo forcado tiver entradas, testar `01 Diagnostico horarios`; se nao houver entradas, o problema e horario/sessao/dados do grafico.
+6. Se o modo forcado tiver entradas, testar `01 Diagnostico horarios`; este modo tambem fecha no candle seguinte para confirmar se os horarios existem no grafico.
 7. Se o diagnostico tiver entradas, testar o modo `02 Base DMI3`; se nao houver entradas, o problema esta nos filtros DMI/base.
 8. Se a base tiver entradas, testar o modo `03 Regime 191/89`.
 9. Conferir se 365 dias fica proximo de 191 trades, 89.01%, +6128 pontos, DD -468.0 e PF 3.49.
