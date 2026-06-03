@@ -56,14 +56,14 @@ Pesquisa separada. Nao altera o V7.1 oficial.
 - O TradingView pode divergir por dados, contrato continuo, horario e regra de execucao.
 - Resultado informado no TradingView para o perfil 01 ficou abaixo do local e reprova esse perfil como primeira escolha.
 - Resultado informado no TradingView para o perfil 04 tambem ficou abaixo do local nos recortes 365d/90d; o 30d foi positivo, mas insuficiente para confirmar.
-- O perfil 05 deve ser testado agora se o foco for acerto/DD, aceitando menor frequencia.
+- Resultado informado no TradingView para o perfil 05 tambem ficou abaixo do local; a familia Calendario DOW atual nao confirmou a meta no TV.
 - O perfil 02 continua sendo o melhor teste para operabilidade recente.
 - A auditoria anterior mostrou fragilidade na faixa 230-250; a busca multifaixa achou o perfil 04 com todos os anos 80%+, mas ainda e pesquisa, nao oficial.
 - Nenhum perfil deve substituir o oficial sem aprovacao explicita.
 
 ## Resultado informado no TradingView
 
-Print recebido em teste no `MNQ1!`, timeframe `2m`, Backtesting Profundo. O painel do Pine indicava `Perfil 01 MAX365`.
+Prints recebidos em teste no `MNQ1!`, timeframe `2m`, Backtesting Profundo.
 
 | Perfil | Periodo TV | Trades | Winrate | PnL TV | DD TV | PF TV | Leitura |
 |---|---|---:|---:|---:|---:|---:|---|
@@ -73,5 +73,8 @@ Print recebido em teste no `MNQ1!`, timeframe `2m`, Backtesting Profundo. O pain
 | 04 Robusto anual | Ultimos 365d | 224 | 80.80% | +8219.00 USD | 1206.00 USD | 1.817 | Nao confirmou: local esperava 85.59% e PF 2.56 |
 | 04 Robusto anual | Ultimos 90d | 57 | 73.68% | +732.00 USD | 1206.00 USD | 1.209 | Fraco no recorte recente |
 | 04 Robusto anual | Ultimos 30d | 18 | 83.33% | +813.00 USD | 417.00 USD | 2.158 | Bom 30d, mas isolado |
+| 05 Alta acerto | Ultimos 365d | 152 | 81.58% | +5972.00 USD | 1168.00 USD | 1.911 | Nao confirmou: local esperava 89.80% e PF 3.80 |
+| 05 Alta acerto | Ultimos 90d | 39 | 79.49% | +1259.00 USD | 367.00 USD | 1.673 | Abaixo da meta de acerto/PF |
+| 05 Alta acerto | Ultimos 30d | 11 | 81.82% | +441.00 USD | 367.00 USD | 1.942 | Lucrativo, mas abaixo da validacao local |
 
-Proximo teste recomendado no TradingView: perfil `05 Alta acerto 147tr 89pct`. Se tambem nao confirmar, parar essa familia e buscar outra logica.
+Leitura: perfis 01, 04 e 05 nao confirmaram acerto alto no TradingView. Parar esta familia Calendario DOW atual e buscar outra logica.
