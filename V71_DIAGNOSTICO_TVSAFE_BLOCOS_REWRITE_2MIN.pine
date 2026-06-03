@@ -1,0 +1,75 @@
+//@version=6
+strategy("V71 Diagnostico TVSafe Blocos Rewrite 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Diagnostico para isolar quais blocos do rewrite TVSafe pioram no TradingView.
+// Use no MNQ1! em 2 minutos com Backtesting Profundo.
+
+perfil = input.string("05 Qua+Sex compartilhado", "Perfil",
+     options=["01 Seg 03:48 range30", "02 Seg 10:30 roc10", "03 Qua 02:56 ema",
+         "04 Sex 09:30 roc5", "05 Qua+Sex compartilhado", "06 Perfil 04 completo",
+         "07 Perfil 05 completo"])
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarSinais = input.bool(true, "Mostrar sinais")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+emaTrend = ema17 - ema34
+roc5 = close - close[5]
+roc10 = close - close[10]
+range30 = ta.highest(high, 15) - ta.lowest(low, 15)
+
+seg0348 = dowSP == dayofweek.monday and hSP == 3 and mSP == 48 and range30 <= 41.0625
+seg1030 = dowSP == dayofweek.monday and hSP == 10 and mSP == 30 and roc10 >= 24.5
+qua0256 = dowSP == dayofweek.wednesday and hSP == 2 and mSP == 56 and emaTrend >= 0.9902
+sex0930 = dowSP == dayofweek.friday and hSP == 9 and mSP == 30 and roc5 <= -9.5
+
+p1 = perfil == "01 Seg 03:48 range30"
+p2 = perfil == "02 Seg 10:30 roc10"
+p3 = perfil == "03 Qua 02:56 ema"
+p4 = perfil == "04 Sex 09:30 roc5"
+p5 = perfil == "05 Qua+Sex compartilhado"
+p6 = perfil == "06 Perfil 04 completo"
+p7 = perfil == "07 Perfil 05 completo"
+
+buyFiltro =
+     (p1 and seg0348) or
+     (p2 and seg1030) or
+     (p3 and qua0256) or
+     (p4 and sex0930) or
+     (p5 and (qua0256 or sex0930)) or
+     (p6 and (seg0348 or qua0256 or sex0930)) or
+     (p7 and (seg1030 or qua0256 or sex0930))
+
+buySignal = strategy.position_size == 0 and buyFiltro
+
+if buySignal
+    strategy.entry("B", strategy.long, alert_message="V71 DIAGNOSTICO TVSAFE BUY")
+
+strategy.exit("TP/SL B", from_entry="B", profit=takeTicks, loss=stopTicks)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+plotshape(mostrarSinais and seg0348 and (p1 or p6), title="Seg 03:48", style=shape.triangleup,
+     location=location.belowbar, color=color.yellow, size=size.small, text="S0348")
+plotshape(mostrarSinais and seg1030 and (p2 or p7), title="Seg 10:30", style=shape.triangleup,
+     location=location.belowbar, color=color.orange, size=size.small, text="S1030")
+plotshape(mostrarSinais and qua0256 and (p3 or p5 or p6 or p7), title="Qua 02:56", style=shape.triangleup,
+     location=location.belowbar, color=color.green, size=size.small, text="Q0256")
+plotshape(mostrarSinais and sex0930 and (p4 or p5 or p6 or p7), title="Sex 09:30", style=shape.triangleup,
+     location=location.belowbar, color=color.aqua, size=size.small, text="F0930")
+
+alertcondition(buySignal, title="V71 Diagnostico TVSafe BUY", message="V71 DIAGNOSTICO TVSAFE BUY")

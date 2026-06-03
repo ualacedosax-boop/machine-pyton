@@ -19,18 +19,19 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 1 | Rewrite TVSafe indicadores 95 - perfil 05 | 2m | `V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine` | 52 local | 100.00% local nos ultimos 365d | 2626.0 | 0.0 | 999 | Perfis 01 e 04 operaram no TV, mas reprovaram no recente; proximo teste e o perfil 05 Ultra |
-| 2 | Destrava TV minimo smoke/horarios | 2m | `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` | 3547 TV smoke | 47.90% TV | -389 USD TV | -1661.50 USD TV | 0.983 TV | Confirmou que o TV executa; e diagnostico, nao estrategia |
-| 3 | Destrava TV 3H escada operavel | 2m | `V71_DESTRAVA_TV_3H_ESCADA_OPERAVEL.pine` | diagnostico | n/d | n/d | n/d | n/d | Travou; provavelmente complexo demais para diagnostico inicial |
-| 4 | DMI3 Take45 robusto | 2m | `V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine` | 132 | 86.36% local nos ultimos 365d | 3081.0 | -331.5 | 2.463 | Travou no teste direto; precisa passar por diagnostico minimo antes |
-| 5 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% local nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Reprovado por operabilidade: tambem travou no TradingView |
-| 6 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_TV_LIMPO.pine` | 191 | 89.01% local nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Reprovado por operabilidade: smoke minimo funciona, mas versoes Regime travaram no TV |
-| 7 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% local | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples, mas ainda sem confirmacao TV recente |
-| 8 | Calendario DOW alta acerto - perfil 05 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 152 TV | 81.58% TV nos ultimos 365d | +5972 USD TV | -1168 USD TV | 1.911 TV | Nao confirmou acerto alto no TV |
-| 9 | Calendario DOW robusto anual - perfil 04 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 224 TV | 80.80% TV nos ultimos 365d | +8219 USD TV | -1206 USD TV | 1.817 TV | Nao confirmou acerto alto no TV; 90d fraco |
-| 10 | Calendario DOW 230-85 - perfil 01 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 240 TV | 81.25% TV nos ultimos 365d | +9165 USD TV | -1105 USD TV | 1.87 TV | Reprovado no TradingView apesar do local forte |
-| 11 | 04:06 reversao sem filtro | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` perfil 01 | 373 | 80.16% local | 6441.5 | -550.5 | 1.74 | Frequencia alta e anos positivos, mas abaixo do alvo de acerto |
-| 12 | Calendario top tokens | 2m | `V71_PESQUISA_TV_CALENDARIO_TOP_TOKENS_3H.pine` | 54 a 160 | 80% a 87% local | variavel | variavel | variavel | Bom para estudar blocos de horario, nao final |
+| 1 | Diagnostico TVSafe por blocos | 2m | `V71_DIAGNOSTICO_TVSAFE_BLOCOS_REWRITE_2MIN.pine` | diagnostico | n/d | n/d | n/d | n/d | Proximo passo: isolar se a perda recente vem da quarta 02:56, sexta 09:30 ou da combinacao |
+| 2 | Rewrite TVSafe indicadores 95 | 2m | `V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine` | 46 TV perfil 05 | 86.96% TV nos ultimos 365d | +2636 USD TV | -827.50 USD TV | 2.877 TV | Operavel, mas perfis 01/04/05 reprovaram no 90d/30d |
+| 3 | Destrava TV minimo smoke/horarios | 2m | `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` | 3547 TV smoke | 47.90% TV | -389 USD TV | -1661.50 USD TV | 0.983 TV | Confirmou que o TV executa; e diagnostico, nao estrategia |
+| 4 | Destrava TV 3H escada operavel | 2m | `V71_DESTRAVA_TV_3H_ESCADA_OPERAVEL.pine` | diagnostico | n/d | n/d | n/d | n/d | Travou; provavelmente complexo demais para diagnostico inicial |
+| 5 | DMI3 Take45 robusto | 2m | `V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine` | 132 | 86.36% local nos ultimos 365d | 3081.0 | -331.5 | 2.463 | Travou no teste direto; precisa passar por diagnostico minimo antes |
+| 6 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% local nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Reprovado por operabilidade: tambem travou no TradingView |
+| 7 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_TV_LIMPO.pine` | 191 | 89.01% local nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Reprovado por operabilidade: smoke minimo funciona, mas versoes Regime travaram no TV |
+| 8 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% local | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples, mas ainda sem confirmacao TV recente |
+| 9 | Calendario DOW alta acerto - perfil 05 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 152 TV | 81.58% TV nos ultimos 365d | +5972 USD TV | -1168 USD TV | 1.911 TV | Nao confirmou acerto alto no TV |
+| 10 | Calendario DOW robusto anual - perfil 04 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 224 TV | 80.80% TV nos ultimos 365d | +8219 USD TV | -1206 USD TV | 1.817 TV | Nao confirmou acerto alto no TV; 90d fraco |
+| 11 | Calendario DOW 230-85 - perfil 01 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 240 TV | 81.25% TV nos ultimos 365d | +9165 USD TV | -1105 USD TV | 1.87 TV | Reprovado no TradingView apesar do local forte |
+| 12 | 04:06 reversao sem filtro | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` perfil 01 | 373 | 80.16% local | 6441.5 | -550.5 | 1.74 | Frequencia alta e anos positivos, mas abaixo do alvo de acerto |
+| 13 | Calendario top tokens | 2m | `V71_PESQUISA_TV_CALENDARIO_TOP_TOKENS_3H.pine` | 54 a 160 | 80% a 87% local | variavel | variavel | variavel | Bom para estudar blocos de horario, nao final |
 
 ## Candidato novo: Calendario DOW 230-85
 
@@ -227,6 +228,14 @@ Teste TradingView do perfil 04:
 | Ultimos 90d | 17 | 76.47% | +377 USD | -468 USD | 1.403 | Recente fraco |
 | Ultimos 30d | 6 | 66.67% | -64 USD | -468 USD | 0.863 | Reprovado |
 
+Teste TradingView do perfil 05:
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| Ultimos 365d | 46 | 86.96% | +2636 USD | -827.50 USD | 2.877 | Anual aceitavel, mas menor frequencia |
+| Ultimos 90d | 15 | 73.33% | +175 USD | -795.50 USD | 1.187 | Recente fraco |
+| Ultimos 30d | 6 | 66.67% | -64 USD | -468 USD | 0.863 | Reprovado; mesmo 30d do perfil 04 |
+
 Perfis novos adicionados ao mesmo Pine:
 
 - `04 Recente 68tr 97pct`: segunda 03:48 BUY se `range30 <= 41.0625`, quarta 02:56 BUY se `ema17 - ema34 >= 0.9902`, sexta 09:30 BUY se `roc5 <= -9.5000`.
@@ -253,7 +262,34 @@ Ponto fraco:
 - 2024 completo ainda e fraco; por isso e candidato de pesquisa/validacao TV, nao substituto do oficial.
 - o perfil 01 caiu no TV para 84.82% em 365d, 78.57% em 90d e 60.00% em 30d; portanto nao deve ser promovido.
 - o perfil 04 caiu no TV para 87.32% em 365d, 76.47% em 90d e 66.67% em 30d; portanto tambem nao deve ser promovido.
-- o perfil 05 e o ultimo teste desta familia antes de reescrever usando o export do TV.
+- o perfil 05 caiu no TV para 86.96% em 365d, 73.33% em 90d e 66.67% em 30d; portanto a familia nao deve ser promovida.
+- os perfis 04 e 05 repetiram exatamente o mesmo 30d, indicando que a perda recente vem dos blocos compartilhados `qua0256` e/ou `sex0930`.
+
+## Diagnostico por blocos do rewrite TVSafe
+
+Arquivo:
+
+`V71_DIAGNOSTICO_TVSAFE_BLOCOS_REWRITE_2MIN.pine`
+
+Objetivo:
+
+- isolar no TradingView qual bloco esta contaminando o 30d dos perfis 04/05;
+- manter o Pine simples e operavel;
+- evitar nova busca cega antes de saber se o problema e quarta 02:56, sexta 09:30 ou a combinacao.
+
+Ordem recomendada de teste:
+
+1. `05 Qua+Sex compartilhado`: deve reproduzir a base ruim do 30d dos perfis 04/05.
+2. `03 Qua 02:56 ema`: se perder, a quarta esta contaminando.
+3. `04 Sex 09:30 roc5`: se perder, a sexta esta contaminando.
+4. `02 Seg 10:30 roc10`: mede o bloco exclusivo do perfil 05.
+5. `01 Seg 03:48 range30`: mede o bloco exclusivo do perfil 04.
+
+Leitura:
+
+- se apenas um bloco estiver ruim, reescrever removendo esse bloco.
+- se `03` e `04` estiverem ruins, abandonar essa familia e usar export/lista de trades do TV para uma nova busca.
+- se os blocos isolados forem bons mas a combinacao for ruim, o problema e concorrencia/ordem de trades no Backtesting Profundo.
 
 ## Candidato operacional: DMI3 Take45 robusto
 
@@ -421,11 +457,11 @@ Ponto fraco:
 
 Melhor candidato para teste serio agora:
 
-`V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine`, perfil `05 Ultra 52tr 100pct`.
+Nenhum candidato aprovado. Proximo passo e diagnostico.
 
 Melhor candidato de alta acertividade/DD:
 
-`V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine`, perfil `05 Ultra 52tr 100pct`, pendente de confirmacao no TradingView.
+Nenhum confirmado no TradingView recente.
 
 Melhor candidato simples por robustez multiano:
 
@@ -441,12 +477,13 @@ Regra pratica:
 - o perfil 01 do Calendario DOW ja foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
 - o perfil 01 do Rewrite TVSafe operou no TradingView, mas reprovou no 30d; manter apenas como diagnostico de operabilidade;
 - o perfil 04 do Rewrite TVSafe tambem operou, mas reprovou no 90d e 30d;
+- o perfil 05 do Rewrite TVSafe tambem operou, mas reprovou no 90d e 30d;
 - o Regime 191/89 deve ficar pausado: o smoke minimo funciona, mas as versoes com logica de regime travaram no TradingView;
 - o Regime Refino 93 tambem deve ficar pausado: travou no TradingView;
 - o DMI3 Take45 tambem deve ficar pausado no teste direto: travou no TradingView;
 - o minimo `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` confirmou que o TV executa, mas e diagnostico e ficou perto de 48% no smoke;
-- se o TradingView confirmar o rewrite TVSafe perfil 05 com 30d e 90d fortes, ele vira a linha principal de pesquisa;
-- se o perfil 05 cair no TV, reescrever usando o export do proprio TradingView;
+- usar o diagnostico por blocos para decidir se remove quarta, sexta ou ambos;
+- se o diagnostico por blocos nao resolver, reescrever usando o export do proprio TradingView;
 - se o TradingView confirmar o 04:06 multiano perto de 86%, ele vira a linha mais segura de pesquisa;
 - nenhum candidato deve substituir o oficial sem aprovacao explicita.
 
@@ -457,10 +494,10 @@ Regra pratica:
 3. Pausar o Regime Refino 93: tambem travou no TradingView.
 4. Pausar o DMI3 Take45 direto: tambem travou no TradingView.
 5. Usar o resultado do `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` apenas como prova de execucao; o modo smoke ficou perto de 48% e nao e estrategia.
-6. Testar `V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine` em `MNQ1!`, `2m`, Backtesting Profundo.
-7. Perfil recomendado: `05 Ultra 52tr 100pct`.
-8. Conferir se 365 dias fica perto de 52 trades, 100%, +2626 pontos, DD 0 e PF 999.
-9. Conferir se 90 dias fica perto de 19 trades e 100%.
-10. Conferir se 30 dias fica perto de 10 trades e 100%.
-11. Se o perfil 05 cair no recorte recente, reescrever de novo usando o export do TV.
+6. Testar `V71_DIAGNOSTICO_TVSAFE_BLOCOS_REWRITE_2MIN.pine` em `MNQ1!`, `2m`, Backtesting Profundo.
+7. Primeiro perfil: `05 Qua+Sex compartilhado`.
+8. Depois testar `03 Qua 02:56 ema`.
+9. Depois testar `04 Sex 09:30 roc5`.
+10. Se um bloco isolado reprovar, criar novo candidato removendo esse bloco.
+11. Se os dois blocos isolados reprovarem, reescrever usando o export/lista de trades do TradingView.
 12. Manter o V7.1 oficial sem alteracao.
