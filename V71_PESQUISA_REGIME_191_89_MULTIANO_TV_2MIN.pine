@@ -14,8 +14,8 @@ strategy("V71 Pesquisa Regime 191 89 Multiano TV 2m",
 
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
-modoTV = input.string("01 Diagnostico horarios", "Modo TV",
-     options=["01 Diagnostico horarios", "02 Base DMI3", "03 Regime 191/89"])
+modoTV = input.string("00 Forcar teste", "Modo TV",
+     options=["00 Forcar teste", "01 Diagnostico horarios", "02 Base DMI3", "03 Regime 191/89"])
 toleranciaMin = input.int(1, "Tolerancia horario min", minval=0, maxval=2)
 mostrarPainel = input.bool(true, "Mostrar painel")
 
@@ -97,15 +97,18 @@ regimeS2052a = eh2052 and ema17 < ema34 and diMinus > diPlus and adx14 >= 20 and
 regimeS2052b = eh2052 and ema17 < ema34 and diMinus > diPlus and adx14 >= 30 and ret30 >= -3.25
 regimeB2058 = eh2058 and ema17 >= ema34 and diPlus >= diMinus and dmiGap >= 10 and dmiGap <= 13.35
 
+modoForca = modoTV == "00 Forcar teste"
 modoDiag = modoTV == "01 Diagnostico horarios"
 modoBase = modoTV == "02 Base DMI3"
 modoRegime = modoTV == "03 Regime 191/89"
 horarioAlvo = eh0346 or eh0348 or eh1030 or eh2052 or eh2058
+forcaBuy = bar_index > 300 and bar_index % 500 == 0
 diagBuy = horarioAlvo and votoTotalDiag >= 0
 diagSell = horarioAlvo and votoTotalDiag < 0
 
 entradaLiberada = strategy.position_size == 0
 baseAtual = baseB0348 or baseB1030 or baseS1030 or baseB2058
+entraForcaBuy = entradaLiberada and modoForca and forcaBuy
 entraDiagBuy = entradaLiberada and modoDiag and diagBuy
 entraDiagSell = entradaLiberada and modoDiag and diagSell
 entraBaseB0348 = entradaLiberada and (modoBase or modoRegime) and baseB0348
@@ -120,7 +123,9 @@ entraRegimeB2052 = entradaLiberada and modoRegime and not baseAtual and regimeB2
 entraRegimeS2052 = entradaLiberada and modoRegime and not baseAtual and (regimeS2052a or regimeS2052b)
 entraRegimeB2058 = entradaLiberada and modoRegime and not baseAtual and regimeB2058
 
-if entraDiagBuy
+if entraForcaBuy
+    strategy.entry("FORCA_B", strategy.long, alert_message="V71 PESQUISA FORCAR TESTE BUY")
+else if entraDiagBuy
     strategy.entry("DBG_B", strategy.long, alert_message="V71 PESQUISA DIAG BUY")
 else if entraDiagSell
     strategy.entry("DBG_S", strategy.short, alert_message="V71 PESQUISA DIAG SELL")
@@ -148,6 +153,7 @@ else if entraRegimeB2058
     strategy.entry("B2058", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 20:58")
 
 strategy.exit("TP/SL S0346", from_entry="S0346", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL FORCA_B", from_entry="FORCA_B", profit=takeTicks, loss=stopTicks)
 strategy.exit("TP/SL DBG_B", from_entry="DBG_B", profit=takeTicks, loss=stopTicks)
 strategy.exit("TP/SL DBG_S", from_entry="DBG_S", profit=takeTicks, loss=stopTicks)
 strategy.exit("TP/SL B0348", from_entry="B0348", profit=takeTicks, loss=stopTicks)
@@ -158,6 +164,7 @@ strategy.exit("TP/SL S2052", from_entry="S2052", profit=takeTicks, loss=stopTick
 strategy.exit("TP/SL B2058", from_entry="B2058", profit=takeTicks, loss=stopTicks)
 
 plotshape(entraRegimeS0346, title="SELL 03:46", style=shape.triangledown, location=location.abovebar, color=color.red, size=size.normal, text="S0346")
+plotshape(entraForcaBuy, title="FORCAR BUY", style=shape.square, location=location.belowbar, color=color.yellow, size=size.tiny, text="F")
 plotshape(entraDiagBuy, title="DIAG BUY", style=shape.circle, location=location.belowbar, color=color.lime, size=size.tiny, text="DBG")
 plotshape(entraDiagSell, title="DIAG SELL", style=shape.circle, location=location.abovebar, color=color.red, size=size.tiny, text="DBG")
 plotshape(entraBaseB0348 or entraRegimeB0348, title="BUY 03:48", style=shape.triangleup, location=location.belowbar, color=color.lime, size=size.normal, text="B0348")
@@ -169,7 +176,7 @@ plotshape(entraBaseB2058 or entraRegimeB2058, title="BUY 20:58", style=shape.tri
 
 compraCond = entraBaseB0348 or entraRegimeB0348 or entraBaseB1030 or entraRegimeB1030 or entraRegimeB2052 or entraBaseB2058 or entraRegimeB2058
 vendaCond = entraRegimeS0346 or entraBaseS1030 or entraRegimeS1030 or entraRegimeS2052
-alertcondition(compraCond or entraDiagBuy, title="V71 Pesquisa Multiano BUY", message="V71 PESQUISA MULTIANO BUY")
+alertcondition(compraCond or entraDiagBuy or entraForcaBuy, title="V71 Pesquisa Multiano BUY", message="V71 PESQUISA MULTIANO BUY")
 alertcondition(vendaCond or entraDiagSell, title="V71 Pesquisa Multiano SELL", message="V71 PESQUISA MULTIANO SELL")
 
 var table painel = table.new(position.top_right, 2, 8, bgcolor=color.new(color.black, 20))
@@ -177,7 +184,7 @@ if mostrarPainel and barstate.islast
     table.cell(painel, 0, 0, "V71 PESQUISA", text_color=color.white)
     table.cell(painel, 1, 0, "MULTIANO 191/89", text_color=color.yellow)
     table.cell(painel, 0, 1, "Modo", text_color=color.white)
-    table.cell(painel, 1, 1, modoTV, text_color=modoDiag ? color.yellow : color.lime)
+    table.cell(painel, 1, 1, modoTV, text_color=modoForca ? color.orange : modoDiag ? color.yellow : color.lime)
     table.cell(painel, 0, 2, "365d local", text_color=color.white)
     table.cell(painel, 1, 2, "191 tr / 89.01% / PF 3.49", text_color=color.lime)
     table.cell(painel, 0, 3, "Hora SP", text_color=color.white)
