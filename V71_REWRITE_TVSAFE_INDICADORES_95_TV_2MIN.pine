@@ -1,0 +1,96 @@
+//@version=6
+strategy("V71 Rewrite TVSafe Indicadores 95 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Rewrite com indicadores simples e compativeis com TradingView.
+// Sem DMI, sem painel pesado, sem IDs dinamicos.
+// Use no MNQ1! em 2 minutos com Backtesting Profundo.
+
+perfil = input.string("01 Principal 122tr 95pct", "Perfil",
+     options=["01 Principal 122tr 95pct", "02 Mais trades 138tr 94pct", "03 Mais acerto 110tr 96pct"])
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarSinais = input.bool(true, "Mostrar sinais")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+emaTrend = ema17 - ema34
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+macdHist = macd - macdSignal
+roc5 = close - close[5]
+body = close - open
+range30 = ta.highest(high, 15) - ta.lowest(low, 15)
+
+typ = hlc3
+newDaySP = ta.change(dayofmonth(time, "America/Sao_Paulo")) != 0
+var float cumPV = na
+var float cumVol = na
+if newDaySP or na(cumPV)
+    cumPV := typ * volume
+    cumVol := volume
+else
+    cumPV += typ * volume
+    cumVol += volume
+vwapSP = cumVol != 0 ? cumPV / cumVol : na
+distVwap = close - vwapSP
+
+p1 = perfil == "01 Principal 122tr 95pct"
+p2 = perfil == "02 Mais trades 138tr 94pct"
+p3 = perfil == "03 Mais acerto 110tr 96pct"
+
+seg1030Buy = dowSP == dayofweek.monday and hSP == 10 and mSP == 30 and body <= 12.375
+dom2058Buy = dowSP == dayofweek.sunday and hSP == 20 and mSP == 58 and macdHist >= 1.0513
+qua0256Buy = dowSP == dayofweek.wednesday and hSP == 2 and mSP == 56 and emaTrend >= 0.9902
+
+qui0430SellP12 = dowSP == dayofweek.thursday and hSP == 4 and mSP == 30 and emaTrend <= 3.3899
+qui0430SellP3 = dowSP == dayofweek.thursday and hSP == 4 and mSP == 30 and distVwap <= -9.6492
+
+sex0930BuyP1 = dowSP == dayofweek.friday and hSP == 9 and mSP == 30 and roc5 <= -9.5
+sex0930BuyP23 = dowSP == dayofweek.friday and hSP == 9 and mSP == 30 and range30 >= 68.95
+
+qui0430Sell = (p1 or p2) ? qui0430SellP12 : qui0430SellP3
+sex0930Buy = p1 ? sex0930BuyP1 : sex0930BuyP23
+
+semPosicao = strategy.position_size == 0
+buySignal = semPosicao and (seg1030Buy or dom2058Buy or qua0256Buy or sex0930Buy)
+sellSignal = semPosicao and qui0430Sell
+
+if buySignal
+    strategy.entry("B", strategy.long, alert_message="V71 REWRITE TVSAFE BUY")
+
+if sellSignal
+    strategy.entry("S", strategy.short, alert_message="V71 REWRITE TVSAFE SELL")
+
+strategy.exit("TP/SL B", from_entry="B", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL S", from_entry="S", profit=takeTicks, loss=stopTicks)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+plotshape(mostrarSinais and seg1030Buy, title="BUY Seg 10:30", style=shape.triangleup, location=location.belowbar,
+     color=color.lime, size=size.small, text="B1030")
+plotshape(mostrarSinais and dom2058Buy, title="BUY Dom 20:58", style=shape.triangleup, location=location.belowbar,
+     color=color.teal, size=size.small, text="B2058")
+plotshape(mostrarSinais and qua0256Buy, title="BUY Qua 02:56", style=shape.triangleup, location=location.belowbar,
+     color=color.green, size=size.small, text="B0256")
+plotshape(mostrarSinais and sex0930Buy, title="BUY Sex 09:30", style=shape.triangleup, location=location.belowbar,
+     color=color.aqua, size=size.small, text="B0930")
+plotshape(mostrarSinais and qui0430Sell, title="SELL Qui 04:30", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.small, text="S0430")
+
+alertcondition(buySignal, title="V71 Rewrite TVSafe BUY", message="V71 REWRITE TVSAFE BUY")
+alertcondition(sellSignal, title="V71 Rewrite TVSafe SELL", message="V71 REWRITE TVSAFE SELL")
