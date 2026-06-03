@@ -1,0 +1,157 @@
+//@version=6
+strategy("V71 Destrava TV 3H Escada Operavel",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1,
+     process_orders_on_close=true)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Objetivo: destravar a validacao no TradingView e descobrir qual filtro zera entradas.
+// Use no MNQ1! em 2 minutos com Backtesting Profundo.
+
+modo = input.string("00 Forcar smoke", "Modo",
+     options=["00 Forcar smoke", "01 Horarios 3H", "02 Scores sem DMI", "03 DMI3 original", "04 Operavel sem DMI Take45"])
+takePontos = input.float(45.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+dmiGapMin = input.float(3.0, "Gap minimo DMI", step=0.5)
+periodoSmoke = input.int(50, "Smoke: entrar a cada N barras", minval=5, maxval=2000)
+fecharDiagnosticoRapido = input.bool(true, "Fechar rapido nos modos 00/01")
+mostrarPainel = input.bool(true, "Mostrar painel")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+eh0348 = hSP == 3 and mSP == 48
+eh1030 = hSP == 10 and mSP == 30
+eh2058 = hSP == 20 and mSP == 58
+
+janela0348 = eh0348 and (dowSP == dayofweek.monday or dowSP == dayofweek.tuesday)
+janela1030Buy = eh1030 and dowSP == dayofweek.monday
+janela1030Sell = eh1030 and dowSP == dayofweek.friday
+janela2058 = eh2058 and (dowSP == dayofweek.sunday or dowSP == dayofweek.wednesday)
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+sma17 = ta.sma(close, 17)
+sma34 = ta.sma(close, 34)
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+roc5 = close - close[5]
+roc10 = close - close[10]
+prevRoc5 = roc5[1]
+body = close - open
+vwapDia = ta.vwap(hlc3)
+[diPlus, diMinus, adx14] = ta.dmi(14, 14)
+dmiGap = math.abs(diPlus - diMinus)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+votoMacd = macd >= macdSignal ? 1 : -1
+votoCandle = body >= 0 ? 1 : -1
+votoPrevRoc5Contra = prevRoc5 <= 0 ? 1 : -1
+votoSma1734 = sma17 >= sma34 ? 1 : -1
+votoRoc10 = roc10 >= 0 ? 1 : -1
+votoEma1734 = ema17 >= ema34 ? 1 : -1
+votoRoc5 = roc5 >= 0 ? 1 : -1
+votoVwap = close >= vwapDia ? 1 : -1
+
+score0348 = votoMacd + votoCandle + votoPrevRoc5Contra
+score1030 = votoSma1734 + votoRoc10 + votoPrevRoc5Contra
+score2058 = votoEma1734 + votoRoc5 + votoVwap
+
+modoSmoke = modo == "00 Forcar smoke"
+modoHorarios = modo == "01 Horarios 3H"
+modoScores = modo == "02 Scores sem DMI"
+modoDmi3 = modo == "03 DMI3 original"
+modoOperavel = modo == "04 Operavel sem DMI Take45"
+
+semPosicao = strategy.position_size == 0
+smokeBuy = modoSmoke and bar_index > 20 and bar_index % periodoSmoke == 0 and semPosicao
+smokeClose = modoSmoke and strategy.position_size > 0 and bar_index % periodoSmoke == 1
+
+horarioBuy = modoHorarios and semPosicao and (janela0348 or janela1030Buy or janela2058)
+horarioSell = modoHorarios and semPosicao and janela1030Sell
+
+scoreBuy0348 = janela0348 and score0348 >= 0
+scoreBuy1030 = janela1030Buy and score1030 >= 0
+scoreSell1030 = janela1030Sell and score1030 < 0
+scoreBuy2058 = janela2058 and score2058 >= 0
+
+dmiOk = dmiGap >= dmiGapMin
+
+scoresBuy = modoScores and semPosicao and (scoreBuy0348 or scoreBuy1030 or scoreBuy2058)
+scoresSell = modoScores and semPosicao and scoreSell1030
+
+dmiBuy = modoDmi3 and semPosicao and dmiOk and (scoreBuy0348 or scoreBuy1030 or scoreBuy2058)
+dmiSell = modoDmi3 and semPosicao and dmiOk and scoreSell1030
+
+operavelBuy = modoOperavel and semPosicao and (scoreBuy0348 or scoreBuy1030 or scoreBuy2058)
+operavelSell = modoOperavel and semPosicao and scoreSell1030
+
+buySignal = smokeBuy or horarioBuy or scoresBuy or dmiBuy or operavelBuy
+sellSignal = horarioSell or scoresSell or dmiSell or operavelSell
+
+idBuy = modoSmoke ? "SMOKE_B" : modoHorarios ? "H_B" : modoScores ? "SCORE_B" : modoDmi3 ? "DMI_B" : "OP_B"
+idSell = modoHorarios ? "H_S" : modoScores ? "SCORE_S" : modoDmi3 ? "DMI_S" : "OP_S"
+
+if buySignal
+    strategy.entry(idBuy, strategy.long, alert_message="V71 DESTRAVA BUY")
+
+if sellSignal
+    strategy.entry(idSell, strategy.short, alert_message="V71 DESTRAVA SELL")
+
+if fecharDiagnosticoRapido and (modoSmoke or modoHorarios)
+    if smokeClose
+        strategy.close("SMOKE_B", comment="FECHA SMOKE")
+    if modoHorarios and strategy.position_size > 0 and not buySignal and not sellSignal
+        strategy.close("H_B", comment="FECHA H")
+    if modoHorarios and strategy.position_size < 0 and not buySignal and not sellSignal
+        strategy.close("H_S", comment="FECHA H")
+else
+    strategy.exit("TP/SL SCORE_B", from_entry="SCORE_B", profit=takeTicks, loss=stopTicks)
+    strategy.exit("TP/SL SCORE_S", from_entry="SCORE_S", profit=takeTicks, loss=stopTicks)
+    strategy.exit("TP/SL DMI_B", from_entry="DMI_B", profit=takeTicks, loss=stopTicks)
+    strategy.exit("TP/SL DMI_S", from_entry="DMI_S", profit=takeTicks, loss=stopTicks)
+    strategy.exit("TP/SL OP_B", from_entry="OP_B", profit=takeTicks, loss=stopTicks)
+    strategy.exit("TP/SL OP_S", from_entry="OP_S", profit=takeTicks, loss=stopTicks)
+
+plotshape(buySignal, title="BUY", style=shape.triangleup, location=location.belowbar,
+     color=modoSmoke ? color.yellow : modoDmi3 ? color.teal : color.lime, size=size.normal, text="BUY")
+plotshape(sellSignal, title="SELL", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.normal, text="SELL")
+plotshape(smokeClose, title="SMOKE CLOSE", style=shape.xcross, location=location.abovebar,
+     color=color.orange, size=size.tiny, text="X")
+
+alertcondition(buySignal, title="V71 Destrava BUY", message="V71 DESTRAVA BUY")
+alertcondition(sellSignal, title="V71 Destrava SELL", message="V71 DESTRAVA SELL")
+
+var table painel = table.new(position.top_right, 2, 10, bgcolor=color.new(color.black, 20))
+if mostrarPainel and barstate.islast
+    table.cell(painel, 0, 0, "V71", text_color=color.white)
+    table.cell(painel, 1, 0, "DESTRAVA 3H", text_color=color.yellow)
+    table.cell(painel, 0, 1, "Modo", text_color=color.white)
+    table.cell(painel, 1, 1, modo, text_color=color.aqua)
+    table.cell(painel, 0, 2, "Hora SP", text_color=color.white)
+    table.cell(painel, 1, 2, str.tostring(hSP) + ":" + (mSP < 10 ? "0" : "") + str.tostring(mSP), text_color=color.white)
+    table.cell(painel, 0, 3, "Janela", text_color=color.white)
+    table.cell(painel, 1, 3, janela0348 ? "03:48" : janela1030Buy ? "10:30B" : janela1030Sell ? "10:30S" : janela2058 ? "20:58" : "fora", text_color=color.white)
+    table.cell(painel, 0, 4, "Scores", text_color=color.white)
+    table.cell(painel, 1, 4, str.tostring(score0348) + " / " + str.tostring(score1030) + " / " + str.tostring(score2058), text_color=color.white)
+    table.cell(painel, 0, 5, "DMI gap", text_color=color.white)
+    table.cell(painel, 1, 5, str.tostring(dmiGap, "#.##"), text_color=dmiOk ? color.lime : color.red)
+    table.cell(painel, 0, 6, "TP/SL", text_color=color.white)
+    table.cell(painel, 1, 6, str.tostring(takePontos) + " / " + str.tostring(stopPontos), text_color=color.white)
+    table.cell(painel, 0, 7, "Posicao", text_color=color.white)
+    table.cell(painel, 1, 7, str.tostring(strategy.position_size), text_color=color.white)
+    table.cell(painel, 0, 8, "Proximo", text_color=color.white)
+    table.cell(painel, 1, 8, modoSmoke ? "testar 01" : modoHorarios ? "testar 02" : modoScores ? "testar 03" : modoDmi3 ? "avaliar DMI" : "avaliar resultado", text_color=color.yellow)
+    table.cell(painel, 0, 9, "Oficial", text_color=color.white)
+    table.cell(painel, 1, 9, "NAO ALTERADO", text_color=color.orange)

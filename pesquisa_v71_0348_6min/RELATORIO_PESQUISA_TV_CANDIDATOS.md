@@ -19,15 +19,16 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 1 | DMI3 Take45 robusto | 2m | `V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine` | 132 | 86.36% local nos ultimos 365d | 3081.0 | -331.5 | 2.463 | Proximo teste pratico: simples e deriva de base DMI3 que ja gerou entradas no TV |
-| 2 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% local nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Reprovado por operabilidade: tambem travou no TradingView |
-| 3 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_TV_LIMPO.pine` | 191 | 89.01% local nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Reprovado por operabilidade: smoke minimo funciona, mas versoes Regime travaram no TV |
-| 4 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% local | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples, mas ainda sem confirmacao TV recente |
-| 5 | Calendario DOW alta acerto - perfil 05 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 152 TV | 81.58% TV nos ultimos 365d | +5972 USD TV | -1168 USD TV | 1.911 TV | Nao confirmou acerto alto no TV |
-| 6 | Calendario DOW robusto anual - perfil 04 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 224 TV | 80.80% TV nos ultimos 365d | +8219 USD TV | -1206 USD TV | 1.817 TV | Nao confirmou acerto alto no TV; 90d fraco |
-| 7 | Calendario DOW 230-85 - perfil 01 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 240 TV | 81.25% TV nos ultimos 365d | +9165 USD TV | -1105 USD TV | 1.87 TV | Reprovado no TradingView apesar do local forte |
-| 8 | 04:06 reversao sem filtro | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` perfil 01 | 373 | 80.16% local | 6441.5 | -550.5 | 1.74 | Frequencia alta e anos positivos, mas abaixo do alvo de acerto |
-| 9 | Calendario top tokens | 2m | `V71_PESQUISA_TV_CALENDARIO_TOP_TOKENS_3H.pine` | 54 a 160 | 80% a 87% local | variavel | variavel | variavel | Bom para estudar blocos de horario, nao final |
+| 1 | Destrava TV 3H escada operavel | 2m | `V71_DESTRAVA_TV_3H_ESCADA_OPERAVEL.pine` | diagnostico | n/d | n/d | n/d | n/d | Proximo teste: confirmar em qual degrau o TradingView deixa de gerar trades |
+| 2 | DMI3 Take45 robusto | 2m | `V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine` | 132 | 86.36% local nos ultimos 365d | 3081.0 | -331.5 | 2.463 | Travou no teste direto; precisa passar pela escada antes |
+| 3 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% local nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Reprovado por operabilidade: tambem travou no TradingView |
+| 4 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_TV_LIMPO.pine` | 191 | 89.01% local nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Reprovado por operabilidade: smoke minimo funciona, mas versoes Regime travaram no TV |
+| 5 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% local | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples, mas ainda sem confirmacao TV recente |
+| 6 | Calendario DOW alta acerto - perfil 05 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 152 TV | 81.58% TV nos ultimos 365d | +5972 USD TV | -1168 USD TV | 1.911 TV | Nao confirmou acerto alto no TV |
+| 7 | Calendario DOW robusto anual - perfil 04 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 224 TV | 80.80% TV nos ultimos 365d | +8219 USD TV | -1206 USD TV | 1.817 TV | Nao confirmou acerto alto no TV; 90d fraco |
+| 8 | Calendario DOW 230-85 - perfil 01 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 240 TV | 81.25% TV nos ultimos 365d | +9165 USD TV | -1105 USD TV | 1.87 TV | Reprovado no TradingView apesar do local forte |
+| 9 | 04:06 reversao sem filtro | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` perfil 01 | 373 | 80.16% local | 6441.5 | -550.5 | 1.74 | Frequencia alta e anos positivos, mas abaixo do alvo de acerto |
+| 10 | Calendario top tokens | 2m | `V71_PESQUISA_TV_CALENDARIO_TOP_TOKENS_3H.pine` | 54 a 160 | 80% a 87% local | variavel | variavel | variavel | Bom para estudar blocos de horario, nao final |
 
 ## Candidato novo: Calendario DOW 230-85
 
@@ -126,8 +127,37 @@ Ponto fraco:
 - a busca pos-DOW voltou ao Regime 191/89 como melhor candidato pronto; ele usa entrada no candle seguinte, mas ainda carrega fragilidade em 2024.
 - o Regime 191/89 travou no TradingView mesmo na versao limpa; como o smoke minimo funciona, o problema esta na implementacao/operabilidade desse Pine, entao ele nao deve ser priorizado.
 - o Regime Refino 93 tambem travou no TradingView; portanto a proxima validacao deve priorizar arquivos Pine mais simples e ja proximos de uma base que gerou entradas no TV.
+- o DMI3 Take45 tambem travou no teste direto; portanto a proxima etapa e diagnostica, com uma escada que comeca forcando entrada e depois adiciona horarios, scores e DMI.
 - por usar calendario por dia da semana, precisa ser confirmado no TradingView antes de qualquer decisao operacional.
 - ainda nao deve substituir o oficial.
+
+## Diagnostico operacional: Destrava TV 3H escada
+
+Arquivo:
+
+`V71_DESTRAVA_TV_3H_ESCADA_OPERAVEL.pine`
+
+Teste no TradingView:
+
+- simbolo: `MNQ1!`
+- timeframe: `2m`
+- modo: Backtesting Profundo
+- comecar no modo `00 Forcar smoke`
+
+Escada de teste:
+
+1. `00 Forcar smoke`: deve gerar trades imediatamente; se nao gerar, o problema e configuracao/execucao no TV.
+2. `01 Horarios 3H`: testa somente os horarios/dias da familia 3H, sem indicadores.
+3. `02 Scores sem DMI`: adiciona os scores de direcao, ainda sem DMI.
+4. `03 DMI3 original`: adiciona `dmi_gap >= 3`, igual ao candidato direto que travou.
+5. `04 Operavel sem DMI Take45`: usa os scores sem DMI com take 45.5/stop 117 para avaliar se existe uma linha operavel sem o filtro problematico.
+
+Leitura:
+
+- se `00` funciona e `01` trava, o problema esta em horario/dia/sessao.
+- se `01` funciona e `02` trava, o problema esta nos scores.
+- se `02` funciona e `03` trava, o DMI e o filtro que zera o TradingView.
+- se `04` gera trades positivos, ele pode virar a proxima linha operacional.
 
 ## Candidato operacional: DMI3 Take45 robusto
 
@@ -295,11 +325,11 @@ Ponto fraco:
 
 Melhor candidato para teste serio agora:
 
-`V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine`.
+`V71_DESTRAVA_TV_3H_ESCADA_OPERAVEL.pine`, comecando pelo modo `00 Forcar smoke`.
 
 Melhor candidato de alta acertividade/DD:
 
-`V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine`, porque os Regimes de maior acerto local travaram no TradingView.
+Nenhum candidato de alta acertividade/DD esta operacional no TradingView neste momento; e preciso passar pela escada de destravamento.
 
 Melhor candidato simples por robustez multiano:
 
@@ -316,7 +346,8 @@ Regra pratica:
 - o perfil 01 ja foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
 - o Regime 191/89 deve ficar pausado: o smoke minimo funciona, mas as versoes com logica de regime travaram no TradingView;
 - o Regime Refino 93 tambem deve ficar pausado: travou no TradingView;
-- se o TradingView confirmar o DMI3 Take45 perto de 132 trades e acima de 85%, ele vira a linha principal de pesquisa operacional;
+- o DMI3 Take45 tambem deve ficar pausado no teste direto: travou no TradingView;
+- se a escada `V71_DESTRAVA_TV_3H_ESCADA_OPERAVEL.pine` passar ate o modo `04`, esse modo vira a linha principal de pesquisa operacional;
 - se o TradingView confirmar o 04:06 multiano perto de 86%, ele vira a linha mais segura de pesquisa;
 - nenhum candidato deve substituir o oficial sem aprovacao explicita.
 
@@ -325,10 +356,12 @@ Regra pratica:
 1. Nao promover a familia Calendario DOW atual: perfis 01, 04 e 05 ficaram abaixo de 85% no TradingView.
 2. Pausar o Regime 191/89: smoke minimo funciona, mas as versoes com logica travaram no TradingView.
 3. Pausar o Regime Refino 93: tambem travou no TradingView.
-4. Testar `V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine` em `MNQ1!`, `2m`, Backtesting Profundo.
-5. Usar parametros padrao: take `45.5`, stop `117`, DMI gap minimo `3.0`.
-6. Conferir se 365 dias fica proximo de 132 trades, 86.36%, +3081.0 pontos, DD -331.5 e PF 2.463.
-7. Conferir se 90 dias fica proximo de 31 trades e 87.10%.
-8. Conferir se 30 dias fica proximo de 11 trades e 90.91%.
-9. Se tambem travar, testar `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` em `6m`, perfil `02 Multiano 86pct`.
-10. Manter o V7.1 oficial sem alteracao.
+4. Pausar o DMI3 Take45 direto: tambem travou no TradingView.
+5. Testar `V71_DESTRAVA_TV_3H_ESCADA_OPERAVEL.pine` em `MNQ1!`, `2m`, Backtesting Profundo.
+6. Primeiro modo: `00 Forcar smoke`; precisa gerar relatorio.
+7. Se `00` gerar relatorio, testar `01 Horarios 3H`.
+8. Se `01` gerar relatorio, testar `02 Scores sem DMI`.
+9. Se `02` gerar relatorio, testar `03 DMI3 original`.
+10. Se `03` travar mas `02` funcionar, testar `04 Operavel sem DMI Take45` e avaliar 365/90/30 dias.
+11. Se `00` tambem travar, voltar para configuracao do TradingView, porque o arquivo forca entradas como o smoke.
+12. Manter o V7.1 oficial sem alteracao.
