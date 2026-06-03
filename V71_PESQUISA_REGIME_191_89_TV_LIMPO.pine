@@ -1,0 +1,171 @@
+//@version=6
+strategy("V71 Pesquisa Regime 191 89 TV LIMPO",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1,
+     process_orders_on_close=true)
+
+// Pesquisa separada. Nao altera o V7.1 oficial.
+// Versao limpa: parte do smoke test que ja gerou trades no TradingView.
+
+modoTV = input.string("00 Smoke limpo", "Modo TV",
+     options=["00 Smoke limpo", "01 Diagnostico horarios", "02 Base DMI3", "03 Regime 191/89"])
+periodoSmoke = input.int(50, "Smoke a cada N barras", minval=5, maxval=2000)
+toleranciaMin = input.int(1, "Tolerancia horario min", minval=0, maxval=2)
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+minSP = hSP * 60 + mSP
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+emJanela(alvo) =>
+    math.abs(minSP - alvo) <= toleranciaMin
+
+eh0346 = emJanela(3 * 60 + 46)
+eh0348 = emJanela(3 * 60 + 48)
+eh1030 = emJanela(10 * 60 + 30)
+eh2052 = emJanela(20 * 60 + 52)
+eh2058 = emJanela(20 * 60 + 58)
+horarioAlvo = eh0346 or eh0348 or eh1030 or eh2052 or eh2058
+
+seg = dowSP == dayofweek.monday
+ter = dowSP == dayofweek.tuesday
+qua = dowSP == dayofweek.wednesday
+sex = dowSP == dayofweek.friday
+dom = dowSP == dayofweek.sunday
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+ema200 = ta.ema(close, 200)
+sma17 = ta.sma(close, 17)
+sma34 = ta.sma(close, 34)
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+roc5 = close - close[5]
+roc10 = close - close[10]
+prevRoc5 = roc5[1]
+body = close - open
+vwapDia = ta.vwap(hlc3)
+[diPlus, diMinus, adx14] = ta.dmi(14, 14)
+dmiGap = math.abs(diPlus - diMinus)
+ema200Slope10 = ema200 - ema200[10]
+range30 = ta.highest(high, 15) - ta.lowest(low, 15)
+ret30 = close - close[15]
+ret60 = close - close[30]
+distVwap = close - vwapDia
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+
+votoMacd = macd >= macdSignal ? 1 : -1
+votoCandle = body >= 0 ? 1 : -1
+votoPrevRoc5Contra = prevRoc5 <= 0 ? 1 : -1
+votoSma1734 = sma17 >= sma34 ? 1 : -1
+votoRoc10 = roc10 >= 0 ? 1 : -1
+votoEma1734 = ema17 >= ema34 ? 1 : -1
+votoRoc5 = roc5 >= 0 ? 1 : -1
+votoVwap = close >= vwapDia ? 1 : -1
+votoDmi = diPlus >= diMinus ? 1 : -1
+votoDiag = votoEma1734 + votoDmi + votoVwap
+
+score0348 = votoMacd + votoCandle + votoPrevRoc5Contra
+score1030 = votoSma1734 + votoRoc10 + votoPrevRoc5Contra
+score2058 = votoEma1734 + votoRoc5 + votoVwap
+
+dmiOk = dmiGap >= 3
+baseB0348 = eh0348 and dmiOk and score0348 >= 0 and (seg or ter)
+baseB1030 = eh1030 and dmiOk and score1030 >= 0 and seg
+baseS1030 = eh1030 and dmiOk and score1030 < 0 and sex
+baseB2058 = eh2058 and dmiOk and score2058 >= 0 and (dom or qua)
+baseAgora = baseB0348 or baseB1030 or baseS1030 or baseB2058
+
+tendBuy = ema17 >= ema34 and diPlus >= diMinus
+tendSell = ema17 < ema34 and diMinus > diPlus
+regS0346 = eh0346 and tendSell and dmiGap >= 6 and distVwap >= -7.26
+regB0348 = eh0348 and tendBuy and adx14 >= 25 and dmiGap >= 3 and ret60 <= 17.25
+regB1030 = eh1030 and tendBuy and adx14 >= 30 and ema200Slope10 >= 5.67
+regS1030 = eh1030 and tendSell and adx14 >= 25 and range30 <= 62.5
+regB2052 = eh2052 and tendBuy and adx14 >= 25 and range30 <= 18.44
+regS2052 = eh2052 and tendSell and ((adx14 >= 20 and dmiGap >= 10 and ret60 >= -27.75) or (adx14 >= 30 and ret30 >= -3.25))
+regB2058 = eh2058 and tendBuy and dmiGap >= 10 and dmiGap <= 13.35
+
+modoSmoke = modoTV == "00 Smoke limpo"
+modoDiag = modoTV == "01 Diagnostico horarios"
+modoBase = modoTV == "02 Base DMI3"
+modoRegime = modoTV == "03 Regime 191/89"
+
+smokeEntra = modoSmoke and bar_index > 20 and bar_index % periodoSmoke == 0 and strategy.position_size == 0
+smokeFecha = modoSmoke and strategy.position_size != 0 and bar_index > 20 and bar_index % periodoSmoke == 1
+diagBuy = modoDiag and horarioAlvo and votoDiag >= 0 and strategy.position_size == 0
+diagSell = modoDiag and horarioAlvo and votoDiag < 0 and strategy.position_size == 0
+
+if smokeEntra
+    strategy.entry("SMOKE_B", strategy.long)
+if smokeFecha
+    strategy.close_all(comment="FECHA SMOKE")
+
+if diagBuy
+    strategy.entry("DIAG_B", strategy.long)
+if diagSell
+    strategy.entry("DIAG_S", strategy.short)
+if modoDiag and strategy.position_size != 0 and not (diagBuy or diagSell)
+    strategy.close_all(comment="FECHA DIAG")
+
+if (modoBase or modoRegime) and strategy.position_size == 0
+    if baseB0348
+        strategy.entry("B0348", strategy.long)
+    else if baseB1030
+        strategy.entry("B1030", strategy.long)
+    else if baseS1030
+        strategy.entry("S1030", strategy.short)
+    else if baseB2058
+        strategy.entry("B2058", strategy.long)
+    else if modoRegime and not baseAgora and regS0346
+        strategy.entry("S0346", strategy.short)
+    else if modoRegime and not baseAgora and regB0348
+        strategy.entry("B0348", strategy.long)
+    else if modoRegime and not baseAgora and regB1030
+        strategy.entry("B1030", strategy.long)
+    else if modoRegime and not baseAgora and regS1030
+        strategy.entry("S1030", strategy.short)
+    else if modoRegime and not baseAgora and regB2052
+        strategy.entry("B2052", strategy.long)
+    else if modoRegime and not baseAgora and regS2052
+        strategy.entry("S2052", strategy.short)
+    else if modoRegime and not baseAgora and regB2058
+        strategy.entry("B2058", strategy.long)
+
+strategy.exit("X B0348", from_entry="B0348", profit=takeTicks, loss=stopTicks)
+strategy.exit("X B1030", from_entry="B1030", profit=takeTicks, loss=stopTicks)
+strategy.exit("X S1030", from_entry="S1030", profit=takeTicks, loss=stopTicks)
+strategy.exit("X B2058", from_entry="B2058", profit=takeTicks, loss=stopTicks)
+strategy.exit("X S0346", from_entry="S0346", profit=takeTicks, loss=stopTicks)
+strategy.exit("X B2052", from_entry="B2052", profit=takeTicks, loss=stopTicks)
+strategy.exit("X S2052", from_entry="S2052", profit=takeTicks, loss=stopTicks)
+
+plotshape(smokeEntra, title="SMOKE", style=shape.square, location=location.belowbar, color=color.yellow, size=size.tiny, text="S")
+plotshape(diagBuy, title="DIAG BUY", style=shape.circle, location=location.belowbar, color=color.lime, size=size.tiny, text="D")
+plotshape(diagSell, title="DIAG SELL", style=shape.circle, location=location.abovebar, color=color.red, size=size.tiny, text="D")
+
+var table painel = table.new(position.top_right, 2, 6, bgcolor=color.new(color.black, 20))
+if barstate.islast
+    table.cell(painel, 0, 0, "V71 LIMPO", text_color=color.white)
+    table.cell(painel, 1, 0, modoTV, text_color=modoSmoke ? color.orange : color.lime)
+    table.cell(painel, 0, 1, "Hora SP", text_color=color.white)
+    table.cell(painel, 1, 1, str.tostring(hSP) + ":" + (mSP < 10 ? "0" : "") + str.tostring(mSP), text_color=color.white)
+    table.cell(painel, 0, 2, "Horario alvo", text_color=color.white)
+    table.cell(painel, 1, 2, horarioAlvo ? "SIM" : "NAO", text_color=horarioAlvo ? color.lime : color.gray)
+    table.cell(painel, 0, 3, "ADX/Gap", text_color=color.white)
+    table.cell(painel, 1, 3, str.tostring(adx14, "#.##") + " / " + str.tostring(dmiGap, "#.##"), text_color=color.white)
+    table.cell(painel, 0, 4, "Posicao", text_color=color.white)
+    table.cell(painel, 1, 4, str.tostring(strategy.position_size), text_color=color.white)
+    table.cell(painel, 0, 5, "Oficial", text_color=color.white)
+    table.cell(painel, 1, 5, "NAO ALTERADO", text_color=color.orange)
