@@ -1,0 +1,74 @@
+//@version=6
+strategy("V71 Destrava TV Minimo Smoke Horarios",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1,
+     process_orders_on_close=true)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Diagnostico minimo: sem indicadores, sem DMI, sem tabela pesada.
+// Use no MNQ1! em 2 minutos com Backtesting Profundo.
+
+modo = input.string("00 Smoke puro", "Modo",
+     options=["00 Smoke puro", "01 Horarios 3H puro", "02 Calendario DOW puro"])
+periodoSmoke = input.int(50, "Smoke: entrar a cada N barras", minval=5, maxval=2000)
+mostrarSinais = input.bool(true, "Mostrar sinais")
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+modoSmoke = modo == "00 Smoke puro"
+modo3H = modo == "01 Horarios 3H puro"
+modoCalendario = modo == "02 Calendario DOW puro"
+
+smokeBuy = modoSmoke and bar_index > 20 and bar_index % periodoSmoke == 0 and strategy.position_size == 0
+smokeClose = modoSmoke and strategy.position_size > 0 and bar_index % periodoSmoke == 1
+
+h3Buy0348 = modo3H and dowSP == dayofweek.monday and hSP == 3 and mSP == 48
+h3Buy0348b = modo3H and dowSP == dayofweek.tuesday and hSP == 3 and mSP == 48
+h3Buy1030 = modo3H and dowSP == dayofweek.monday and hSP == 10 and mSP == 30
+h3Sell1030 = modo3H and dowSP == dayofweek.friday and hSP == 10 and mSP == 30
+h3Buy2058 = modo3H and dowSP == dayofweek.sunday and hSP == 20 and mSP == 58
+h3Buy2058b = modo3H and dowSP == dayofweek.wednesday and hSP == 20 and mSP == 58
+
+calBuy0402 = modoCalendario and dowSP == dayofweek.monday and hSP == 4 and mSP == 2
+calSell0312 = modoCalendario and dowSP == dayofweek.tuesday and hSP == 3 and mSP == 12
+calBuy0256 = modoCalendario and dowSP == dayofweek.wednesday and hSP == 2 and mSP == 56
+calSell0430 = modoCalendario and dowSP == dayofweek.thursday and hSP == 4 and mSP == 30
+calBuy0930 = modoCalendario and dowSP == dayofweek.friday and hSP == 9 and mSP == 30
+
+buy3H = h3Buy0348 or h3Buy0348b or h3Buy1030 or h3Buy2058 or h3Buy2058b
+sell3H = h3Sell1030
+buyCalendario = calBuy0402 or calBuy0256 or calBuy0930
+sellCalendario = calSell0312 or calSell0430
+
+buySignal = strategy.position_size == 0 and (smokeBuy or buy3H or buyCalendario)
+sellSignal = strategy.position_size == 0 and (sell3H or sellCalendario)
+
+var int barraEntrada = na
+
+if buySignal
+    strategy.entry("B", strategy.long, alert_message="V71 DESTRAVA MIN BUY")
+    barraEntrada := bar_index
+
+if sellSignal
+    strategy.entry("S", strategy.short, alert_message="V71 DESTRAVA MIN SELL")
+    barraEntrada := bar_index
+
+fechaRapido = strategy.position_size != 0 and not na(barraEntrada) and bar_index > barraEntrada
+
+if smokeClose or fechaRapido
+    strategy.close("B", comment="FECHA B")
+    strategy.close("S", comment="FECHA S")
+
+plotshape(mostrarSinais and buySignal, title="BUY", style=shape.triangleup, location=location.belowbar,
+     color=modoSmoke ? color.yellow : color.lime, size=size.small, text="B")
+plotshape(mostrarSinais and sellSignal, title="SELL", style=shape.triangledown, location=location.abovebar,
+     color=color.red, size=size.small, text="S")
+plotshape(mostrarSinais and (smokeClose or fechaRapido), title="FECHA", style=shape.xcross, location=location.abovebar,
+     color=color.orange, size=size.tiny, text="X")
+
+alertcondition(buySignal, title="V71 Destrava Min BUY", message="V71 DESTRAVA MIN BUY")
+alertcondition(sellSignal, title="V71 Destrava Min SELL", message="V71 DESTRAVA MIN SELL")
