@@ -39,6 +39,7 @@ Teste no TradingView:
 - modo: Backtesting Profundo
 - perfil 01: `01 Max 365d 233tr 87pct`
 - perfil 02: `02 Recente forte 234tr 85pct`
+- perfil 03: `03 Pior ano melhor 230tr 86pct`
 
 Horarios/direcoes:
 
@@ -52,6 +53,7 @@ Filtros por perfil:
 
 - perfil 01: quarta 02:56 com `dmi_gap >= 3.5237` e quinta 04:30 com `ema200_slope10 <= 4.7472`
 - perfil 02: segunda 04:02 com `vwap_slope10 <= 4.6748` e terca 03:12 com `dist_vwap <= 22.2546`
+- perfil 03: terca 03:12 com `dmi_gap >= 2.7238` e quinta 04:30 com `dmi_gap <= 12.7108`
 
 Metricas locais:
 
@@ -69,10 +71,20 @@ Metricas locais:
 | 02 Recente forte | 2024 | 191 | 74.87% | 1605.5 | n/d | n/d |
 | 02 Recente forte | 2025 | 233 | 81.12% | 4396.5 | n/d | n/d |
 | 02 Recente forte | 2026 | 88 | 87.50% | 2601.5 | n/d | n/d |
+| 03 Pior ano melhor | Ultimos 365d | 230 | 86.09% | 6255.0 | -300.5 | 2.67 |
+| 03 Pior ano melhor | Ultimos 90d | 56 | 85.71% | 1488.0 | -234.0 | 2.59 |
+| 03 Pior ano melhor | Ultimos 30d | 20 | 85.00% | 507.5 | -234.0 | 2.45 |
+| 03 Pior ano melhor | 2024 | 165 | 77.58% | 2135.0 | n/d | n/d |
+| 03 Pior ano melhor | 2025 | 226 | 81.42% | 4378.0 | n/d | n/d |
+| 03 Pior ano melhor | 2026 | 89 | 85.39% | 2317.0 | n/d | n/d |
 
 Arquivo de conferencia local:
 
 `pesquisa_v71_0348_6min/REFINO_CALENDARIO_DOW_230_85.md`
+
+Auditoria de robustez:
+
+`pesquisa_v71_0348_6min/AUDITORIA_CALENDARIO_DOW_230_85_ROTACAO.md`
 
 Ponto forte:
 
@@ -83,6 +95,7 @@ Ponto forte:
 Ponto fraco:
 
 - os anos completos 2024 e 2025 ficam abaixo de 85%, embora positivos.
+- a auditoria encontrou 1.863 candidatos na faixa 230-250 trades e 85%+ em 365d, mas nenhum manteve todos os anos acima de 80%.
 - por usar calendario por dia da semana, precisa ser confirmado no TradingView antes de qualquer decisao operacional.
 - ainda nao deve substituir o oficial.
 

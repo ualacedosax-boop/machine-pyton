@@ -21,6 +21,7 @@ Pesquisa separada. Nao altera o V7.1 oficial.
 |---|---|---|
 | `01 Max 365d 233tr 87pct` | quarta 02:56 `dmi_gap >= 3.5237`; quinta 04:30 `ema200_slope10 <= 4.7472` | Melhor pontuacao anual local |
 | `02 Recente forte 234tr 85pct` | segunda 04:02 `vwap_slope10 <= 4.6748`; terca 03:12 `dist_vwap <= 22.2546` | Melhor 90d/30d local |
+| `03 Pior ano melhor 230tr 86pct` | terca 03:12 `dmi_gap >= 2.7238`; quinta 04:30 `dmi_gap <= 12.7108` | Melhor pior-ano dentro da familia |
 
 ## Metricas locais esperadas
 
@@ -32,9 +33,13 @@ Pesquisa separada. Nao altera o V7.1 oficial.
 | 02 Recente forte | Ultimos 365d | 234 | 85.90% | 6289.5 | -316.5 | 2.63 |
 | 02 Recente forte | Ultimos 90d | 56 | 89.29% | 1823.0 | -300.5 | 3.60 |
 | 02 Recente forte | Ultimos 30d | 21 | 90.48% | 725.5 | -117.0 | 4.10 |
+| 03 Pior ano melhor | Ultimos 365d | 230 | 86.09% | 6255.0 | -300.5 | 2.67 |
+| 03 Pior ano melhor | Ultimos 90d | 56 | 85.71% | 1488.0 | -234.0 | 2.59 |
+| 03 Pior ano melhor | Ultimos 30d | 20 | 85.00% | 507.5 | -234.0 | 2.45 |
 
 ## Observacoes
 
 - O TradingView pode divergir por dados, contrato continuo, horario e regra de execucao.
 - Se o TV ficar perto dos numeros locais, o perfil 02 e o primeiro teste recomendado para operabilidade recente.
+- A auditoria de rotacao mostrou que nenhum perfil desta familia manteve todos os anos acima de 80%; ela ainda e pesquisa, nao oficial.
 - Nenhum perfil deve substituir o oficial sem aprovacao explicita.
