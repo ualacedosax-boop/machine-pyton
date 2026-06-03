@@ -19,8 +19,8 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 1 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` | 191 | 89.01% local nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Proximo teste; usa entrada no candle seguinte, mas 2024 ficou fraco |
-| 2 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% local nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Melhor acerto/DD restante, mas com frequencia menor e 2024 fraco |
+| 1 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% local nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Melhor acerto/DD restante para teste no TV, mas com frequencia menor e 2024 fraco |
+| 2 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_TV_LIMPO.pine` | 191 | 89.01% local nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Reprovado por operabilidade: smoke minimo funciona, mas versoes Regime travaram no TV |
 | 3 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% local | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples |
 | 4 | Calendario DOW alta acerto - perfil 05 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 152 TV | 81.58% TV nos ultimos 365d | +5972 USD TV | -1168 USD TV | 1.911 TV | Nao confirmou acerto alto no TV |
 | 5 | Calendario DOW robusto anual - perfil 04 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 224 TV | 80.80% TV nos ultimos 365d | +8219 USD TV | -1206 USD TV | 1.817 TV | Nao confirmou acerto alto no TV; 90d fraco |
@@ -123,6 +123,7 @@ Ponto fraco:
 - o perfil 04 foi testado no TradingView e caiu para 80.80% nos ultimos 365 dias, PF 1.817, 90d com 73.68% e PF 1.209; portanto nao confirmou a meta, apesar do 30d positivo.
 - o perfil 05 foi testado no TradingView e caiu para 81.58% nos ultimos 365 dias, PF 1.911, 90d com 79.49% e PF 1.673; portanto a familia Calendario DOW atual deve ser abandonada.
 - a busca pos-DOW voltou ao Regime 191/89 como melhor candidato pronto; ele usa entrada no candle seguinte, mas ainda carrega fragilidade em 2024.
+- o Regime 191/89 travou no TradingView mesmo na versao limpa; como o smoke minimo funciona, o problema esta na implementacao/operabilidade desse Pine, entao ele nao deve ser priorizado.
 - por usar calendario por dia da semana, precisa ser confirmado no TradingView antes de qualquer decisao operacional.
 - ainda nao deve substituir o oficial.
 
@@ -262,7 +263,7 @@ Ponto fraco:
 
 Melhor candidato para teste serio agora:
 
-`V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine`.
+`V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine`, perfil `02 Equilibrado 139 94pct`.
 
 Melhor candidato de alta acertividade/DD:
 
@@ -274,29 +275,23 @@ Melhor candidato simples por robustez multiano:
 
 Melhor candidato para tentar mais frequencia/pontuacao, mas com ressalva:
 
-`V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine`.
+Nenhum candidato de maior frequencia esta confirmado no TradingView neste momento.
 
 Regra pratica:
 
 - o perfil 04 foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
 - o perfil 05 foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
 - o perfil 01 ja foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
-- se o TradingView confirmar o Regime 191/89 perto de 191 trades, 89.01% e PF 3.49 nos ultimos 365 dias, ele vira a proxima linha de pesquisa, ainda com ressalva por causa de 2024;
+- o Regime 191/89 deve ficar pausado: o smoke minimo funciona, mas as versoes com logica de regime travaram no TradingView;
 - se o TradingView confirmar o 04:06 multiano perto de 86%, ele vira a linha mais segura de pesquisa;
 - nenhum candidato deve substituir o oficial sem aprovacao explicita.
 
 ## Proximo teste recomendado no TradingView
 
 1. Nao promover a familia Calendario DOW atual: perfis 01, 04 e 05 ficaram abaixo de 85% no TradingView.
-2. Testar primeiro `V71_PESQUISA_REGIME_191_89_TV_LIMPO.pine` em `MNQ1!`, `2m`, Backtesting Profundo.
-3. Recompilar a versao `DEBUG v2` e comecar no modo `00 Forcar teste`; ele entra a cada 50 barras e fecha logo depois.
-4. Se ainda nao houver entradas no modo forcado, testar o arquivo minimo `V71_TESTE_TV_SMOKE_FORCA_ENTRADA.pine`.
-5. Se o smoke test tambem nao gerar trades, o problema nao e a logica V71; e execucao/configuracao do TradingView.
-6. Se o modo forcado tiver entradas, testar `01 Diagnostico horarios`; este modo tambem fecha no candle seguinte para confirmar se os horarios existem no grafico.
-7. Se o diagnostico tiver entradas, testar o modo `02 Base DMI3`; se nao houver entradas, o problema esta nos filtros DMI/base.
-8. Se a base tiver entradas, testar o modo `03 Regime 191/89`.
-9. Conferir se 365 dias fica proximo de 191 trades, 89.01%, +6128 pontos, DD -468.0 e PF 3.49.
-10. Conferir se 90 dias fica proximo de 40 trades, 85.00%, +1015 pontos e PF 2.45.
-11. Conferir se 30 dias fica proximo de 13 trades, 84.62%, +321.5 pontos e PF 2.37.
-12. Se o Regime 191/89 tambem cair para perto de 80%-82% no TV, testar o `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` perfil `02 Equilibrado 139 94pct`.
-13. Manter o V7.1 oficial sem alteracao.
+2. Pausar o Regime 191/89: smoke minimo funciona, mas as versoes com logica travaram no TradingView.
+3. Testar `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` em `MNQ1!`, `2m`, Backtesting Profundo.
+4. Perfil recomendado: `02 Equilibrado 139 94pct`.
+5. Conferir se 365 dias fica proximo de 139 trades, 94.24%, +5679.5 pontos, DD -183.5 e PF 7.07.
+6. Se tambem travar ou divergir forte, voltar para busca de Pine mais simples/operavel.
+7. Manter o V7.1 oficial sem alteracao.
