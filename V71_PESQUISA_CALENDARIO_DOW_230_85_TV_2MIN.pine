@@ -15,7 +15,7 @@ strategy("V71 Pesquisa Calendario DOW 230-85 TV 2m",
 
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
-perfil = input.string("04 Robusto anual 222tr 85pct", "Perfil",
+perfil = input.string("05 Alta acerto 147tr 89pct", "Perfil",
      options=["01 Max 365d 233tr 87pct", "02 Recente forte 234tr 85pct", "03 Pior ano melhor 230tr 86pct", "04 Robusto anual 222tr 85pct", "05 Alta acerto 147tr 89pct"])
 
 takeTicks = int(math.round(takePontos / syminfo.mintick))
