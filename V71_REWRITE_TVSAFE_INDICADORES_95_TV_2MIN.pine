@@ -11,7 +11,8 @@ strategy("V71 Rewrite TVSafe Indicadores 95 2m",
 // Use no MNQ1! em 2 minutos com Backtesting Profundo.
 
 perfil = input.string("01 Principal 122tr 95pct", "Perfil",
-     options=["01 Principal 122tr 95pct", "02 Mais trades 138tr 94pct", "03 Mais acerto 110tr 96pct"])
+     options=["01 Principal 122tr 95pct", "02 Mais trades 138tr 94pct", "03 Mais acerto 110tr 96pct",
+         "04 Recente 68tr 97pct", "05 Ultra 52tr 100pct"])
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
 mostrarSinais = input.bool(true, "Mostrar sinais")
@@ -32,6 +33,7 @@ macd = ema12 - ema26
 macdSignal = ta.ema(macd, 9)
 macdHist = macd - macdSignal
 roc5 = close - close[5]
+roc10 = close - close[10]
 body = close - open
 range30 = ta.highest(high, 15) - ta.lowest(low, 15)
 
@@ -51,8 +53,13 @@ distVwap = close - vwapSP
 p1 = perfil == "01 Principal 122tr 95pct"
 p2 = perfil == "02 Mais trades 138tr 94pct"
 p3 = perfil == "03 Mais acerto 110tr 96pct"
+p4 = perfil == "04 Recente 68tr 97pct"
+p5 = perfil == "05 Ultra 52tr 100pct"
+p123 = p1 or p2 or p3
 
 seg1030Buy = dowSP == dayofweek.monday and hSP == 10 and mSP == 30 and body <= 12.375
+seg0348BuyP4 = dowSP == dayofweek.monday and hSP == 3 and mSP == 48 and range30 <= 41.0625
+seg1030BuyP5 = dowSP == dayofweek.monday and hSP == 10 and mSP == 30 and roc10 >= 24.5
 dom2058Buy = dowSP == dayofweek.sunday and hSP == 20 and mSP == 58 and macdHist >= 1.0513
 qua0256Buy = dowSP == dayofweek.wednesday and hSP == 2 and mSP == 56 and emaTrend >= 0.9902
 
@@ -62,11 +69,14 @@ qui0430SellP3 = dowSP == dayofweek.thursday and hSP == 4 and mSP == 30 and distV
 sex0930BuyP1 = dowSP == dayofweek.friday and hSP == 9 and mSP == 30 and roc5 <= -9.5
 sex0930BuyP23 = dowSP == dayofweek.friday and hSP == 9 and mSP == 30 and range30 >= 68.95
 
-qui0430Sell = (p1 or p2) ? qui0430SellP12 : qui0430SellP3
+qui0430Sell = (p1 or p2) ? qui0430SellP12 : p3 ? qui0430SellP3 : false
 sex0930Buy = p1 ? sex0930BuyP1 : sex0930BuyP23
 
 semPosicao = strategy.position_size == 0
-buySignal = semPosicao and (seg1030Buy or dom2058Buy or qua0256Buy or sex0930Buy)
+buyBaseSignal = p123 and (seg1030Buy or dom2058Buy or qua0256Buy or sex0930Buy)
+buyRecenteSignal = p4 and (seg0348BuyP4 or qua0256Buy or sex0930BuyP1)
+buyUltraSignal = p5 and (seg1030BuyP5 or qua0256Buy or sex0930BuyP1)
+buySignal = semPosicao and (buyBaseSignal or buyRecenteSignal or buyUltraSignal)
 sellSignal = semPosicao and qui0430Sell
 
 if buySignal
@@ -81,13 +91,17 @@ strategy.exit("TP/SL S", from_entry="S", profit=takeTicks, loss=stopTicks)
 plot(ema17, "EMA 17", color=color.purple, linewidth=2)
 plot(ema34, "EMA 34", color=color.blue, linewidth=2)
 
-plotshape(mostrarSinais and seg1030Buy, title="BUY Seg 10:30", style=shape.triangleup, location=location.belowbar,
+plotshape(mostrarSinais and p123 and seg1030Buy, title="BUY Seg 10:30", style=shape.triangleup, location=location.belowbar,
      color=color.lime, size=size.small, text="B1030")
-plotshape(mostrarSinais and dom2058Buy, title="BUY Dom 20:58", style=shape.triangleup, location=location.belowbar,
+plotshape(mostrarSinais and p4 and seg0348BuyP4, title="BUY Seg 03:48", style=shape.triangleup, location=location.belowbar,
+     color=color.yellow, size=size.small, text="B0348")
+plotshape(mostrarSinais and p5 and seg1030BuyP5, title="BUY Seg 10:30 Ultra", style=shape.triangleup, location=location.belowbar,
+     color=color.orange, size=size.small, text="B10U")
+plotshape(mostrarSinais and p123 and dom2058Buy, title="BUY Dom 20:58", style=shape.triangleup, location=location.belowbar,
      color=color.teal, size=size.small, text="B2058")
 plotshape(mostrarSinais and qua0256Buy, title="BUY Qua 02:56", style=shape.triangleup, location=location.belowbar,
      color=color.green, size=size.small, text="B0256")
-plotshape(mostrarSinais and sex0930Buy, title="BUY Sex 09:30", style=shape.triangleup, location=location.belowbar,
+plotshape(mostrarSinais and ((p123 and sex0930Buy) or ((p4 or p5) and sex0930BuyP1)), title="BUY Sex 09:30", style=shape.triangleup, location=location.belowbar,
      color=color.aqua, size=size.small, text="B0930")
 plotshape(mostrarSinais and qui0430Sell, title="SELL Qui 04:30", style=shape.triangledown, location=location.abovebar,
      color=color.red, size=size.small, text="S0430")

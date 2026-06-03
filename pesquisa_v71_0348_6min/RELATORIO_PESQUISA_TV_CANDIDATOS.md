@@ -19,7 +19,7 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 1 | Rewrite TVSafe indicadores 95 | 2m | `V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine` | 122 local | 95.08% local nos ultimos 365d | 5156.0 | -133.0 | 8.34 | Proximo teste serio: indicadores simples, sem DMI, baseado no smoke que voltou a operar |
+| 1 | Rewrite TVSafe indicadores 95 - perfis 04/05 | 2m | `V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine` | 68/52 local | 97.06%/100.00% local nos ultimos 365d | 3099.0/2626.0 | -117.0/0.0 | 14.24/999 | Perfil 01 operou no TV, mas o recorte de 30d reprovou; proximo teste e o perfil 04, depois 05 |
 | 2 | Destrava TV minimo smoke/horarios | 2m | `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` | 3547 TV smoke | 47.90% TV | -389 USD TV | -1661.50 USD TV | 0.983 TV | Confirmou que o TV executa; e diagnostico, nao estrategia |
 | 3 | Destrava TV 3H escada operavel | 2m | `V71_DESTRAVA_TV_3H_ESCADA_OPERAVEL.pine` | diagnostico | n/d | n/d | n/d | n/d | Travou; provavelmente complexo demais para diagnostico inicial |
 | 4 | DMI3 Take45 robusto | 2m | `V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine` | 132 | 86.36% local nos ultimos 365d | 3081.0 | -331.5 | 2.463 | Travou no teste direto; precisa passar por diagnostico minimo antes |
@@ -180,7 +180,8 @@ Teste no TradingView:
 - simbolo: `MNQ1!`
 - timeframe: `2m`
 - modo: Backtesting Profundo
-- perfil recomendado: `01 Principal 122tr 95pct`
+- perfil recomendado agora: `04 Recente 68tr 97pct`
+- fallback de alta seletividade: `05 Ultra 52tr 100pct`
 
 Indicadores usados:
 
@@ -188,6 +189,7 @@ Indicadores usados:
 - MACD histograma;
 - EMA 17 menos EMA 34;
 - ROC 5;
+- ROC 10;
 - range de 30 minutos;
 - distancia do VWAP apenas no perfil `03`.
 
@@ -210,14 +212,40 @@ Metricas locais do perfil 01:
 | 2025 | 121 | 87.60% | 3598.0 | -234.0 | 3.05 |
 | 2026 | 56 | 94.64% | 2325.5 | -117.0 | 7.63 |
 
+Teste TradingView do perfil 01:
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| Ultimos 365d | 112 | 84.82% | +5617 USD | -835 USD | 2.412 | Operavel, mas abaixo do alvo de 85% |
+| Ultimos 90d | 28 | 78.57% | +818 USD | -835 USD | 1.583 | Recente fraco |
+| Ultimos 30d | 10 | 60.00% | -330 USD | -835 USD | 0.647 | Reprovado |
+
+Perfis novos adicionados ao mesmo Pine:
+
+- `04 Recente 68tr 97pct`: segunda 03:48 BUY se `range30 <= 41.0625`, quarta 02:56 BUY se `ema17 - ema34 >= 0.9902`, sexta 09:30 BUY se `roc5 <= -9.5000`.
+- `05 Ultra 52tr 100pct`: segunda 10:30 BUY se `roc10 >= 24.5000`, quarta 02:56 BUY se `ema17 - ema34 >= 0.9902`, sexta 09:30 BUY se `roc5 <= -9.5000`.
+
+Metricas locais dos perfis novos:
+
+| Perfil | Periodo | Trades | Winrate | Pontos | DD | PF |
+|---|---|---:|---:|---:|---:|---:|
+| 04 Recente | Ultimos 365d | 68 | 97.06% | 3099.0 | -117.0 | 14.24 |
+| 04 Recente | Ultimos 90d | 19 | 100.00% | 959.5 | 0.0 | 999 |
+| 04 Recente | Ultimos 30d | 9 | 100.00% | 454.5 | 0.0 | 999 |
+| 05 Ultra | Ultimos 365d | 52 | 100.00% | 2626.0 | 0.0 | 999 |
+| 05 Ultra | Ultimos 90d | 19 | 100.00% | 959.5 | 0.0 | 999 |
+| 05 Ultra | Ultimos 30d | 10 | 100.00% | 505.0 | 0.0 | 999 |
+
 Ponto forte:
 
 - e o primeiro rewrite apos o smoke minimo que combina acerto alto recente, DD baixo e indicadores simples no Pine.
+- confirmou operabilidade no TradingView; a falha agora e qualidade do filtro, nao travamento.
 
 Ponto fraco:
 
 - 2024 completo ainda e fraco; por isso e candidato de pesquisa/validacao TV, nao substituto do oficial.
-- precisa confirmar no TradingView porque os dados locais e o contrato continuo podem divergir.
+- o perfil 01 caiu no TV para 84.82% em 365d, 78.57% em 90d e 60.00% em 30d; portanto nao deve ser promovido.
+- os perfis 04/05 sao mais seletivos e podem estar overfitados; precisam confirmacao direta no TradingView.
 
 ## Candidato operacional: DMI3 Take45 robusto
 
@@ -385,11 +413,11 @@ Ponto fraco:
 
 Melhor candidato para teste serio agora:
 
-`V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine`, perfil `01 Principal 122tr 95pct`.
+`V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine`, perfil `04 Recente 68tr 97pct`.
 
 Melhor candidato de alta acertividade/DD:
 
-`V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine`, perfil `01 Principal 122tr 95pct`, pendente de confirmacao no TradingView.
+`V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine`, perfil `05 Ultra 52tr 100pct`, pendente de confirmacao no TradingView.
 
 Melhor candidato simples por robustez multiano:
 
@@ -401,14 +429,15 @@ Nenhum candidato de maior frequencia esta confirmado no TradingView neste moment
 
 Regra pratica:
 
-- o perfil 04 foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
-- o perfil 05 foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
-- o perfil 01 ja foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
+- os perfis 04/05 antigos do Calendario DOW foram testados no TradingView e nao confirmaram; so voltar neles se houver ajuste de regra/dados;
+- o perfil 01 do Calendario DOW ja foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
+- o perfil 01 do Rewrite TVSafe operou no TradingView, mas reprovou no 30d; manter apenas como diagnostico de operabilidade;
 - o Regime 191/89 deve ficar pausado: o smoke minimo funciona, mas as versoes com logica de regime travaram no TradingView;
 - o Regime Refino 93 tambem deve ficar pausado: travou no TradingView;
 - o DMI3 Take45 tambem deve ficar pausado no teste direto: travou no TradingView;
 - o minimo `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` confirmou que o TV executa, mas e diagnostico e ficou perto de 48% no smoke;
-- se o TradingView confirmar o rewrite TVSafe perto de 122 trades, 95% e PF alto, ele vira a linha principal de pesquisa;
+- se o TradingView confirmar o rewrite TVSafe perfil 04 com 30d e 90d fortes, ele vira a linha principal de pesquisa;
+- se o perfil 04 cair no TV, testar o perfil 05 Ultra como teste de maxima seletividade;
 - se o TradingView confirmar o 04:06 multiano perto de 86%, ele vira a linha mais segura de pesquisa;
 - nenhum candidato deve substituir o oficial sem aprovacao explicita.
 
@@ -420,9 +449,10 @@ Regra pratica:
 4. Pausar o DMI3 Take45 direto: tambem travou no TradingView.
 5. Usar o resultado do `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` apenas como prova de execucao; o modo smoke ficou perto de 48% e nao e estrategia.
 6. Testar `V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine` em `MNQ1!`, `2m`, Backtesting Profundo.
-7. Perfil recomendado: `01 Principal 122tr 95pct`.
-8. Conferir se 365 dias fica perto de 122 trades, 95.08%, +5156 pontos, DD -133 e PF 8.34.
-9. Conferir se 90 dias fica perto de 41 trades e 95.12%.
-10. Conferir se 30 dias fica perto de 19 trades e 89.47%.
-11. Se o TV cair para perto de 80%-82%, testar os perfis `02` e `03`; se todos cairem, reescrever de novo usando o export do TV.
-12. Manter o V7.1 oficial sem alteracao.
+7. Perfil recomendado: `04 Recente 68tr 97pct`.
+8. Conferir se 365 dias fica perto de 68 trades, 97.06%, +3099 pontos, DD -117 e PF 14.24.
+9. Conferir se 90 dias fica perto de 19 trades e 100%.
+10. Conferir se 30 dias fica perto de 9 trades e 100%.
+11. Se o perfil 04 cair no recorte recente, testar `05 Ultra 52tr 100pct`.
+12. Se os perfis 04/05 tambem cairem no TV, reescrever de novo usando o export do TV.
+13. Manter o V7.1 oficial sem alteracao.
