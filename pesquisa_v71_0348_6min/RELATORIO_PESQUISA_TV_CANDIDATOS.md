@@ -19,12 +19,14 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 1 | Calendario DOW 230-85 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 233 | 87.55% nos ultimos 365d | 6909.0 | -316.5 | 3.04 | Melhor candidato de alta frequencia; precisa confirmar no TradingView |
-| 2 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Melhor acerto/DD, mas com frequencia menor |
-| 3 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples |
-| 4 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` | 191 | 89.01% nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Frequencia maior, mas 2024 ficou fraco |
-| 5 | 04:06 reversao sem filtro | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` perfil 01 | 373 | 80.16% | 6441.5 | -550.5 | 1.74 | Frequencia alta e anos positivos, mas abaixo do alvo de acerto |
-| 6 | Calendario top tokens | 2m | `V71_PESQUISA_TV_CALENDARIO_TOP_TOKENS_3H.pine` | 54 a 160 | 80% a 87% | variavel | variavel | variavel | Bom para estudar blocos de horario, nao final |
+| 1 | Calendario DOW robusto anual - perfil 04 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 222 | 85.59% nos ultimos 365d | 5851.0 | -351.0 | 2.56 | Melhor equilibrio novo: alta frequencia e todos os anos 80%+ |
+| 2 | Calendario DOW alta acerto - perfil 05 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 147 | 89.80% nos ultimos 365d | 4911.0 | -183.5 | 3.80 | Melhor acerto robusto multiano nesta familia |
+| 3 | Calendario DOW 230-85 - perfil 01 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 233 | 87.55% nos ultimos 365d | 6909.0 | -316.5 | 3.04 | Melhor pontuacao anual local; 2024 abaixo de 80% |
+| 4 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Melhor acerto/DD, mas com frequencia menor e 2024 fraco |
+| 5 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples |
+| 6 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` | 191 | 89.01% nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Frequencia maior, mas 2024 ficou fraco |
+| 7 | 04:06 reversao sem filtro | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` perfil 01 | 373 | 80.16% | 6441.5 | -550.5 | 1.74 | Frequencia alta e anos positivos, mas abaixo do alvo de acerto |
+| 8 | Calendario top tokens | 2m | `V71_PESQUISA_TV_CALENDARIO_TOP_TOKENS_3H.pine` | 54 a 160 | 80% a 87% | variavel | variavel | variavel | Bom para estudar blocos de horario, nao final |
 
 ## Candidato novo: Calendario DOW 230-85
 
@@ -40,6 +42,8 @@ Teste no TradingView:
 - perfil 01: `01 Max 365d 233tr 87pct`
 - perfil 02: `02 Recente forte 234tr 85pct`
 - perfil 03: `03 Pior ano melhor 230tr 86pct`
+- perfil 04: `04 Robusto anual 222tr 85pct`
+- perfil 05: `05 Alta acerto 147tr 89pct`
 
 Horarios/direcoes:
 
@@ -54,6 +58,8 @@ Filtros por perfil:
 - perfil 01: quarta 02:56 com `dmi_gap >= 3.5237` e quinta 04:30 com `ema200_slope10 <= 4.7472`
 - perfil 02: segunda 04:02 com `vwap_slope10 <= 4.6748` e terca 03:12 com `dist_vwap <= 22.2546`
 - perfil 03: terca 03:12 com `dmi_gap >= 2.7238` e quinta 04:30 com `dmi_gap <= 12.7108`
+- perfil 04: segunda 04:02 com `ema_gap >= 2.6933` e quinta 04:30 com `dmi_gap <= 22.1959` + `vwap_slope10 <= 1.9005`
+- perfil 05: terca 03:12 com `range_30 <= 16.75`, quarta 02:56 com `ema_gap >= 3.3369` e quinta 04:30 com `adx14 <= 20.3605`
 
 Metricas locais:
 
@@ -77,6 +83,18 @@ Metricas locais:
 | 03 Pior ano melhor | 2024 | 165 | 77.58% | 2135.0 | n/d | n/d |
 | 03 Pior ano melhor | 2025 | 226 | 81.42% | 4378.0 | n/d | n/d |
 | 03 Pior ano melhor | 2026 | 89 | 85.39% | 2317.0 | n/d | n/d |
+| 04 Robusto anual | Ultimos 365d | 222 | 85.59% | 5851.0 | -351.0 | 2.56 |
+| 04 Robusto anual | Ultimos 90d | 58 | 84.48% | 1421.5 | -351.0 | 2.35 |
+| 04 Robusto anual | Ultimos 30d | 20 | 85.00% | 507.5 | -117.0 | 2.45 |
+| 04 Robusto anual | 2024 | 160 | 80.00% | 2720.0 | -433.5 | 1.73 |
+| 04 Robusto anual | 2025 | 220 | 81.36% | 4242.5 | -516.0 | 1.88 |
+| 04 Robusto anual | 2026 | 88 | 85.23% | 2266.5 | -351.0 | 2.49 |
+| 05 Alta acerto | Ultimos 365d | 147 | 89.80% | 4911.0 | -183.5 | 3.80 |
+| 05 Alta acerto | Ultimos 90d | 39 | 87.18% | 1132.0 | -183.5 | 2.94 |
+| 05 Alta acerto | Ultimos 30d | 14 | 85.71% | 372.0 | -117.0 | 2.59 |
+| 05 Alta acerto | 2024 | 115 | 81.74% | 2290.0 | -481.5 | 1.93 |
+| 05 Alta acerto | 2025 | 146 | 84.25% | 3520.5 | -433.5 | 2.31 |
+| 05 Alta acerto | 2026 | 59 | 89.83% | 1974.5 | -183.5 | 3.81 |
 
 Arquivo de conferencia local:
 
@@ -86,16 +104,21 @@ Auditoria de robustez:
 
 `pesquisa_v71_0348_6min/AUDITORIA_CALENDARIO_DOW_230_85_ROTACAO.md`
 
+Busca multifaixa nova:
+
+`pesquisa_v71_0348_6min/BUSCA_CALENDARIO_DOW_ROBUSTO_MULTIFAIXA.md`
+
 Ponto forte:
 
-- e o primeiro candidato que bate a faixa desejada de 230 a 250 trades e passa de 85% nos ultimos 365 dias.
-- lucro, DD e PF locais ficaram melhores que os candidatos frequentes anteriores.
+- o perfil 01 e o primeiro candidato que bate a faixa desejada de 230 a 250 trades e passa de 85% nos ultimos 365 dias.
+- o perfil 04 fica perto da faixa, com 222 trades, 85%+ nos ultimos 365 dias e todos os anos 80%+.
 - o perfil 02 preserva 85%+ no anual e melhora bastante os recortes de 90 e 30 dias.
+- o perfil 05 sobe para 89.80% nos ultimos 365 dias com DD/PF melhores, mas aceita menor frequencia.
 
 Ponto fraco:
 
 - os anos completos 2024 e 2025 ficam abaixo de 85%, embora positivos.
-- a auditoria encontrou 1.863 candidatos na faixa 230-250 trades e 85%+ em 365d, mas nenhum manteve todos os anos acima de 80%.
+- a auditoria encontrou 1.863 candidatos na faixa 230-250 trades e 85%+ em 365d, mas nenhum manteve todos os anos acima de 80%; a solucao multifaixa achou robustez anual abrindo mao de pelo menos 8 trades na faixa.
 - por usar calendario por dia da semana, precisa ser confirmado no TradingView antes de qualquer decisao operacional.
 - ainda nao deve substituir o oficial.
 
@@ -233,34 +256,36 @@ Ponto fraco:
 
 ## Conclusao provisoria
 
-Melhor candidato de alta frequencia para teste serio agora:
+Melhor candidato para teste serio agora:
 
-`V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine`.
+`V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine`, perfil `04 Robusto anual 222tr 85pct`.
 
 Melhor candidato de alta acertividade/DD:
 
-`V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine`, perfil `02 Equilibrado 139 94pct`.
+`V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine`, perfil `05 Alta acerto 147tr 89pct`.
 
 Melhor candidato simples por robustez multiano:
 
 `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine`, perfil `02 Multiano 86pct`.
 
-Melhor candidato para tentar mais frequencia:
+Melhor candidato para tentar mais frequencia/pontuacao:
 
-`V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine`.
+`V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine`, perfil `01 Max 365d 233tr 87pct`.
 
 Regra pratica:
 
-- se o TradingView confirmar o Calendario DOW 230-85 perto de 233 trades e 87%, ele vira a melhor linha de pesquisa de frequencia;
+- se o TradingView confirmar o perfil 04 perto de 222 trades, 85.59% e anos 80%+, ele vira a melhor linha de pesquisa equilibrada;
+- se o TradingView confirmar o perfil 05 perto de 147 trades, 89.80% e anos 80%+, ele vira a melhor linha de alta acertividade/DD;
+- se o TradingView confirmar o perfil 01 perto de 233 trades e 87%, ele vira a melhor linha de pesquisa de frequencia/pontuacao;
 - se o TradingView confirmar o 04:06 multiano perto de 86%, ele vira a linha mais segura de pesquisa;
 - se o TradingView confirmar o regime 191/89 nos ultimos 365 dias, ele vira candidato de alta performance, mas ainda precisa controle de risco por causa de 2024;
 - nenhum candidato deve substituir o oficial sem aprovacao explicita.
 
 ## Proximo teste recomendado no TradingView
 
-1. Testar `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` em `MNQ1!`, `2m`.
-2. Conferir se 365 dias fica proximo de 233 trades, 87.55%, +6909 pontos, DD -316.5 e PF 3.04.
-3. Conferir 90 dias e 30 dias no TradingView.
-4. Testar `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` em `MNQ1!`, `2m`, perfil `02 Equilibrado 139 94pct`.
-5. Testar `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` em `MNQ1!`, `6m`, perfil `02 Multiano 86pct`.
+1. Testar `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` em `MNQ1!`, `2m`, perfil `04 Robusto anual 222tr 85pct`.
+2. Conferir se 365 dias fica proximo de 222 trades, 85.59%, +5851 pontos, DD -351.0 e PF 2.56.
+3. Conferir se os anos completos ficam perto de 2024 80.00%, 2025 81.36% e 2026 85.23%.
+4. Testar o mesmo Pine no perfil `05 Alta acerto 147tr 89pct`.
+5. Conferir se 365 dias fica proximo de 147 trades, 89.80%, +4911 pontos, DD -183.5 e PF 3.80.
 6. Comparar as metricas locais acima com o relatorio do TradingView.

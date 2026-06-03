@@ -22,6 +22,8 @@ Pesquisa separada. Nao altera o V7.1 oficial.
 | `01 Max 365d 233tr 87pct` | quarta 02:56 `dmi_gap >= 3.5237`; quinta 04:30 `ema200_slope10 <= 4.7472` | Melhor pontuacao anual local |
 | `02 Recente forte 234tr 85pct` | segunda 04:02 `vwap_slope10 <= 4.6748`; terca 03:12 `dist_vwap <= 22.2546` | Melhor 90d/30d local |
 | `03 Pior ano melhor 230tr 86pct` | terca 03:12 `dmi_gap >= 2.7238`; quinta 04:30 `dmi_gap <= 12.7108` | Melhor pior-ano dentro da familia |
+| `04 Robusto anual 222tr 85pct` | segunda 04:02 `ema_gap >= 2.6933`; quinta 04:30 `dmi_gap <= 22.1959` e `vwap_slope10 <= 1.9005` | Melhor equilibrio anual de frequencia alta; todos os anos 80%+ |
+| `05 Alta acerto 147tr 89pct` | terca 03:12 `range_30 <= 16.75`; quarta 02:56 `ema_gap >= 3.3369`; quinta 04:30 `adx14 <= 20.3605` | Melhor acerto robusto multiano nesta familia |
 
 ## Metricas locais esperadas
 
@@ -36,10 +38,24 @@ Pesquisa separada. Nao altera o V7.1 oficial.
 | 03 Pior ano melhor | Ultimos 365d | 230 | 86.09% | 6255.0 | -300.5 | 2.67 |
 | 03 Pior ano melhor | Ultimos 90d | 56 | 85.71% | 1488.0 | -234.0 | 2.59 |
 | 03 Pior ano melhor | Ultimos 30d | 20 | 85.00% | 507.5 | -234.0 | 2.45 |
+| 04 Robusto anual | Ultimos 365d | 222 | 85.59% | 5851.0 | -351.0 | 2.56 |
+| 04 Robusto anual | Ultimos 90d | 58 | 84.48% | 1421.5 | -351.0 | 2.35 |
+| 04 Robusto anual | Ultimos 30d | 20 | 85.00% | 507.5 | -117.0 | 2.45 |
+| 04 Robusto anual | 2024 | 160 | 80.00% | 2720.0 | -433.5 | 1.73 |
+| 04 Robusto anual | 2025 | 220 | 81.36% | 4242.5 | -516.0 | 1.88 |
+| 04 Robusto anual | 2026 | 88 | 85.23% | 2266.5 | -351.0 | 2.49 |
+| 05 Alta acerto | Ultimos 365d | 147 | 89.80% | 4911.0 | -183.5 | 3.80 |
+| 05 Alta acerto | Ultimos 90d | 39 | 87.18% | 1132.0 | -183.5 | 2.94 |
+| 05 Alta acerto | Ultimos 30d | 14 | 85.71% | 372.0 | -117.0 | 2.59 |
+| 05 Alta acerto | 2024 | 115 | 81.74% | 2290.0 | -481.5 | 1.93 |
+| 05 Alta acerto | 2025 | 146 | 84.25% | 3520.5 | -433.5 | 2.31 |
+| 05 Alta acerto | 2026 | 59 | 89.83% | 1974.5 | -183.5 | 3.81 |
 
 ## Observacoes
 
 - O TradingView pode divergir por dados, contrato continuo, horario e regra de execucao.
-- Se o TV ficar perto dos numeros locais, o perfil 02 e o primeiro teste recomendado para operabilidade recente.
-- A auditoria de rotacao mostrou que nenhum perfil desta familia manteve todos os anos acima de 80%; ela ainda e pesquisa, nao oficial.
+- Se o TV ficar perto dos numeros locais, o perfil 04 vira o primeiro teste recomendado para equilibrio anual com frequencia alta.
+- O perfil 05 deve ser testado em seguida se o foco for acerto/DD, aceitando menor frequencia.
+- O perfil 02 continua sendo o melhor teste para operabilidade recente.
+- A auditoria anterior mostrou fragilidade na faixa 230-250; a busca multifaixa achou o perfil 04 com todos os anos 80%+, mas ainda e pesquisa, nao oficial.
 - Nenhum perfil deve substituir o oficial sem aprovacao explicita.
