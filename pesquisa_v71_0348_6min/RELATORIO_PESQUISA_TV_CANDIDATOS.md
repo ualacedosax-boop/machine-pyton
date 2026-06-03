@@ -19,9 +19,9 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 1 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% local nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Melhor acerto/DD restante, mas com frequencia menor e 2024 fraco |
-| 2 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% local | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples |
-| 3 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` | 191 | 89.01% local nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Frequencia maior, mas 2024 ficou fraco |
+| 1 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` | 191 | 89.01% local nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Proximo teste; usa entrada no candle seguinte, mas 2024 ficou fraco |
+| 2 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% local nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Melhor acerto/DD restante, mas com frequencia menor e 2024 fraco |
+| 3 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% local | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples |
 | 4 | Calendario DOW alta acerto - perfil 05 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 152 TV | 81.58% TV nos ultimos 365d | +5972 USD TV | -1168 USD TV | 1.911 TV | Nao confirmou acerto alto no TV |
 | 5 | Calendario DOW robusto anual - perfil 04 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 224 TV | 80.80% TV nos ultimos 365d | +8219 USD TV | -1206 USD TV | 1.817 TV | Nao confirmou acerto alto no TV; 90d fraco |
 | 6 | Calendario DOW 230-85 - perfil 01 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 240 TV | 81.25% TV nos ultimos 365d | +9165 USD TV | -1105 USD TV | 1.87 TV | Reprovado no TradingView apesar do local forte |
@@ -122,6 +122,7 @@ Ponto fraco:
 - o perfil 01 foi testado no TradingView e caiu para 81.25% nos ultimos 365 dias, PF 1.87, 90d com 70.49% e PF 1.031; portanto nao deve ser priorizado.
 - o perfil 04 foi testado no TradingView e caiu para 80.80% nos ultimos 365 dias, PF 1.817, 90d com 73.68% e PF 1.209; portanto nao confirmou a meta, apesar do 30d positivo.
 - o perfil 05 foi testado no TradingView e caiu para 81.58% nos ultimos 365 dias, PF 1.911, 90d com 79.49% e PF 1.673; portanto a familia Calendario DOW atual deve ser abandonada.
+- a busca pos-DOW voltou ao Regime 191/89 como melhor candidato pronto; ele usa entrada no candle seguinte, mas ainda carrega fragilidade em 2024.
 - por usar calendario por dia da semana, precisa ser confirmado no TradingView antes de qualquer decisao operacional.
 - ainda nao deve substituir o oficial.
 
@@ -261,11 +262,11 @@ Ponto fraco:
 
 Melhor candidato para teste serio agora:
 
-Buscar uma nova logica fora da familia Calendario DOW atual.
+`V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine`.
 
 Melhor candidato de alta acertividade/DD:
 
-`V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine`, perfil `05 Alta acerto 147tr 89pct`.
+`V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine`, perfil `02 Equilibrado 139 94pct`.
 
 Melhor candidato simples por robustez multiano:
 
@@ -273,20 +274,23 @@ Melhor candidato simples por robustez multiano:
 
 Melhor candidato para tentar mais frequencia/pontuacao, mas com ressalva:
 
-`V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine`, perfil `01 Max 365d 233tr 87pct`.
+`V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine`.
 
 Regra pratica:
 
 - o perfil 04 foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
 - o perfil 05 foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
 - o perfil 01 ja foi testado no TradingView e nao confirmou; so voltar nele se houver ajuste de regra/dados;
+- se o TradingView confirmar o Regime 191/89 perto de 191 trades, 89.01% e PF 3.49 nos ultimos 365 dias, ele vira a proxima linha de pesquisa, ainda com ressalva por causa de 2024;
 - se o TradingView confirmar o 04:06 multiano perto de 86%, ele vira a linha mais segura de pesquisa;
-- se o TradingView confirmar o regime 191/89 nos ultimos 365 dias, ele vira candidato de alta performance, mas ainda precisa controle de risco por causa de 2024;
 - nenhum candidato deve substituir o oficial sem aprovacao explicita.
 
 ## Proximo teste recomendado no TradingView
 
 1. Nao promover a familia Calendario DOW atual: perfis 01, 04 e 05 ficaram abaixo de 85% no TradingView.
-2. Voltar para busca de nova logica com validacao mais proxima do mecanismo do TradingView.
-3. Priorizar candidatos que mantenham acerto 85%+ no TradingView, nao apenas na base local.
-4. Manter o V7.1 oficial sem alteracao.
+2. Testar `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` em `MNQ1!`, `2m`, Backtesting Profundo.
+3. Conferir se 365 dias fica proximo de 191 trades, 89.01%, +6128 pontos, DD -468.0 e PF 3.49.
+4. Conferir se 90 dias fica proximo de 40 trades, 85.00%, +1015 pontos e PF 2.45.
+5. Conferir se 30 dias fica proximo de 13 trades, 84.62%, +321.5 pontos e PF 2.37.
+6. Se o Regime 191/89 tambem cair para perto de 80%-82% no TV, testar o `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` perfil `02 Equilibrado 139 94pct`.
+7. Manter o V7.1 oficial sem alteracao.
