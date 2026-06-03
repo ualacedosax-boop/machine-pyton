@@ -66,6 +66,31 @@ Folds usados:
 | noite|20:54|BUY [macd_hist <= 0.4640 & prev_roc5 >= -7.2500] + manha|11:54|SELL [dist_ema200 <= 9.1919 & ret_60 <= 28.2500] | 5 | 82 | 89.02 | 2633.50 | -133.00 | 3.50 | 208 | 79.81 | 3469.00 | 48 | 79.17 | 749.00 | 16 | 75.00 | 138.00 |
 | noite|20:54|BUY [macd_hist <= 0.4640 & prev_roc5 >= -7.2500] + manha|11:54|SELL [dist_ema200 <= 9.1919 & ema_trend <= 8.1862] | 5 | 86 | 88.37 | 2668.00 | -133.00 | 3.28 | 214 | 79.91 | 3604.50 | 49 | 77.55 | 632.00 | 17 | 70.59 | 21.00 |
 
+## Validacao TradingView
+
+Arquivo testado:
+
+`V71_ROTACAO_2M1M_NOITE_MANHA_TV_2MIN.pine`
+
+Perfil testado:
+
+`03 Combo Noite+Manha`
+
+Resultado:
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Ultimos 365d | 195 | 73.33% | +2275 USD | -2750 USD | 1.187 | Operavel, mas abaixo do alvo |
+| Ultimos 90d | 51 | 64.71% | -879 USD | -2366 USD | 0.791 | Reprovado |
+| Ultimos 30d | 22 | 68.18% | -123 USD | -1270 USD | 0.925 | Reprovado |
+
+Leitura:
+
+- o combo nao deve ser promovido.
+- o TradingView gerou mais trades que a simulacao local de 365d, em parte porque a base local terminava em `2026-05-20` e o teste do TV foi ate `2026-06-03`.
+- a proxima validacao deve testar os blocos separados: `01 Noite 20:54 SELL` e `02 Manha 10:30 SELL`.
+- se apenas um bloco confirmar, refazer a busca do bloco que caiu antes de tentar juntar novamente.
+
 ## Leitura
 
 - Uma regra so e candidata se passar em meses de teste, nao apenas no periodo total.
