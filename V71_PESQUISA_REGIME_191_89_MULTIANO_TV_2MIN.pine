@@ -1,9 +1,10 @@
 //@version=6
-strategy("V71 Pesquisa Regime 191 89 Multiano TV 2m",
+strategy("V71 Pesquisa Regime 191 89 Multiano TV 2m DEBUG v2",
      overlay=true,
      pyramiding=0,
      default_qty_type=strategy.fixed,
-     default_qty_value=1)
+     default_qty_value=1,
+     process_orders_on_close=true)
 
 // Pesquisa separada. NAO altera o V7.1 oficial.
 // Candidato robusto multiano local:
@@ -16,6 +17,7 @@ takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
 modoTV = input.string("00 Forcar teste", "Modo TV",
      options=["00 Forcar teste", "01 Diagnostico horarios", "02 Base DMI3", "03 Regime 191/89"])
+periodoForca = input.int(50, "Forcar a cada N barras", minval=5, maxval=2000)
 toleranciaMin = input.int(1, "Tolerancia horario min", minval=0, maxval=2)
 mostrarPainel = input.bool(true, "Mostrar painel")
 
@@ -102,13 +104,13 @@ modoDiag = modoTV == "01 Diagnostico horarios"
 modoBase = modoTV == "02 Base DMI3"
 modoRegime = modoTV == "03 Regime 191/89"
 horarioAlvo = eh0346 or eh0348 or eh1030 or eh2052 or eh2058
-forcaBuy = bar_index > 300 and bar_index % 500 == 0
+forcaBuy = bar_index > 20 and bar_index % periodoForca == 0
+forcaFecha = bar_index > 20 and bar_index % periodoForca == 1
 diagBuy = horarioAlvo and votoTotalDiag >= 0
 diagSell = horarioAlvo and votoTotalDiag < 0
 
 entradaLiberada = strategy.position_size == 0
 baseAtual = baseB0348 or baseB1030 or baseS1030 or baseB2058
-var int forcaBar = na
 var int diagBar = na
 entraForcaBuy = entradaLiberada and modoForca and forcaBuy
 entraDiagBuy = entradaLiberada and modoDiag and diagBuy
@@ -126,7 +128,6 @@ entraRegimeS2052 = entradaLiberada and modoRegime and not baseAtual and (regimeS
 entraRegimeB2058 = entradaLiberada and modoRegime and not baseAtual and regimeB2058
 
 if entraForcaBuy
-    forcaBar := bar_index
     strategy.entry("FORCA_B", strategy.long, alert_message="V71 PESQUISA FORCAR TESTE BUY")
 else if entraDiagBuy
     diagBar := bar_index
@@ -157,8 +158,8 @@ else if entraBaseB2058
 else if entraRegimeB2058
     strategy.entry("B2058", strategy.long, alert_message="V71 PESQUISA MULTIANO BUY 20:58")
 
-if modoForca and strategy.position_size > 0 and not na(forcaBar) and bar_index > forcaBar
-    strategy.close("FORCA_B", comment="FECHA TESTE")
+if modoForca and strategy.position_size != 0 and forcaFecha
+    strategy.close_all(comment="FECHA TESTE")
 if modoDiag and strategy.position_size != 0 and not na(diagBar) and bar_index > diagBar
     strategy.close("DBG_B", comment="FECHA DIAG")
     strategy.close("DBG_S", comment="FECHA DIAG")
@@ -203,7 +204,7 @@ if mostrarPainel and barstate.islast
     table.cell(painel, 0, 4, "ADX / Gap", text_color=color.white)
     table.cell(painel, 1, 4, str.tostring(adx14, "#.##") + " / " + str.tostring(dmiGap, "#.##"), text_color=color.white)
     table.cell(painel, 0, 5, "Alvo/Score", text_color=color.white)
-    table.cell(painel, 1, 5, (horarioAlvo ? "SIM" : "NAO") + " / " + str.tostring(votoTotalDiag), text_color=horarioAlvo ? color.lime : color.gray)
+    table.cell(painel, 1, 5, (modoForca ? "FORCA" : horarioAlvo ? "SIM" : "NAO") + " / " + str.tostring(votoTotalDiag), text_color=modoForca ? color.orange : horarioAlvo ? color.lime : color.gray)
     table.cell(painel, 0, 6, "TP/SL", text_color=color.white)
     table.cell(painel, 1, 6, str.tostring(takePontos) + " / " + str.tostring(stopPontos), text_color=color.white)
     table.cell(painel, 0, 7, "Oficial", text_color=color.white)

@@ -289,7 +289,7 @@ Regra pratica:
 
 1. Nao promover a familia Calendario DOW atual: perfis 01, 04 e 05 ficaram abaixo de 85% no TradingView.
 2. Testar `V71_PESQUISA_REGIME_191_89_MULTIANO_TV_2MIN.pine` em `MNQ1!`, `2m`, Backtesting Profundo.
-3. Comecar no modo `00 Forcar teste`; se nao houver entradas, o problema e aplicacao/configuracao da estrategia no grafico.
+3. Recompilar a versao `DEBUG v2` e comecar no modo `00 Forcar teste`; ele entra a cada 50 barras e fecha logo depois.
 4. Se ainda nao houver entradas no modo forcado, testar o arquivo minimo `V71_TESTE_TV_SMOKE_FORCA_ENTRADA.pine`.
 5. Se o smoke test tambem nao gerar trades, o problema nao e a logica V71; e execucao/configuracao do TradingView.
 6. Se o modo forcado tiver entradas, testar `01 Diagnostico horarios`; este modo tambem fecha no candle seguinte para confirmar se os horarios existem no grafico.
