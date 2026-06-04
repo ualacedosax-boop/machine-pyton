@@ -20,7 +20,7 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 0 | Confluencia 7 indicadores 21:02 | 2m | `V71_CONFLUENCIA_7INDICADORES_ROTACAO_TV_2MIN.pine` | perfil 01: 53 TV; perfil 02: 53 TV | perfil 02 TV: 71.70% anual; 76.92% 90d; 100.00% 30d | perfil 02 TV: +328 USD anual; +308 USD 90d; +505 USD 30d | -777 USD TV anual | 1.093 TV anual | Perfis 01 e 02 reprovaram no anual; seguir para perfil 03 |
+| 0 | Confluencia 7 indicadores 21:02 | 2m | `V71_CONFLUENCIA_7INDICADORES_ROTACAO_TV_2MIN.pine` | perfil 01: 53 TV; perfil 02: 53 TV; perfil 03: 52 TV | perfil 03 TV: 69.23% anual; 71.43% 90d; 83.33% 30d | perfil 03 TV: -108 USD anual; +74 USD 90d; +271 USD 30d | -917 USD TV anual | 0.971 TV anual | Perfis 01-03 reprovaram no anual; seguir para perfil 04 |
 | 1 | Rotacao 2024-2025 Holdout2026 | 2m | `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine` | 197/92/146/114/104 TV | melhor: 80.20% anual perfil 01; 87.50% 30d perfil 04 | melhor anual +6596.50 USD perfil 01; perfil 05 -886.00 USD | melhor DD anual -747.00 USD perfil 02; perfil 05 -1773.00 USD | melhor PF anual 1.705 perfil 01; perfil 05 0.889 | Bateria 01-05 encerrada: nenhum perfil promove; 04 fica so como melhor recente |
 | 2 | Rotacao 2M/1M Manha Refino | 2m | `V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine` | 61 a 106 local | 81.97% a 84.51% local nos ultimos 365d | +1238 a +1846.5 pts local | n/d | n/d | Exploratorio; supersedido porque foi criado antes da regra 2026 somente holdout |
 | 3 | Rotacao 2M/1M Noite+Manha | 2m | `V71_ROTACAO_2M1M_NOITE_MANHA_TV_2MIN.pine` | 195 TV combo | 73.33% TV nos ultimos 365d | +2275 USD TV | -2750 USD TV | 1.187 TV | Combo reprovado no TV; noite isolada positiva recente, fraca no anual |
@@ -58,15 +58,17 @@ Melhor bloco encontrado:
 |---|---|---:|---|---|---|---|---|
 | 01 Noite 2102 SELL | `21:02 SELL`, 5 de 7 votos, `ADX >= 20`, `DMI gap >= 4` | 16/20 | 75tr, 85.33%, +1945.0 pts | 20tr, 85.00%, +507.5 pts | 14tr, 85.71%, +372.0 pts | 5tr, 100.00%, +252.5 pts | Testado no TV e reprovado |
 | 02 Noite 2102 SELL | variante com DMI/ROC10/candle | 15/20 | 84tr, 85.71%, +2232.0 pts | 20tr, 85.00%, +507.5 pts | 14tr, 85.71%, +372.0 pts | 5tr, 100.00%, +252.5 pts | Testado no TV: 30d forte, anual reprovado |
-| 03 Noite 2102 SELL | variante com DMI/MACD/candle | 15/20 | 76tr, 86.84%, +2163.0 pts | 20tr, 85.00%, +507.5 pts | 14tr, 85.71%, +372.0 pts | 5tr, 100.00%, +252.5 pts | Terceiro teste |
+| 03 Noite 2102 SELL | variante com DMI/MACD/candle | 15/20 | 76tr, 86.84%, +2163.0 pts | 20tr, 85.00%, +507.5 pts | 14tr, 85.71%, +372.0 pts | 5tr, 100.00%, +252.5 pts | Testado no TV: anual negativo |
+| 04 Noite 2102 SELL combo leg | combo de filtros da noite | n/d | n/d | n/d | n/d | n/d | Proximo teste |
 | 05 Manha 1152 BUY | diagnostico de manha | 16/20 | 98tr, 83.67%, +2269.0 pts | 15tr, 73.33%, +87.5 pts | 12tr, 66.67%, -64.0 pts | 2tr, 100.00%, +101.0 pts | Nao promover; diagnostico |
 
 Decisao:
 
 - nao promover o perfil `01 Noite 2102 SELL 75tr 85pct`;
 - nao promover o perfil `02 Noite 2102 SELL 84tr 86pct`;
-- o Pine foi atualizado para abrir por padrao no perfil `03 Noite 2102 SELL 76tr 87pct`;
-- testar o perfil `03` para ver se a variante replica melhor;
+- nao promover o perfil `03 Noite 2102 SELL 76tr 87pct`;
+- o Pine foi atualizado para abrir por padrao no perfil `04 Noite 2102 SELL combo leg`;
+- testar o perfil `04` para ver se o combo da perna noturna replica melhor;
 - nao promover o combo ainda: no local ele ficou forte em 2024-2025, mas caiu para 77.78% no holdout 2026 e 74.07% nos 90d;
 - manter o V7.1 oficial sem alteracao.
 
@@ -85,6 +87,14 @@ Teste TradingView do perfil `02 Noite 2102 SELL 84tr 86pct`:
 | Ultimos 365d | 53 | 71.70% | +328.00 USD | -777.00 USD | 1.093 | Reprovado: anual positivo, mas acerto/PF fracos |
 | Ultimos 90d | 13 | 76.92% | +308.00 USD | -426.50 USD | 1.439 | Melhor que o perfil 01, mas ainda abaixo do alvo |
 | Ultimos 30d | 5 | 100.00% | +505.00 USD | -87.00 USD | n/d | Excelente recente, mas pouca amostra |
+
+Teste TradingView do perfil `03 Noite 2102 SELL 76tr 87pct`:
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| Ultimos 365d | 52 | 69.23% | -108.00 USD | -917.00 USD | 0.971 | Reprovado: anual negativo e PF abaixo de 1 |
+| Ultimos 90d | 14 | 71.43% | +74.00 USD | -619.00 USD | 1.079 | Quase neutro; sem vantagem suficiente |
+| Ultimos 30d | 6 | 83.33% | +271.00 USD | -321.00 USD | 2.158 | Recente positivo, mas abaixo da meta e pouca amostra |
 
 ## Candidato novo: Rotacao 2024-2025 Holdout2026
 

@@ -10,7 +10,7 @@ strategy("V71 Confluencia 7 Indicadores Rotacao TV 2m",
 // 2026 ficou fora do score/folds/selecao e foi usado somente como holdout cego.
 // Use no MNQ1! em 2 minutos com Backtesting Profundo.
 
-perfil = input.string("03 Noite 2102 SELL 76tr 87pct", "Perfil",
+perfil = input.string("04 Noite 2102 SELL combo leg", "Perfil",
      options=["01 Noite 2102 SELL 75tr 85pct", "02 Noite 2102 SELL 84tr 86pct",
          "03 Noite 2102 SELL 76tr 87pct", "04 Noite 2102 SELL combo leg",
          "05 Manha 1152 BUY diagnostico", "06 Combo Noite+Manha diagnostico"])

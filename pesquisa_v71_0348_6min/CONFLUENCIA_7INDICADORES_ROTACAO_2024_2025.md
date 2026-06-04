@@ -104,7 +104,8 @@ Decisao:
 
 - nao promover o perfil `01`;
 - nao promover o perfil `02`;
-- testar em seguida o perfil `03 Noite 2102 SELL 76tr 87pct`.
+- nao promover o perfil `03`;
+- testar em seguida o perfil `04 Noite 2102 SELL combo leg`.
 
 ## Teste TradingView - perfil 02
 
@@ -119,4 +120,20 @@ Perfil: `02 Noite 2102 SELL 84tr 86pct`.
 Decisao:
 
 - nao promover o perfil `02`;
-- testar em seguida o perfil `03 Noite 2102 SELL 76tr 87pct`.
+- perfil `03` tambem foi testado no TV e reprovou no anual;
+- testar em seguida o perfil `04 Noite 2102 SELL combo leg`.
+
+## Teste TradingView - perfil 03
+
+Perfil: `03 Noite 2102 SELL 76tr 87pct`.
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| Ultimos 365d | 52 | 69.23% | -108.00 USD | -917.00 USD | 0.971 | Reprovado no anual |
+| Ultimos 90d | 14 | 71.43% | +74.00 USD | -619.00 USD | 1.079 | Quase neutro |
+| Ultimos 30d | 6 | 83.33% | +271.00 USD | -321.00 USD | 2.158 | Recente positivo, mas abaixo da meta |
+
+Decisao:
+
+- nao promover o perfil `03`;
+- o Pine foi atualizado para abrir por padrao no perfil `04 Noite 2102 SELL combo leg`.
