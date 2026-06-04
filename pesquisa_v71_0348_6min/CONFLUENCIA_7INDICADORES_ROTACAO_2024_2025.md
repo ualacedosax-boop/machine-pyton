@@ -89,3 +89,19 @@ Folds usados:
 - Promover para TradingView somente candidatos que continuem fortes no holdout 2026 e nos recortes recentes.
 - O score acima nao usa 2026; se 2026 estiver ruim, o candidato deve ser tratado como reprovado ou apenas diagnostico.
 - Esta busca e a primeira bateria de confluencia. Apos teste no TV, registrar os resultados reais no relatorio principal.
+
+## Teste TradingView - perfil 01
+
+Perfil: `01 Noite 2102 SELL 75tr 85pct`.
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| Ultimos 365d | 53 | 69.81% | -7.00 USD | -848.00 USD | 0.998 | Reprovado no anual |
+| Ultimos 90d | 14 | 71.43% | +74.00 USD | -619.00 USD | 1.079 | Fraco |
+| Ultimos 30d | 6 | 83.33% | +271.00 USD | -321.00 USD | 2.158 | Recente positivo, mas poucos trades |
+
+Decisao:
+
+- nao promover o perfil `01`;
+- testar em seguida o perfil `02 Noite 2102 SELL 84tr 85pct`;
+- se o perfil `02` tambem nao confirmar, testar o perfil `03`.
