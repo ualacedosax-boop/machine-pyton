@@ -137,3 +137,19 @@ Decisao:
 
 - nao promover o perfil `03`;
 - o Pine foi atualizado para abrir por padrao no perfil `04 Noite 2102 SELL combo leg`.
+
+## Teste TradingView - perfil 05
+
+Perfil: `05 Manha 1152 BUY diagnostico`.
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| Ultimos 365d | 67 | 83.58% | +2894.00 USD | -789.50 USD | 2.026 | Melhor TV da familia ate agora, mas abaixo de 85% |
+| Ultimos 90d | 21 | 80.95% | +535.00 USD | -789.50 USD | 1.453 | Positivo, mas abaixo da meta |
+| Ultimos 30d | 10 | 80.00% | +340.00 USD | -277.50 USD | 1.726 | Positivo, mas abaixo da meta |
+
+Decisao:
+
+- nao promover o perfil `05`;
+- manter como referencia auxiliar de manha, porque o anual foi positivo e PF ficou acima de 2;
+- perfil `04 Noite 2102 SELL combo leg` segue pendente para teste.
