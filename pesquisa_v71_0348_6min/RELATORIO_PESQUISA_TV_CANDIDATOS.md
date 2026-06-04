@@ -20,7 +20,7 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 1 | Rotacao 2024-2025 Holdout2026 | 2m | `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine` | 197 TV perfil 01 / 92 TV perfil 02 | 80.20% TV perfil 01 / 77.17% TV perfil 02 nos ultimos 365d | +6596.50 USD TV / +2257.00 USD TV | -804.50 USD TV / -747.00 USD TV | 1.705 TV / 1.459 TV | Perfis 01 e 02 positivos no anual, mas abaixo da meta; 02 reprovou no 30d; testar perfil 03 |
+| 1 | Rotacao 2024-2025 Holdout2026 | 2m | `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine` | 197 TV perfil 01 / 92 TV perfil 02 / 146 TV perfil 03 | 80.20% / 77.17% / 72.60% TV nos ultimos 365d | +6596.50 / +2257.00 / +1346.00 USD TV | DD -804.50 / -747.00 / -1966.50 USD TV | PF 1.705 / 1.459 / 1.144 TV | Perfis 01 e 02 positivos mas abaixo da meta; 03 reprovou no 90d/30d; testar perfil 04 |
 | 2 | Rotacao 2M/1M Manha Refino | 2m | `V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine` | 61 a 106 local | 81.97% a 84.51% local nos ultimos 365d | +1238 a +1846.5 pts local | n/d | n/d | Exploratorio; supersedido porque foi criado antes da regra 2026 somente holdout |
 | 3 | Rotacao 2M/1M Noite+Manha | 2m | `V71_ROTACAO_2M1M_NOITE_MANHA_TV_2MIN.pine` | 195 TV combo | 73.33% TV nos ultimos 365d | +2275 USD TV | -2750 USD TV | 1.187 TV | Combo reprovado no TV; noite isolada positiva recente, fraca no anual |
 | 4 | Diagnostico TVSafe por blocos | 2m | `V71_DIAGNOSTICO_TVSAFE_BLOCOS_REWRITE_2MIN.pine` | diagnostico | n/d | n/d | n/d | n/d | Caminho secundario: isolar se a perda recente vem da quarta 02:56, sexta 09:30 ou da combinacao |
@@ -97,6 +97,20 @@ Decisao:
 - nao promover o perfil `02`;
 - o 365d e positivo, mas o 30d negativo invalida como candidato operacional;
 - proximo teste: `03 Manha 1030 SELL`.
+
+Teste TradingView do perfil `03 Manha 1030 SELL`:
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| Ultimos 365d | 146 | 72.60% | +1346.00 USD | -1966.50 USD | 1.144 | Positivo, mas DD alto e acerto baixo |
+| Ultimos 90d | 32 | 59.38% | -1123.00 USD | -1917.50 USD | 0.631 | Reprovado |
+| Ultimos 30d | 11 | 54.55% | -564.00 USD | -1055.50 USD | 0.518 | Reprovado |
+
+Decisao:
+
+- nao promover o perfil `03`;
+- o 90d e o 30d negativos encerram esse bloco de manha 10:30;
+- proximo teste: `04 Manha 1154 SELL`.
 
 ## Candidato novo: Rotacao 2M/1M Noite e Manha
 
@@ -614,11 +628,11 @@ Ponto fraco:
 
 Melhor candidato para teste serio agora:
 
-`V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine`, agora no perfil `03 Manha 1030 SELL`.
+`V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine`, agora no perfil `04 Manha 1154 SELL`.
 
 Melhor candidato de alta acertividade/DD:
 
-Nenhum confirmado no TradingView recente; os perfis `01 Combo` e `02 Noite 21 BUY` foram positivos no anual, mas nao passaram de 85% de acerto.
+Nenhum confirmado no TradingView recente; os perfis `01 Combo` e `02 Noite 21 BUY` foram positivos no anual, mas nao passaram de 85% de acerto, e o perfil `03` reprovou no 90d/30d.
 
 Melhor candidato simples por robustez multiano:
 
@@ -641,7 +655,8 @@ Regra pratica:
 - o arquivo `V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine` fica apenas como historico exploratorio, pois foi criado antes da regra 2026 somente holdout;
 - o perfil `01 Combo 21 BUY + 1154 SELL` do holdout 2026 foi positivo no TradingView, mas ficou abaixo de 85% nos 365/90/30 dias;
 - o perfil `02 Noite 21 BUY` tambem foi positivo no anual, mas reprovou no 30d;
-- a proxima busca/teste deve usar `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine`, com `03 Manha 1030 SELL`;
+- o perfil `03 Manha 1030 SELL` reprovou no TradingView, com 90d e 30d negativos;
+- a proxima busca/teste deve usar `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine`, com `04 Manha 1154 SELL`;
 - o Regime 191/89 deve ficar pausado: o smoke minimo funciona, mas as versoes com logica de regime travaram no TradingView;
 - o Regime Refino 93 tambem deve ficar pausado: travou no TradingView;
 - o DMI3 Take45 tambem deve ficar pausado no teste direto: travou no TradingView;
@@ -661,8 +676,8 @@ Regra pratica:
 7. O perfil `01 Noite 20:54 SELL` ficou positivo no 30d/90d, mas reprovou no 365d.
 8. Perfil `01 Combo 21 BUY + 1154 SELL` ja testado: positivo, mas abaixo da meta de acerto.
 9. Perfil `02 Noite 21 BUY` ja testado: positivo no anual, mas reprovado no 30d.
-10. Testar agora `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine`, perfil `03 Manha 1030 SELL`.
-11. Depois testar `04 Manha 1154 SELL`, sabendo que tambem enfraqueceu no 30d local.
+10. Perfil `03 Manha 1030 SELL` ja testado: reprovado no 90d/30d.
+11. Testar agora `04 Manha 1154 SELL`, sabendo que tambem enfraqueceu no 30d local.
 12. Testar `05 Noite 2058 SELL` como noite alternativa.
 13. Se todos cairem no TV, reescrever usando export/lista de trades do TradingView.
 14. Manter o V7.1 oficial sem alteracao.
