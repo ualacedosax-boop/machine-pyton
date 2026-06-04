@@ -10,7 +10,7 @@ strategy("V71 Rotacao 2024-2025 Holdout2026 TV 2m",
 // 2026 ficou fora de quantis, score, folds e escolha de parametros; foi usado so como holdout.
 // Use no MNQ1! em 2 minutos com Backtesting Profundo.
 
-perfil = input.string("04 Manha 1154 SELL", "Perfil",
+perfil = input.string("05 Noite 2058 SELL", "Perfil",
      options=["01 Combo 21 BUY + 1154 SELL", "02 Noite 21 BUY",
          "03 Manha 1030 SELL", "04 Manha 1154 SELL", "05 Noite 2058 SELL"])
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
