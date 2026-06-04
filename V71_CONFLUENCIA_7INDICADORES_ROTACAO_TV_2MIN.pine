@@ -1,0 +1,134 @@
+//@version=6
+strategy("V71 Confluencia 7 Indicadores Rotacao TV 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Selecionado apenas com 2024-2025 usando rotacao 2M/1M.
+// 2026 ficou fora do score/folds/selecao e foi usado somente como holdout cego.
+// Use no MNQ1! em 2 minutos com Backtesting Profundo.
+
+perfil = input.string("01 Noite 2102 SELL 75tr 85pct", "Perfil",
+     options=["01 Noite 2102 SELL 75tr 85pct", "02 Noite 2102 SELL 84tr 86pct",
+         "03 Noite 2102 SELL 76tr 87pct", "04 Noite 2102 SELL combo leg",
+         "05 Manha 1152 BUY diagnostico", "06 Combo Noite+Manha diagnostico"])
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarSinais = input.bool(true, "Mostrar sinais")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+ema89 = ta.ema(close, 89)
+ema200 = ta.ema(close, 200)
+
+[diPlus, diMinus, adx14] = ta.dmi(14, 14)
+dmiGap = math.abs(diPlus - diMinus)
+
+[macdLine, macdSignal, macdHist] = ta.macd(close, 12, 26, 9)
+roc5 = close - close[5]
+roc10 = close - close[10]
+bbMid = ta.sma(close, 20)
+
+stochHi = ta.highest(high, 14)
+stochLo = ta.lowest(low, 14)
+stochDen = stochHi - stochLo
+stoch14 = stochDen != 0 ? 100 * (close - stochLo) / stochDen : na
+
+regimeOk = adx14 >= 20 and dmiGap >= 4
+
+vSellEma1734 = ema17 < ema34 ? 1 : 0
+vSellEma3489 = ema34 < ema89 ? 1 : 0
+vSellEma200 = close < ema200 ? 1 : 0
+vSellDmi = diMinus > diPlus ? 1 : 0
+vSellMacd = macdLine < macdSignal ? 1 : 0
+vSellRoc5 = roc5 < 0 ? 1 : 0
+vSellRoc10 = roc10 < 0 ? 1 : 0
+vSellBbMid = close < bbMid ? 1 : 0
+vSellCandle = close < open ? 1 : 0
+vSellPrevCandle = close[1] < open[1] ? 1 : 0
+
+vBuyEma3489 = ema34 >= ema89 ? 1 : 0
+vBuyMacd = macdLine >= macdSignal ? 1 : 0
+vBuyRoc5 = roc5 >= 0 ? 1 : 0
+vBuyBbMid = close >= bbMid ? 1 : 0
+vBuyCandle = close >= open ? 1 : 0
+vBuyPrevCandle = close[1] >= open[1] ? 1 : 0
+vBuyStoch50 = stoch14 >= 50 ? 1 : 0
+
+// Perfil 01 local:
+// Modelo 2024-2025: 75tr, 85.33%, +1945.0 pts.
+// Holdout 2026: 20tr, 85.00%, +507.5 pts.
+scoreN1 = vSellEma1734 + vSellEma3489 + vSellEma200 + vSellRoc5 + vSellBbMid + vSellCandle + vSellPrevCandle
+noite2102SellA = hSP == 21 and mSP == 2 and regimeOk and scoreN1 >= 5
+
+// Perfil 02 local:
+// Modelo 2024-2025: 84tr, 85.71%, +2232.0 pts.
+// Holdout 2026: 20tr, 85.00%, +507.5 pts.
+scoreN2 = vSellEma1734 + vSellEma3489 + vSellEma200 + vSellDmi + vSellRoc5 + vSellRoc10 + vSellCandle
+noite2102SellB = hSP == 21 and mSP == 2 and regimeOk and scoreN2 >= 5
+
+// Perfil 03 local:
+// Modelo 2024-2025: 76tr, 86.84%, +2163.0 pts.
+// Holdout 2026: 20tr, 85.00%, +507.5 pts.
+scoreN3 = vSellEma1734 + vSellEma3489 + vSellEma200 + vSellDmi + vSellMacd + vSellRoc5 + vSellCandle
+noite2102SellC = hSP == 21 and mSP == 2 and regimeOk and scoreN3 >= 5
+
+// Perfil 04 e a perna de noite que apareceu nos melhores combos locais.
+scoreN4 = vSellEma1734 + vSellEma200 + vSellDmi + vSellMacd + vSellRoc5 + vSellRoc10 + vSellPrevCandle
+noite2102SellD = hSP == 21 and mSP == 2 and regimeOk and scoreN4 >= 5
+
+// Perfil 05 local forte, mas holdout/90d fracos; manter como diagnostico.
+scoreM1 = vBuyEma3489 + vBuyMacd + vBuyRoc5 + vBuyBbMid + vBuyCandle + vBuyPrevCandle + vBuyStoch50
+manha1152Buy = hSP == 11 and mSP == 52 and regimeOk and scoreM1 >= 5
+
+p1 = perfil == "01 Noite 2102 SELL 75tr 85pct"
+p2 = perfil == "02 Noite 2102 SELL 84tr 86pct"
+p3 = perfil == "03 Noite 2102 SELL 76tr 87pct"
+p4 = perfil == "04 Noite 2102 SELL combo leg"
+p5 = perfil == "05 Manha 1152 BUY diagnostico"
+p6 = perfil == "06 Combo Noite+Manha diagnostico"
+
+sellSignal = strategy.position_size == 0 and (
+     (p1 and noite2102SellA) or
+     (p2 and noite2102SellB) or
+     (p3 and noite2102SellC) or
+     ((p4 or p6) and noite2102SellD))
+
+buySignal = strategy.position_size == 0 and (
+     ((p5 or p6) and manha1152Buy))
+
+if buySignal
+    strategy.entry("B", strategy.long, alert_message="V71 CONFLUENCIA 7 IND BUY")
+
+if sellSignal
+    strategy.entry("S", strategy.short, alert_message="V71 CONFLUENCIA 7 IND SELL")
+
+strategy.exit("TP/SL B", from_entry="B", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL S", from_entry="S", profit=takeTicks, loss=stopTicks)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+plot(ema89, "EMA 89", color=color.gray, linewidth=1)
+plot(ema200, "EMA 200", color=color.silver, linewidth=1)
+
+plotshape(mostrarSinais and noite2102SellA and p1, title="N2102 A", style=shape.triangledown,
+     location=location.abovebar, color=color.fuchsia, size=size.small, text="N1")
+plotshape(mostrarSinais and noite2102SellB and p2, title="N2102 B", style=shape.triangledown,
+     location=location.abovebar, color=color.red, size=size.small, text="N2")
+plotshape(mostrarSinais and noite2102SellC and p3, title="N2102 C", style=shape.triangledown,
+     location=location.abovebar, color=color.orange, size=size.small, text="N3")
+plotshape(mostrarSinais and noite2102SellD and (p4 or p6), title="N2102 D", style=shape.triangledown,
+     location=location.abovebar, color=color.maroon, size=size.small, text="N4")
+plotshape(mostrarSinais and manha1152Buy and (p5 or p6), title="M1152", style=shape.triangleup,
+     location=location.belowbar, color=color.lime, size=size.small, text="M")
+
+alertcondition(buySignal, title="V71 Confluencia 7 IND BUY", message="V71 CONFLUENCIA 7 IND BUY")
+alertcondition(sellSignal, title="V71 Confluencia 7 IND SELL", message="V71 CONFLUENCIA 7 IND SELL")
