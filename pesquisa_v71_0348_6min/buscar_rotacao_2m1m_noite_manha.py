@@ -18,6 +18,8 @@ ARQ_MD = SAIDA_DIR / "ROTACAO_2M1M_NOITE_MANHA.md"
 
 TAKE = 50.5
 STOP = 117.0
+ANOS_MODELO = [2024, 2025]
+ANO_HOLDOUT = 2026
 
 FAMILIAS = {
     "noite": ["20:54", "20:56", "20:58", "21:00"],
@@ -74,10 +76,10 @@ def preparar():
     return df.replace([np.inf, -np.inf], np.nan)
 
 
-def folds_2m1m(meses):
+def folds_2m1m(meses, anos_modelo=ANOS_MODELO):
     meses_set = set(meses)
     folds = []
-    anos = sorted({int(m[:4]) for m in meses})
+    anos = sorted({int(m[:4]) for m in meses if int(m[:4]) in anos_modelo})
     for ano in anos:
         for inicio in [1, 4, 7, 10]:
             treino = [f"{ano}-{inicio:02d}", f"{ano}-{inicio + 1:02d}"]
@@ -124,6 +126,18 @@ def resumo_recorte(trades, dias):
         return resumo(trades)
     fim = trades["datahora_entrada"].max()
     return resumo(trades[trades["datahora_entrada"] >= fim - pd.Timedelta(days=dias)])
+
+
+def recorte_anos(trades, anos):
+    if trades.empty:
+        return trades
+    return trades[trades["ano"].isin(anos)].copy()
+
+
+def recorte_ano(trades, ano):
+    if trades.empty:
+        return trades
+    return trades[trades["ano"].eq(ano)].copy()
 
 
 def simular_arrays(shared, idx_sinal, direcao):
@@ -177,6 +191,7 @@ def simular_token(df, shared, familia, hhmm, direcao):
             "datahora_entrada": entrada,
             "datahora_saida": saida,
             "mes": df.at[int(idx), "mes"],
+            "ano": int(df.at[int(idx), "DataHora_SP"].year),
             "pontos": float(pontos),
             "resultado": resultado,
         }
@@ -225,10 +240,10 @@ def score_linha(row):
         + row["teste_pontos"] * 3.0
         + row["teste_winrate"] * 45.0
         + min(row["teste_pf"], 10.0) * 220.0
-        + row["pontos_365"] * 0.8
-        + row["pontos_90"] * 1.6
-        + row["pontos_30"] * 1.2
-        + row["winrate_365"] * 18.0
+        + row["pontos_modelo"] * 0.8
+        + row["winrate_modelo"] * 18.0
+        + row["winrate_2024"] * 8.0
+        + row["winrate_2025"] * 8.0
         - abs(row["teste_dd"]) * 1.1
         - row["folds_teste_neg"] * 750
         - max(0, 4 - row["folds_teste_ok"]) * 900
@@ -273,7 +288,13 @@ def avaliar_candidato(token_trades, cond, folds, meta):
 
     teste_pool = filtrar_aberta(pd.concat(testes_todos, ignore_index=True)) if testes_todos else pd.DataFrame()
     mtodos = resumo(teste_pool)
-    m365 = resumo_recorte(trades, 365)
+    modelo = recorte_anos(trades, ANOS_MODELO)
+    holdout = recorte_ano(trades, ANO_HOLDOUT)
+    mmodelo = resumo(modelo)
+    m2024 = resumo(recorte_ano(trades, 2024))
+    m2025 = resumo(recorte_ano(trades, 2025))
+    m2026 = resumo(holdout)
+    m365_modelo = resumo_recorte(modelo, 365)
     m90 = resumo_recorte(trades, 90)
     m30 = resumo_recorte(trades, 30)
     row = {
@@ -285,7 +306,11 @@ def avaliar_candidato(token_trades, cond, folds, meta):
         "folds_teste_ok": folds_teste_ok,
         "folds_teste_neg": folds_teste_neg,
         **{f"teste_{k}": v for k, v in mtodos.items()},
-        **{f"{k}_365": v for k, v in m365.items()},
+        **{f"{k}_modelo": v for k, v in mmodelo.items()},
+        **{f"{k}_2024": v for k, v in m2024.items()},
+        **{f"{k}_2025": v for k, v in m2025.items()},
+        **{f"{k}_2026": v for k, v in m2026.items()},
+        **{f"{k}_365_modelo": v for k, v in m365_modelo.items()},
         **{f"{k}_90": v for k, v in m90.items()},
         **{f"{k}_30": v for k, v in m30.items()},
     }
@@ -298,7 +323,8 @@ def buscar_token(token_trades, folds, meta):
     folds_linhas = []
     melhores_trades = []
 
-    conds_base = [tuple()] + atomos_token(token_trades)
+    token_modelo = recorte_anos(token_trades, ANOS_MODELO)
+    conds_base = [tuple()] + atomos_token(token_modelo)
     avaliados = []
     for cond in conds_base:
         row, fold_df, trades = avaliar_candidato(token_trades, cond, folds, meta)
@@ -357,7 +383,7 @@ def buscar():
         for hhmm in horarios:
             for direcao in ["BUY", "SELL"]:
                 token_trades = simular_token(df, shared, familia, hhmm, direcao)
-                if len(token_trades) < 60:
+                if len(recorte_anos(token_trades, ANOS_MODELO)) < 60:
                     continue
                 meta = {
                     "familia": familia,
@@ -375,6 +401,7 @@ def buscar():
                     f"{familia} {hhmm} {direcao}: score={top['score']:.1f} "
                     f"folds_ok={top['folds_teste_ok']}/{top['folds_total']} "
                     f"teste={top['teste_trades']}tr {top['teste_winrate']:.1f}% {top['teste_pontos']:.1f} "
+                    f"2026={top['trades_2026']}tr {top['winrate_2026']:.1f}% {top['pontos_2026']:.1f} "
                     f"filtro={top['filtro']}",
                     flush=True,
                 )
@@ -421,7 +448,11 @@ def avaliar_combo(row_a, row_b, trades_por_chave, folds):
         "folds_teste_ok": folds_teste_ok,
         "folds_teste_neg": folds_teste_neg,
         **{f"teste_{k}": v for k, v in resumo(teste_pool).items()},
-        **{f"{k}_365": v for k, v in resumo_recorte(trades, 365).items()},
+        **{f"{k}_modelo": v for k, v in resumo(recorte_anos(trades, ANOS_MODELO)).items()},
+        **{f"{k}_2024": v for k, v in resumo(recorte_ano(trades, 2024)).items()},
+        **{f"{k}_2025": v for k, v in resumo(recorte_ano(trades, 2025)).items()},
+        **{f"{k}_2026": v for k, v in resumo(recorte_ano(trades, ANO_HOLDOUT)).items()},
+        **{f"{k}_365_modelo": v for k, v in resumo_recorte(recorte_anos(trades, ANOS_MODELO), 365).items()},
         **{f"{k}_90": v for k, v in resumo_recorte(trades, 90).items()},
         **{f"{k}_30": v for k, v in resumo_recorte(trades, 30).items()},
     }
@@ -480,9 +511,12 @@ def escrever_md(ranking, combos, folds):
         "teste_pontos",
         "teste_dd",
         "teste_pf",
-        "trades_365",
-        "winrate_365",
-        "pontos_365",
+        "trades_modelo",
+        "winrate_modelo",
+        "pontos_modelo",
+        "trades_2026",
+        "winrate_2026",
+        "pontos_2026",
         "trades_90",
         "winrate_90",
         "pontos_90",
@@ -498,9 +532,12 @@ def escrever_md(ranking, combos, folds):
         "teste_pontos",
         "teste_dd",
         "teste_pf",
-        "trades_365",
-        "winrate_365",
-        "pontos_365",
+        "trades_modelo",
+        "winrate_modelo",
+        "pontos_modelo",
+        "trades_2026",
+        "winrate_2026",
+        "pontos_2026",
         "trades_90",
         "winrate_90",
         "pontos_90",
@@ -514,6 +551,8 @@ def escrever_md(ranking, combos, folds):
         "Pesquisa separada. Nao altera o V7.1 oficial.",
         "",
         "Metodo: blocos trimestrais. Treina os dois primeiros meses e testa o terceiro.",
+        "",
+        f"Regra anti-vazamento: o modelo so usa {ANOS_MODELO[0]}-{ANOS_MODELO[-1]}. O ano {ANO_HOLDOUT} nao participa de quantis, score, folds ou escolha de parametros; fica apenas como holdout.",
         "",
         "Folds usados:",
         "",
@@ -531,6 +570,7 @@ def escrever_md(ranking, combos, folds):
             "## Leitura",
             "",
             "- Uma regra so e candidata se passar em meses de teste, nao apenas no periodo total.",
+            f"- {ANO_HOLDOUT} e prova cega: serve para rejeitar ou promover para TV, mas nao para criar a regra.",
             "- Se a combinacao for pior que os blocos separados, manter scripts separados e juntar apenas depois de validacao no TV.",
             "- Proximo passo apos escolher candidatos: converter para Pine simples e validar no TradingView com Backtesting Profundo.",
             "",
@@ -549,12 +589,12 @@ def main():
     escrever_md(ranking, combos, folds)
 
     print("\nTop noite:")
-    print(ranking[ranking["familia"].eq("noite")].head(10)[["candidato", "filtro", "folds_teste_ok", "teste_trades", "teste_winrate", "teste_pontos", "trades_365", "winrate_365", "pontos_365", "trades_30", "winrate_30", "pontos_30"]].to_string(index=False, max_colwidth=100))
+    print(ranking[ranking["familia"].eq("noite")].head(10)[["candidato", "filtro", "folds_teste_ok", "teste_trades", "teste_winrate", "teste_pontos", "trades_modelo", "winrate_modelo", "pontos_modelo", "trades_2026", "winrate_2026", "pontos_2026", "trades_30", "winrate_30", "pontos_30"]].to_string(index=False, max_colwidth=100))
     print("\nTop manha:")
-    print(ranking[ranking["familia"].eq("manha")].head(10)[["candidato", "filtro", "folds_teste_ok", "teste_trades", "teste_winrate", "teste_pontos", "trades_365", "winrate_365", "pontos_365", "trades_30", "winrate_30", "pontos_30"]].to_string(index=False, max_colwidth=100))
+    print(ranking[ranking["familia"].eq("manha")].head(10)[["candidato", "filtro", "folds_teste_ok", "teste_trades", "teste_winrate", "teste_pontos", "trades_modelo", "winrate_modelo", "pontos_modelo", "trades_2026", "winrate_2026", "pontos_2026", "trades_30", "winrate_30", "pontos_30"]].to_string(index=False, max_colwidth=100))
     print("\nTop combos:")
     if not combos.empty:
-        print(combos.head(10)[["combo", "folds_teste_ok", "teste_trades", "teste_winrate", "teste_pontos", "trades_365", "winrate_365", "pontos_365", "trades_30", "winrate_30", "pontos_30"]].to_string(index=False, max_colwidth=120))
+        print(combos.head(10)[["combo", "folds_teste_ok", "teste_trades", "teste_winrate", "teste_pontos", "trades_modelo", "winrate_modelo", "pontos_modelo", "trades_2026", "winrate_2026", "pontos_2026", "trades_30", "winrate_30", "pontos_30"]].to_string(index=False, max_colwidth=120))
     print("\nArquivos:")
     print(ARQ_RANKING)
     print(ARQ_COMBOS)

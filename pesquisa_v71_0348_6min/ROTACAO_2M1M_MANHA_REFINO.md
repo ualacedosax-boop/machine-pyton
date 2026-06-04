@@ -2,6 +2,8 @@
 
 Pesquisa separada. Nao altera o V7.1 oficial.
 
+Status atual: supersedido. Este refino foi criado antes da regra fixa de nao treinar/selecionar com 2026. A validacao principal passa a ser `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine`.
+
 Objetivo: continuar a busca depois que o combo `20:54 SELL + 10:30 SELL` reprovou no TradingView e o bloco de noite ficou positivo apenas no recente, mas fraco no anual.
 
 ## Metodo

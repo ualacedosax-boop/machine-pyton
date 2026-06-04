@@ -1,0 +1,96 @@
+//@version=6
+strategy("V71 Rotacao 2024-2025 Holdout2026 TV 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Regra anti-vazamento: filtros escolhidos apenas com 2024-2025.
+// 2026 ficou fora de quantis, score, folds e escolha de parametros; foi usado so como holdout.
+// Use no MNQ1! em 2 minutos com Backtesting Profundo.
+
+perfil = input.string("01 Combo 21 BUY + 1154 SELL", "Perfil",
+     options=["01 Combo 21 BUY + 1154 SELL", "02 Noite 21 BUY",
+         "03 Manha 1030 SELL", "04 Manha 1154 SELL", "05 Noite 2058 SELL"])
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarSinais = input.bool(true, "Mostrar sinais")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+emaTrend = ema17 - ema34
+ema200 = ta.ema(close, 200)
+distEma200 = close - ema200
+roc5 = close - close[5]
+roc10 = close - close[10]
+
+typ = hlc3
+newDaySP = ta.change(dayofmonth(time, "America/Sao_Paulo")) != 0
+var float cumPV = na
+var float cumVol = na
+if newDaySP or na(cumPV)
+    cumPV := typ * volume
+    cumVol := volume
+else
+    cumPV += typ * volume
+    cumVol += volume
+vwapSP = cumVol != 0 ? cumPV / cumVol : na
+distVwap = close - vwapSP
+
+range20Hi = ta.highest(high, 20)
+range20Lo = ta.lowest(low, 20)
+range20Den = range20Hi - range20Lo
+posRange20 = range20Den != 0 ? (close - range20Lo) / range20Den : na
+
+p1 = perfil == "01 Combo 21 BUY + 1154 SELL"
+p2 = perfil == "02 Noite 21 BUY"
+p3 = perfil == "03 Manha 1030 SELL"
+p4 = perfil == "04 Manha 1154 SELL"
+p5 = perfil == "05 Noite 2058 SELL"
+
+noite2100Buy = hSP == 21 and mSP == 0 and emaTrend >= -2.9964 and roc5 <= -0.5000
+manha1030Sell = hSP == 10 and mSP == 30 and distEma200 <= 24.0847 and posRange20 <= 0.8233
+manha1154Sell = hSP == 11 and mSP == 54 and distVwap <= 6.9961 and emaTrend <= 8.3737
+noite2058Sell = hSP == 20 and mSP == 58 and roc10 <= -3.2500
+
+buySignal = strategy.position_size == 0 and (
+     (p1 and noite2100Buy) or
+     (p2 and noite2100Buy))
+
+sellSignal = strategy.position_size == 0 and (
+     (p1 and manha1154Sell) or
+     (p3 and manha1030Sell) or
+     (p4 and manha1154Sell) or
+     (p5 and noite2058Sell))
+
+if buySignal
+    strategy.entry("B", strategy.long, alert_message="V71 ROTACAO HOLDOUT2026 BUY")
+
+if sellSignal
+    strategy.entry("S", strategy.short, alert_message="V71 ROTACAO HOLDOUT2026 SELL")
+
+strategy.exit("TP/SL B", from_entry="B", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL S", from_entry="S", profit=takeTicks, loss=stopTicks)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+plot(ema200, "EMA 200", color=color.gray, linewidth=1)
+
+plotshape(mostrarSinais and noite2100Buy and (p1 or p2), title="BUY 21", style=shape.triangleup,
+     location=location.belowbar, color=color.lime, size=size.small, text="N21")
+plotshape(mostrarSinais and manha1030Sell and p3, title="SELL 1030", style=shape.triangledown,
+     location=location.abovebar, color=color.red, size=size.small, text="M1030")
+plotshape(mostrarSinais and manha1154Sell and (p1 or p4), title="SELL 1154", style=shape.triangledown,
+     location=location.abovebar, color=color.fuchsia, size=size.small, text="M1154")
+plotshape(mostrarSinais and noite2058Sell and p5, title="SELL 2058", style=shape.triangledown,
+     location=location.abovebar, color=color.orange, size=size.small, text="N2058")
+
+alertcondition(buySignal, title="V71 Rotacao Holdout2026 BUY", message="V71 ROTACAO HOLDOUT2026 BUY")
+alertcondition(sellSignal, title="V71 Rotacao Holdout2026 SELL", message="V71 ROTACAO HOLDOUT2026 SELL")

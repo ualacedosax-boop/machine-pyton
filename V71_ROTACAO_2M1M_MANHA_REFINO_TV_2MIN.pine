@@ -8,6 +8,8 @@ strategy("V71 Rotacao 2M1M Manha Refino TV 2m",
 // Pesquisa separada. NAO altera o V7.1 oficial.
 // Refino da busca 2M/1M para manha, focado em 10:30 SELL.
 // Candidatos filtrados por rotacao e recortes 90d/30d positivos locais.
+// OBS: candidato exploratorio anterior a regra "2026 so holdout".
+// Preferir V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine.
 // Use no MNQ1! em 2 minutos com Backtesting Profundo.
 
 perfil = input.string("03 EMA200 ROC10 71tr", "Perfil",
