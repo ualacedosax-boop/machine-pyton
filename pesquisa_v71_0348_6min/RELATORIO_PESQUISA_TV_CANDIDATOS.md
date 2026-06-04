@@ -20,7 +20,7 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 1 | Rotacao 2024-2025 Holdout2026 | 2m | `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine` | 197 TV perfil 01 / 92 TV perfil 02 / 146 TV perfil 03 / 114 TV perfil 04 | 80.20% / 77.17% / 72.60% / 77.19% TV nos ultimos 365d | +6596.50 / +2257.00 / +1346.00 / +2497.50 USD TV | DD -804.50 / -747.00 / -1966.50 / -871.00 USD TV | PF 1.705 / 1.459 / 1.144 / 1.391 TV | Perfil 04 teve 30d forte, mas anual/90d abaixo da meta; testar perfil 05 |
+| 1 | Rotacao 2024-2025 Holdout2026 | 2m | `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine` | 197/92/146/114/104 TV | melhor: 80.20% anual perfil 01; 87.50% 30d perfil 04 | melhor anual +6596.50 USD perfil 01; perfil 05 -886.00 USD | melhor DD anual -747.00 USD perfil 02; perfil 05 -1773.00 USD | melhor PF anual 1.705 perfil 01; perfil 05 0.889 | Bateria 01-05 encerrada: nenhum perfil promove; 04 fica so como melhor recente |
 | 2 | Rotacao 2M/1M Manha Refino | 2m | `V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine` | 61 a 106 local | 81.97% a 84.51% local nos ultimos 365d | +1238 a +1846.5 pts local | n/d | n/d | Exploratorio; supersedido porque foi criado antes da regra 2026 somente holdout |
 | 3 | Rotacao 2M/1M Noite+Manha | 2m | `V71_ROTACAO_2M1M_NOITE_MANHA_TV_2MIN.pine` | 195 TV combo | 73.33% TV nos ultimos 365d | +2275 USD TV | -2750 USD TV | 1.187 TV | Combo reprovado no TV; noite isolada positiva recente, fraca no anual |
 | 4 | Diagnostico TVSafe por blocos | 2m | `V71_DIAGNOSTICO_TVSAFE_BLOCOS_REWRITE_2MIN.pine` | diagnostico | n/d | n/d | n/d | n/d | Caminho secundario: isolar se a perda recente vem da quarta 02:56, sexta 09:30 ou da combinacao |
@@ -126,6 +126,21 @@ Decisao:
 - manter como melhor recente desta bateria, por ter 30d acima de 85% com PF bom;
 - anual e 90d ainda ficam abaixo da meta, entao precisa de mais filtro ou combinacao;
 - proximo teste: `05 Noite 2058 SELL`.
+
+Teste TradingView do perfil `05 Noite 2058 SELL`:
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| Ultimos 365d | 104 | 67.31% | -886.00 USD | -1773.00 USD | 0.889 | Reprovado no anual |
+| Ultimos 90d | 27 | 66.67% | -288.00 USD | -818.50 USD | 0.863 | Reprovado |
+| Ultimos 30d | 9 | 66.67% | -96.00 USD | -520.50 USD | 0.863 | Reprovado |
+
+Decisao:
+
+- nao promover o perfil `05`;
+- a bateria `01-05` fica encerrada sem candidato operacional;
+- manter o perfil `04 Manha 1154 SELL` apenas como referencia de melhor 30d, nao como aprovacao;
+- proxima etapa: nova busca com a mesma regra anti-vazamento, usando 2024-2025 para selecao e 2026 apenas como holdout.
 
 ## Candidato novo: Rotacao 2M/1M Noite e Manha
 
@@ -643,7 +658,7 @@ Ponto fraco:
 
 Melhor candidato para teste serio agora:
 
-`V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine`, agora no perfil `05 Noite 2058 SELL`.
+Nenhum perfil da bateria `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine` foi aprovado para promocao.
 
 Melhor candidato de alta acertividade/DD:
 
@@ -672,7 +687,9 @@ Regra pratica:
 - o perfil `02 Noite 21 BUY` tambem foi positivo no anual, mas reprovou no 30d;
 - o perfil `03 Manha 1030 SELL` reprovou no TradingView, com 90d e 30d negativos;
 - o perfil `04 Manha 1154 SELL` foi o melhor recente desta bateria, com 87.50% no 30d, mas ainda nao confirmou no anual/90d;
-- a proxima busca/teste deve usar `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine`, com `05 Noite 2058 SELL`;
+- o perfil `05 Noite 2058 SELL` reprovou nos 365d/90d/30d;
+- a bateria `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine` nao deve ser promovida;
+- a proxima busca deve manter a regra: 2024-2025 para selecao, 2026 somente holdout;
 - o Regime 191/89 deve ficar pausado: o smoke minimo funciona, mas as versoes com logica de regime travaram no TradingView;
 - o Regime Refino 93 tambem deve ficar pausado: travou no TradingView;
 - o DMI3 Take45 tambem deve ficar pausado no teste direto: travou no TradingView;
@@ -694,6 +711,7 @@ Regra pratica:
 9. Perfil `02 Noite 21 BUY` ja testado: positivo no anual, mas reprovado no 30d.
 10. Perfil `03 Manha 1030 SELL` ja testado: reprovado no 90d/30d.
 11. Perfil `04 Manha 1154 SELL` ja testado: melhor recente, mas anual/90d abaixo da meta.
-12. Testar agora `05 Noite 2058 SELL` como noite alternativa.
-13. Se todos cairem no TV, reescrever usando export/lista de trades do TradingView.
-14. Manter o V7.1 oficial sem alteracao.
+12. Perfil `05 Noite 2058 SELL` ja testado: reprovado nos 365d/90d/30d.
+13. Encerrar a bateria `01-05`: nenhum perfil promove.
+14. Proxima etapa: nova busca anti-vazamento, com 2024-2025 para selecao e 2026 apenas como holdout.
+15. Manter o V7.1 oficial sem alteracao.
