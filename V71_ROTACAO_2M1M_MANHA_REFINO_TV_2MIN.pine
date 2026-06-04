@@ -1,0 +1,92 @@
+//@version=6
+strategy("V71 Rotacao 2M1M Manha Refino TV 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Refino da busca 2M/1M para manha, focado em 10:30 SELL.
+// Candidatos filtrados por rotacao e recortes 90d/30d positivos locais.
+// Use no MNQ1! em 2 minutos com Backtesting Profundo.
+
+perfil = input.string("03 EMA200 ROC10 71tr", "Perfil",
+     options=["03 EMA200 ROC10 71tr", "02 VWAP PosRange 83tr", "01 Macd PosRange 106tr",
+         "04 VWAP Macd 61tr"])
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarSinais = input.bool(true, "Mostrar sinais")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+
+ema12 = ta.ema(close, 12)
+ema26 = ta.ema(close, 26)
+macd = ema12 - ema26
+macdSignal = ta.ema(macd, 9)
+macdHist = macd - macdSignal
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+ema200 = ta.ema(close, 200)
+distEma200 = close - ema200
+roc10 = close - close[10]
+
+typ = hlc3
+newDaySP = ta.change(dayofmonth(time, "America/Sao_Paulo")) != 0
+var float cumPV = na
+var float cumVol = na
+if newDaySP or na(cumPV)
+    cumPV := typ * volume
+    cumVol := volume
+else
+    cumPV += typ * volume
+    cumVol += volume
+vwapSP = cumVol != 0 ? cumPV / cumVol : na
+distVwap = close - vwapSP
+
+range20Hi = ta.highest(high, 20)
+range20Lo = ta.lowest(low, 20)
+range20Den = range20Hi - range20Lo
+posRange20 = range20Den != 0 ? (close - range20Lo) / range20Den : na
+
+p1 = perfil == "01 Macd PosRange 106tr"
+p2 = perfil == "02 VWAP PosRange 83tr"
+p3 = perfil == "03 EMA200 ROC10 71tr"
+p4 = perfil == "04 VWAP Macd 61tr"
+
+base1030 = hSP == 10 and mSP == 30
+
+manhaP1 = base1030 and macdHist <= 0.8812 and posRange20 <= 0.5400
+manhaP2 = base1030 and distVwap <= 9.7502 and posRange20 <= 0.5400
+manhaP3 = base1030 and distEma200 <= 27.5907 and roc10 <= -12.2250
+manhaP4 = base1030 and distVwap <= 9.7502 and macdHist <= -0.2755
+
+sellSignal = strategy.position_size == 0 and (
+     (p1 and manhaP1) or
+     (p2 and manhaP2) or
+     (p3 and manhaP3) or
+     (p4 and manhaP4))
+
+if sellSignal
+    strategy.entry("S", strategy.short, alert_message="V71 ROTACAO MANHA REFINO SELL")
+
+strategy.exit("TP/SL S", from_entry="S", profit=takeTicks, loss=stopTicks)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+plot(ema200, "EMA 200", color=color.gray, linewidth=1)
+
+plotshape(mostrarSinais and manhaP1 and p1, title="SELL P1", style=shape.triangledown,
+     location=location.abovebar, color=color.red, size=size.small, text="M1")
+plotshape(mostrarSinais and manhaP2 and p2, title="SELL P2", style=shape.triangledown,
+     location=location.abovebar, color=color.orange, size=size.small, text="M2")
+plotshape(mostrarSinais and manhaP3 and p3, title="SELL P3", style=shape.triangledown,
+     location=location.abovebar, color=color.fuchsia, size=size.small, text="M3")
+plotshape(mostrarSinais and manhaP4 and p4, title="SELL P4", style=shape.triangledown,
+     location=location.abovebar, color=color.maroon, size=size.small, text="M4")
+
+alertcondition(sellSignal, title="V71 Rotacao Manha Refino SELL", message="V71 ROTACAO MANHA REFINO SELL")

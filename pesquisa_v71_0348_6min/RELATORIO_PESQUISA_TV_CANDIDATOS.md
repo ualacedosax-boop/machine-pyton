@@ -19,20 +19,21 @@ O objetivo e encontrar uma configuracao com:
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 1 | Rotacao 2M/1M Noite+Manha | 2m | `V71_ROTACAO_2M1M_NOITE_MANHA_TV_2MIN.pine` | 195 TV combo | 73.33% TV nos ultimos 365d | +2275 USD TV | -2750 USD TV | 1.187 TV | Combo reprovado no TV; proximo passo e testar noite e manha separados |
-| 2 | Diagnostico TVSafe por blocos | 2m | `V71_DIAGNOSTICO_TVSAFE_BLOCOS_REWRITE_2MIN.pine` | diagnostico | n/d | n/d | n/d | n/d | Caminho secundario: isolar se a perda recente vem da quarta 02:56, sexta 09:30 ou da combinacao |
-| 3 | Rewrite TVSafe indicadores 95 | 2m | `V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine` | 46 TV perfil 05 | 86.96% TV nos ultimos 365d | +2636 USD TV | -827.50 USD TV | 2.877 TV | Operavel, mas perfis 01/04/05 reprovaram no 90d/30d |
-| 4 | Destrava TV minimo smoke/horarios | 2m | `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` | 3547 TV smoke | 47.90% TV | -389 USD TV | -1661.50 USD TV | 0.983 TV | Confirmou que o TV executa; e diagnostico, nao estrategia |
-| 5 | Destrava TV 3H escada operavel | 2m | `V71_DESTRAVA_TV_3H_ESCADA_OPERAVEL.pine` | diagnostico | n/d | n/d | n/d | n/d | Travou; provavelmente complexo demais para diagnostico inicial |
-| 6 | DMI3 Take45 robusto | 2m | `V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine` | 132 | 86.36% local nos ultimos 365d | 3081.0 | -331.5 | 2.463 | Travou no teste direto; precisa passar por diagnostico minimo antes |
-| 7 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% local nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Reprovado por operabilidade: tambem travou no TradingView |
-| 8 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_TV_LIMPO.pine` | 191 | 89.01% local nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Reprovado por operabilidade: smoke minimo funciona, mas versoes Regime travaram no TV |
-| 9 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% local | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples, mas ainda sem confirmacao TV recente |
-| 10 | Calendario DOW alta acerto - perfil 05 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 152 TV | 81.58% TV nos ultimos 365d | +5972 USD TV | -1168 USD TV | 1.911 TV | Nao confirmou acerto alto no TV |
-| 11 | Calendario DOW robusto anual - perfil 04 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 224 TV | 80.80% TV nos ultimos 365d | +8219 USD TV | -1206 USD TV | 1.817 TV | Nao confirmou acerto alto no TV; 90d fraco |
-| 12 | Calendario DOW 230-85 - perfil 01 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 240 TV | 81.25% TV nos ultimos 365d | +9165 USD TV | -1105 USD TV | 1.87 TV | Reprovado no TradingView apesar do local forte |
-| 13 | 04:06 reversao sem filtro | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` perfil 01 | 373 | 80.16% local | 6441.5 | -550.5 | 1.74 | Frequencia alta e anos positivos, mas abaixo do alvo de acerto |
-| 14 | Calendario top tokens | 2m | `V71_PESQUISA_TV_CALENDARIO_TOP_TOKENS_3H.pine` | 54 a 160 | 80% a 87% local | variavel | variavel | variavel | Bom para estudar blocos de horario, nao final |
+| 1 | Rotacao 2M/1M Manha Refino | 2m | `V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine` | 61 a 106 local | 81.97% a 84.51% local nos ultimos 365d | +1238 a +1846.5 pts local | n/d | n/d | Proximo teste TV; refina apenas 10:30 SELL depois da noite fraca no anual |
+| 2 | Rotacao 2M/1M Noite+Manha | 2m | `V71_ROTACAO_2M1M_NOITE_MANHA_TV_2MIN.pine` | 195 TV combo | 73.33% TV nos ultimos 365d | +2275 USD TV | -2750 USD TV | 1.187 TV | Combo reprovado no TV; noite isolada positiva recente, fraca no anual |
+| 3 | Diagnostico TVSafe por blocos | 2m | `V71_DIAGNOSTICO_TVSAFE_BLOCOS_REWRITE_2MIN.pine` | diagnostico | n/d | n/d | n/d | n/d | Caminho secundario: isolar se a perda recente vem da quarta 02:56, sexta 09:30 ou da combinacao |
+| 4 | Rewrite TVSafe indicadores 95 | 2m | `V71_REWRITE_TVSAFE_INDICADORES_95_TV_2MIN.pine` | 46 TV perfil 05 | 86.96% TV nos ultimos 365d | +2636 USD TV | -827.50 USD TV | 2.877 TV | Operavel, mas perfis 01/04/05 reprovaram no 90d/30d |
+| 5 | Destrava TV minimo smoke/horarios | 2m | `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` | 3547 TV smoke | 47.90% TV | -389 USD TV | -1661.50 USD TV | 0.983 TV | Confirmou que o TV executa; e diagnostico, nao estrategia |
+| 6 | Destrava TV 3H escada operavel | 2m | `V71_DESTRAVA_TV_3H_ESCADA_OPERAVEL.pine` | diagnostico | n/d | n/d | n/d | n/d | Travou; provavelmente complexo demais para diagnostico inicial |
+| 7 | DMI3 Take45 robusto | 2m | `V71_PESQUISA_TV_3H_DMI3_TAKE45_ROBUSTO.pine` | 132 | 86.36% local nos ultimos 365d | 3081.0 | -331.5 | 2.463 | Travou no teste direto; precisa passar por diagnostico minimo antes |
+| 8 | Regime refino 93 - perfil equilibrado | 2m | `V71_PESQUISA_REGIME_REFINO_93_TV_2MIN.pine` | 139 | 94.24% local nos ultimos 365d | 5679.5 | -183.5 | 7.07 | Reprovado por operabilidade: tambem travou no TradingView |
+| 9 | Regime 191/89 multiano | 2m | `V71_PESQUISA_REGIME_191_89_TV_LIMPO.pine` | 191 | 89.01% local nos ultimos 365d | 6128.0 | -468.0 | 3.49 | Reprovado por operabilidade: smoke minimo funciona, mas versoes Regime travaram no TV |
+| 10 | 04:06 reversao multiano | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` | 122 | 86.07% local | 3313.5 | -183.5 | 2.67 | Melhor robustez multiano simples, mas ainda sem confirmacao TV recente |
+| 11 | Calendario DOW alta acerto - perfil 05 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 152 TV | 81.58% TV nos ultimos 365d | +5972 USD TV | -1168 USD TV | 1.911 TV | Nao confirmou acerto alto no TV |
+| 12 | Calendario DOW robusto anual - perfil 04 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 224 TV | 80.80% TV nos ultimos 365d | +8219 USD TV | -1206 USD TV | 1.817 TV | Nao confirmou acerto alto no TV; 90d fraco |
+| 13 | Calendario DOW 230-85 - perfil 01 | 2m | `V71_PESQUISA_CALENDARIO_DOW_230_85_TV_2MIN.pine` | 240 TV | 81.25% TV nos ultimos 365d | +9165 USD TV | -1105 USD TV | 1.87 TV | Reprovado no TradingView apesar do local forte |
+| 14 | 04:06 reversao sem filtro | 6m | `V71_PESQUISA_0406_REVERSAO_MULTIANO_TV_6MIN.pine` perfil 01 | 373 | 80.16% local | 6441.5 | -550.5 | 1.74 | Frequencia alta e anos positivos, mas abaixo do alvo de acerto |
+| 15 | Calendario top tokens | 2m | `V71_PESQUISA_TV_CALENDARIO_TOP_TOKENS_3H.pine` | 54 a 160 | 80% a 87% local | variavel | variavel | variavel | Bom para estudar blocos de horario, nao final |
 
 ## Candidato novo: Rotacao 2M/1M Noite e Manha
 
@@ -87,6 +88,43 @@ Leitura:
 - o TV executou mais trades que o local porque a base local da busca terminava em `2026-05-20`, enquanto o TV testou ate `2026-06-03`; ainda assim, o resultado deve ser tratado como reprova.
 - o perfil `01 Noite 20:54 SELL` foi positivo no 30d/90d, mas reprovou no 365d por acerto baixo e DD alto.
 - proximo passo: testar `02 Manha 10:30 SELL` separado para decidir se a manha tambem esta contaminada.
+
+## Candidato novo: Rotacao 2M/1M Manha Refino
+
+Arquivo:
+
+`V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine`
+
+Metodo:
+
+- pesquisa separada, sem mexer no V7.1 oficial;
+- mantem o alvo da sugestao do usuario: operacoes na parte da manha em torno de `10:30`;
+- usa rotacao 2M/1M: treina dois meses e testa o terceiro;
+- pega apenas candidatos com pelo menos 5 folds de teste positivos e recortes locais 90d/30d positivos;
+- usa take `50.5` e stop `117`.
+
+Perfis do Pine:
+
+| Perfil | Regra | OOS trades | OOS winrate | OOS pontos | 365d trades | 365d winrate | 365d pontos | 90d | 30d |
+|---|---|---:|---:|---:|---:|---:|---:|---|---|
+| 03 EMA200 ROC10 71tr | `10:30 SELL`, `distEma200 <= 27.5907`, `roc10 <= -12.2250` | 29 | 86.21% | +794.5 | 71 | 84.51% | +1743.0 | 12tr, 91.67%, +438.5 | 5tr, 80.00%, +85.0 |
+| 02 VWAP PosRange 83tr | `10:30 SELL`, `distVwap <= 9.7502`, `posRange20 <= 0.5400` | 40 | 85.00% | +1015.0 | 83 | 83.13% | +1846.5 | 13tr, 92.31%, +489.0 | 5tr, 80.00%, +85.0 |
+| 01 Macd PosRange 106tr | `10:30 SELL`, `macdHist <= 0.8812`, `posRange20 <= 0.5400` | 58 | 79.31% | +919.0 | 106 | 80.19% | +1835.5 | 25tr, 80.00%, +425.0 | 7tr, 85.71%, +186.0 |
+| 04 VWAP Macd 61tr | `10:30 SELL`, `distVwap <= 9.7502`, `macdHist <= -0.2755` | 33 | 84.85% | +829.0 | 61 | 81.97% | +1238.0 | 9tr, 88.89%, +287.0 | 4tr, 75.00%, +34.5 |
+
+Ordem de teste recomendada:
+
+1. `03 EMA200 ROC10 71tr`: padrao do Pine; menor frequencia, mas melhor equilibrio entre OOS, 365d, 90d e 30d.
+2. `02 VWAP PosRange 83tr`: segunda melhor opcao, com OOS e recortes recentes fortes.
+3. `01 Macd PosRange 106tr`: mais trades, mas acerto local anual mais baixo.
+4. `04 VWAP Macd 61tr`: diagnostico secundario; 30d local tem poucos trades.
+
+Leitura:
+
+- este arquivo nao tenta juntar noite e manha; ele testa se a manha sozinha ainda tem vantagem quando refinada.
+- a base local termina em `2026-05-20`, entao o TradingView ate `2026-06-03` pode mudar bastante o resultado.
+- se os perfis 03 ou 02 confirmarem no TV, a proxima etapa e procurar uma noite nova para combinar depois.
+- se os quatro cairem no TV, a busca deve passar a usar export/lista de trades do proprio TradingView.
 
 ## Candidato novo: Calendario DOW 230-85
 
@@ -512,11 +550,11 @@ Ponto fraco:
 
 Melhor candidato para teste serio agora:
 
-`V71_ROTACAO_2M1M_NOITE_MANHA_TV_2MIN.pine`, perfis separados `01 Noite 20:54 SELL` e `02 Manha 10:30 SELL`.
+`V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine`, com prioridade para `03 EMA200 ROC10 71tr` e depois `02 VWAP PosRange 83tr`.
 
 Melhor candidato de alta acertividade/DD:
 
-Nenhum confirmado no TradingView recente; o novo combo por rotacao e o proximo a validar.
+Nenhum confirmado no TradingView recente; o refino da manha por rotacao e o proximo a validar.
 
 Melhor candidato simples por robustez multiano:
 
@@ -535,6 +573,7 @@ Regra pratica:
 - o perfil 05 do Rewrite TVSafe tambem operou, mas reprovou no 90d e 30d;
 - a busca por rotacao 2M/1M achou um combo novo `20:54 SELL + 10:30 SELL`, mas o perfil `03 Combo` reprovou no TV;
 - o perfil `01 Noite 20:54 SELL` da rotacao ficou positivo no recente, mas nao passou no anual;
+- a proxima busca deve testar a manha refinada em `V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine`, com `03 EMA200 ROC10 71tr` primeiro;
 - o Regime 191/89 deve ficar pausado: o smoke minimo funciona, mas as versoes com logica de regime travaram no TradingView;
 - o Regime Refino 93 tambem deve ficar pausado: travou no TradingView;
 - o DMI3 Take45 tambem deve ficar pausado no teste direto: travou no TradingView;
@@ -552,8 +591,10 @@ Regra pratica:
 5. Usar o resultado do `V71_DESTRAVA_TV_MINIMO_SMOKE_HORARIOS.pine` apenas como prova de execucao; o modo smoke ficou perto de 48% e nao e estrategia.
 6. O perfil `03 Combo Noite+Manha` da rotacao reprovou no TradingView.
 7. O perfil `01 Noite 20:54 SELL` ficou positivo no 30d/90d, mas reprovou no 365d.
-8. Testar separado `02 Manha 10:30 SELL`.
-9. Se a manha confirmar melhor que a noite, manter a manha e refazer a busca da noite.
-10. Se a manha tambem cair, reescrever usando o export/lista de trades do TradingView.
-11. Se ambos cairem, reescrever usando o export/lista de trades do TradingView.
-12. Manter o V7.1 oficial sem alteracao.
+8. Testar `V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine`.
+9. Comecar pelo perfil `03 EMA200 ROC10 71tr`.
+10. Se o perfil 03 cair, testar `02 VWAP PosRange 83tr`.
+11. Se 03 e 02 cairem, testar `01 Macd PosRange 106tr` apenas como medicao de frequencia.
+12. Se a manha refinada confirmar, procurar uma noite nova e juntar depois.
+13. Se a manha refinada tambem cair, reescrever usando o export/lista de trades do TradingView.
+14. Manter o V7.1 oficial sem alteracao.
