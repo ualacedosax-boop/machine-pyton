@@ -103,5 +103,20 @@ Perfil: `01 Noite 2102 SELL 75tr 85pct`.
 Decisao:
 
 - nao promover o perfil `01`;
-- testar em seguida o perfil `02 Noite 2102 SELL 84tr 86pct`;
-- se o perfil `02` tambem nao confirmar, testar o perfil `03`.
+- nao promover o perfil `02`;
+- testar em seguida o perfil `03 Noite 2102 SELL 76tr 87pct`.
+
+## Teste TradingView - perfil 02
+
+Perfil: `02 Noite 2102 SELL 84tr 86pct`.
+
+| Periodo | Trades | Winrate | Resultado | DD | PF | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| Ultimos 365d | 53 | 71.70% | +328.00 USD | -777.00 USD | 1.093 | Reprovado no anual |
+| Ultimos 90d | 13 | 76.92% | +308.00 USD | -426.50 USD | 1.439 | Positivo, mas fraco para promover |
+| Ultimos 30d | 5 | 100.00% | +505.00 USD | -87.00 USD | n/d | Recente excelente, pouca amostra |
+
+Decisao:
+
+- nao promover o perfil `02`;
+- testar em seguida o perfil `03 Noite 2102 SELL 76tr 87pct`.
