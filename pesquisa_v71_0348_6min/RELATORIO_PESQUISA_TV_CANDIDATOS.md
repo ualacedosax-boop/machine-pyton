@@ -64,7 +64,7 @@ Melhor bloco encontrado:
 Decisao:
 
 - nao promover o perfil `01 Noite 2102 SELL 75tr 85pct`;
-- o Pine foi atualizado para abrir por padrao no perfil `02 Noite 2102 SELL 84tr 85pct`;
+- o Pine foi atualizado para abrir por padrao no perfil `02 Noite 2102 SELL 84tr 86pct`;
 - se o perfil `02` tambem nao confirmar, testar o perfil `03` para ver se a variante replica melhor;
 - nao promover o combo ainda: no local ele ficou forte em 2024-2025, mas caiu para 77.78% no holdout 2026 e 74.07% nos 90d;
 - manter o V7.1 oficial sem alteracao.

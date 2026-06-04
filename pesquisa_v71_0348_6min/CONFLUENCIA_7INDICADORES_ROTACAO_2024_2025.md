@@ -103,5 +103,5 @@ Perfil: `01 Noite 2102 SELL 75tr 85pct`.
 Decisao:
 
 - nao promover o perfil `01`;
-- testar em seguida o perfil `02 Noite 2102 SELL 84tr 85pct`;
+- testar em seguida o perfil `02 Noite 2102 SELL 84tr 86pct`;
 - se o perfil `02` tambem nao confirmar, testar o perfil `03`.
