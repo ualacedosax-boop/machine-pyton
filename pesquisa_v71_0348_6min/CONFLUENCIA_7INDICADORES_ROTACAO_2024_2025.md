@@ -150,6 +150,8 @@ Perfil: `05 Manha 1152 BUY diagnostico`.
 
 Decisao:
 
-- nao promover o perfil `05`;
-- manter como referencia auxiliar de manha, porque o anual foi positivo e PF ficou acima de 2;
+- nao promover o perfil `05` como sistema unico;
+- aderir o perfil `05` como perna candidata de manha, porque o anual foi positivo, o PF ficou acima de 2 e a replicacao no TradingView foi a melhor desta familia ate agora;
+- nao aumentar a frequencia deste mesmo perfil por enquanto: as variantes locais com mais trades ja perdem acerto e pioram no holdout; se forem testadas, devem virar perfil separado `05+`, nao substituir o `05` base;
+- buscar frequencia somando pernas independentes de noite/madrugada e depois combinar com a manha;
 - perfil `04 Noite 2102 SELL combo leg` segue pendente para teste.
