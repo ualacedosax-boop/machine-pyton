@@ -13,13 +13,15 @@ strategy("V71 Setup05 Proxima Busca TV 2m",
 // - perfil 06 combina somente as pernas que sobreviveram melhor: manha base + madrugada.
 // Selecao feita sem usar 2026 no score/folds; 2026 fica somente para teste cego no TradingView.
 
-perfil = input.string("05 Madrugada 0348 DMI3", "Perfil",
+perfil = input.string("06 Combo manha+madrugada", "Perfil",
      options=["01 Manha 1152 base", "02 Manha 1152 vwap",
          "03 Noite 2052 WEEK SELL", "04 Noite 2052 ALT SELL",
          "05 Madrugada 0348 DMI3", "06 Combo manha+madrugada"])
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
 mostrarSinais = input.bool(true, "Mostrar sinais")
+
+plot(close, "TVSAFE compila", color=color.new(color.white, 100))
 
 takeTicks = int(math.round(takePontos / syminfo.mintick))
 stopTicks = int(math.round(stopPontos / syminfo.mintick))

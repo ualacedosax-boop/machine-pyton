@@ -160,5 +160,6 @@ Proxima bateria:
 
 - `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`;
 - o perfil `05 Madrugada 0348 DMI3` foi informado como o melhor entre os perfis testados;
-- default movido para `05 Madrugada 0348 DMI3`;
+- default movido para `06 Combo manha+madrugada` para testar a uniao manha base + madrugada;
 - combo `06` ajustado para manha base + madrugada, sem as pernas de noite 20:52.
+- adicionado `plot` transparente TV-safe para evitar erro de estrategia aparentemente vazia no compilador.
