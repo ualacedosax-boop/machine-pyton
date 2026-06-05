@@ -16,18 +16,20 @@ O objetivo e encontrar uma configuracao com:
 - menor sinal possivel de overfitting.
 - regra anti-vazamento: 2026 nao pode participar de quantis, score, folds, escolha de filtros ou treino; 2026 fica apenas como teste/holdout.
 
-## Plano apos perfil 05
+## Plano apos perfis 04/06
 
 - Aderir o perfil `05 Manha 1152 BUY diagnostico` como perna candidata de manha, nao como sistema unico.
 - Manter o `05` base fechado; aumento de frequencia deve ser testado como perfil separado `05+`, porque as variantes locais com mais trades reduzem acerto e pioram o holdout.
 - Buscar frequencia por pernas independentes de noite e madrugada, mantendo a rotacao 2M/1M somente em 2024-2025 e deixando 2026 totalmente cego.
-- Proxima validacao pratica no TradingView: testar `04 Noite 2102 SELL combo leg`; se replicar, testar `06 Combo Noite+Manha diagnostico`.
+- Resultado informado no TradingView: `04 Noite 2102 SELL combo leg` e `06 Combo Noite+Manha diagnostico` nao ficaram bons; tratar ambos como reprovados qualitativos ate receber numeros.
+- Proxima validacao pratica no TradingView: `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`, com default em `03 Noite 2052 WEEK SELL`.
 
 ## Ranking pratico
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 0 | Confluencia 7 indicadores 21:02 | 2m | `V71_CONFLUENCIA_7INDICADORES_ROTACAO_TV_2MIN.pine` | perfil 01: 53 TV; perfil 02: 53 TV; perfil 03: 52 TV; perfil 05: 67 TV | perfil 05 TV: 83.58% anual; 80.95% 90d; 80.00% 30d | perfil 05 TV: +2894 USD anual; +535 USD 90d; +340 USD 30d | -789.50 USD TV anual | 2.026 TV anual | Perfil 05 adotado como perna candidata de manha; perfil 04 ainda pendente para noite |
+| 0 | Setup05 proxima busca | 2m | `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine` | pendente TV | pendente TV | pendente TV | pendente TV | pendente TV | Nova bateria: 05 manha preservado, 20:52 noite, 03:48 madrugada, combo separado |
+| 1 | Confluencia 7 indicadores 21:02 | 2m | `V71_CONFLUENCIA_7INDICADORES_ROTACAO_TV_2MIN.pine` | perfil 01: 53 TV; perfil 02: 53 TV; perfil 03: 52 TV; perfil 05: 67 TV | perfil 05 TV: 83.58% anual; 80.95% 90d; 80.00% 30d | perfil 05 TV: +2894 USD anual; +535 USD 90d; +340 USD 30d | -789.50 USD TV anual | 2.026 TV anual | Perfil 05 adotado como perna candidata de manha; perfis 04/06 reprovados qualitativamente |
 | 1 | Rotacao 2024-2025 Holdout2026 | 2m | `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine` | 197/92/146/114/104 TV | melhor: 80.20% anual perfil 01; 87.50% 30d perfil 04 | melhor anual +6596.50 USD perfil 01; perfil 05 -886.00 USD | melhor DD anual -747.00 USD perfil 02; perfil 05 -1773.00 USD | melhor PF anual 1.705 perfil 01; perfil 05 0.889 | Bateria 01-05 encerrada: nenhum perfil promove; 04 fica so como melhor recente |
 | 2 | Rotacao 2M/1M Manha Refino | 2m | `V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine` | 61 a 106 local | 81.97% a 84.51% local nos ultimos 365d | +1238 a +1846.5 pts local | n/d | n/d | Exploratorio; supersedido porque foi criado antes da regra 2026 somente holdout |
 | 3 | Rotacao 2M/1M Noite+Manha | 2m | `V71_ROTACAO_2M1M_NOITE_MANHA_TV_2MIN.pine` | 195 TV combo | 73.33% TV nos ultimos 365d | +2275 USD TV | -2750 USD TV | 1.187 TV | Combo reprovado no TV; noite isolada positiva recente, fraca no anual |
@@ -77,10 +79,16 @@ Decisao:
 - nao promover o perfil `05 Manha 1152 BUY diagnostico` como sistema unico;
 - aderir o perfil `05` como perna candidata de manha, porque foi o melhor TV desta familia ate agora;
 - nao aumentar frequencia no proprio `05` por enquanto; testar qualquer relaxamento como `05+` separado;
-- o Pine permanece abrindo por padrao no perfil `04 Noite 2102 SELL combo leg`, que ainda esta pendente;
-- testar o perfil `04` para ver se o combo da perna noturna replica melhor;
-- nao promover o combo ainda: no local ele ficou forte em 2024-2025, mas caiu para 77.78% no holdout 2026 e 74.07% nos 90d;
+- nao promover o perfil `04 Noite 2102 SELL combo leg`, informado como ruim no TV;
+- nao promover o perfil `06 Combo Noite+Manha diagnostico`, informado como ruim no TV;
+- avancar para `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`, trocando a noite de 21:02 por candidatos de 20:52 e adicionando diagnostico de madrugada 03:48;
 - manter o V7.1 oficial sem alteracao.
+
+Teste TradingView dos perfis `04 Noite 2102 SELL combo leg` e `06 Combo Noite+Manha diagnostico`:
+
+- resultado informado: ambos nao ficaram bons;
+- sem numeros detalhados ainda; registrar como reprovacao qualitativa;
+- conclusao: nao insistir na familia 21:02 como perna principal de noite nesta etapa.
 
 Teste TradingView do perfil `01 Noite 2102 SELL 75tr 85pct`:
 

@@ -1,0 +1,154 @@
+//@version=6
+strategy("V71 Setup05 Proxima Busca TV 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Pesquisa separada. NAO altera o V7.1 oficial.
+// Regra de pesquisa:
+// - perfil 01 preserva a perna de manha que melhor replicou no TV;
+// - perfis 03/04 procuram nova perna de noite fora do 21:02;
+// - perfil 05 mede madrugada simples/TV-safe;
+// - perfil 06 combina as pernas independentes.
+// Selecao feita sem usar 2026 no score/folds; 2026 fica somente para teste cego no TradingView.
+
+perfil = input.string("03 Noite 2052 WEEK SELL", "Perfil",
+     options=["01 Manha 1152 base", "02 Manha 1152 vwap",
+         "03 Noite 2052 WEEK SELL", "04 Noite 2052 ALT SELL",
+         "05 Madrugada 0348 DMI3", "06 Combo base+noite+madrugada"])
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+mostrarSinais = input.bool(true, "Mostrar sinais")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+seg = dowSP == dayofweek.monday
+ter = dowSP == dayofweek.tuesday
+qua = dowSP == dayofweek.wednesday
+qui = dowSP == dayofweek.thursday
+sex = dowSP == dayofweek.friday
+week = seg or ter or qua or qui or sex
+
+ema8 = ta.ema(close, 8)
+ema17 = ta.ema(close, 17)
+ema21 = ta.ema(close, 21)
+ema34 = ta.ema(close, 34)
+ema89 = ta.ema(close, 89)
+ema200 = ta.ema(close, 200)
+
+[diPlus, diMinus, adx14] = ta.dmi(14, 14)
+dmiGap = math.abs(diPlus - diMinus)
+
+[macdLine, macdSignal, macdHist] = ta.macd(close, 12, 26, 9)
+roc5 = close - close[5]
+roc10 = close - close[10]
+bbMid = ta.sma(close, 20)
+vwapVal = ta.vwap(hlc3)
+
+stochHi = ta.highest(high, 14)
+stochLo = ta.lowest(low, 14)
+stochDen = stochHi - stochLo
+stoch14 = stochDen != 0 ? 100 * (close - stochLo) / stochDen : na
+
+body = close - open
+prevBody = close[1] - open[1]
+prevRoc5Contra = roc5[1] <= 0 ? 1 : -1
+
+regimeAdx20Dmi4 = adx14 >= 20 and dmiGap >= 4
+regimeAdx20 = adx14 >= 20
+regimeDmi3 = dmiGap >= 3
+
+vSellEma821 = ema8 < ema21 ? 1 : 0
+vSellEma3489 = ema34 < ema89 ? 1 : 0
+vSellMacd = macdLine < macdSignal ? 1 : 0
+vSellRoc10 = roc10 < 0 ? 1 : 0
+vSellVwap = close < vwapVal ? 1 : 0
+vSellBbMid = close < bbMid ? 1 : 0
+vSellCandle = close < open ? 1 : 0
+vSellPrevCandle = close[1] < open[1] ? 1 : 0
+vSellStoch50 = stoch14 < 50 ? 1 : 0
+
+vBuyEma3489 = ema34 >= ema89 ? 1 : 0
+vBuyMacd = macdLine >= macdSignal ? 1 : 0
+vBuyRoc5 = roc5 >= 0 ? 1 : 0
+vBuyVwap = close >= vwapVal ? 1 : 0
+vBuyBbMid = close >= bbMid ? 1 : 0
+vBuyCandle = close >= open ? 1 : 0
+vBuyPrevCandle = close[1] >= open[1] ? 1 : 0
+vBuyStoch50 = stoch14 >= 50 ? 1 : 0
+
+// Perfil 01: mesmo bloco do perfil 05 que foi positivo no TV.
+scoreMBase = vBuyEma3489 + vBuyMacd + vBuyRoc5 + vBuyBbMid + vBuyCandle + vBuyPrevCandle + vBuyStoch50
+manha1152Base = hSP == 11 and mSP == 52 and regimeAdx20Dmi4 and scoreMBase >= 5
+
+// Perfil 02: variante leve para medir se VWAP replica melhor no TV.
+scoreMVwap = vBuyMacd + vBuyRoc5 + vBuyVwap + vBuyBbMid + vBuyCandle + vBuyPrevCandle + vBuyStoch50
+manha1152Vwap = hSP == 11 and mSP == 52 and regimeAdx20Dmi4 and scoreMVwap >= 5
+
+// Perfil 03 local:
+// noite|20:52|SELL|v5|adx20|WEEK|ema34_89+macd+roc10+vwap+bb_mid+prev_candle+stoch50
+// Modelo 2024-2025: 76tr, 84.21%, +1828.0 pts. Holdout local 2026: 15tr, 80.00%.
+scoreN2052A = vSellEma3489 + vSellMacd + vSellRoc10 + vSellVwap + vSellBbMid + vSellPrevCandle + vSellStoch50
+noite2052SellA = hSP == 20 and mSP == 52 and week and regimeAdx20 and scoreN2052A >= 5
+
+// Perfil 04 local:
+// noite|20:52|SELL|v5|adx20|WEEK|ema8_21+ema34_89+macd+roc10+bb_mid+candle+stoch50
+// Modelo 2024-2025: 85tr, 83.53%, +1947.5 pts. Holdout local 2026: 21tr, 85.71%.
+scoreN2052B = vSellEma821 + vSellEma3489 + vSellMacd + vSellRoc10 + vSellBbMid + vSellCandle + vSellStoch50
+noite2052SellB = hSP == 20 and mSP == 52 and week and regimeAdx20 and scoreN2052B >= 5
+
+// Perfil 05: bloco simples de madrugada vindo da linha DMI3/V3B, mantido como diagnostico TV-safe.
+score0348 = (macdLine >= macdSignal ? 1 : -1) + (body >= 0 ? 1 : -1) + prevRoc5Contra
+madrugada0348Buy = hSP == 3 and mSP == 48 and (seg or ter) and regimeDmi3 and score0348 >= 0
+
+p1 = perfil == "01 Manha 1152 base"
+p2 = perfil == "02 Manha 1152 vwap"
+p3 = perfil == "03 Noite 2052 WEEK SELL"
+p4 = perfil == "04 Noite 2052 ALT SELL"
+p5 = perfil == "05 Madrugada 0348 DMI3"
+p6 = perfil == "06 Combo base+noite+madrugada"
+
+buySignal = strategy.position_size == 0 and (
+     (p1 and manha1152Base) or
+     (p2 and manha1152Vwap) or
+     (p5 and madrugada0348Buy) or
+     (p6 and (manha1152Base or madrugada0348Buy)))
+
+sellSignal = strategy.position_size == 0 and (
+     (p3 and noite2052SellA) or
+     (p4 and noite2052SellB) or
+     (p6 and (noite2052SellA or noite2052SellB)))
+
+if buySignal
+    strategy.entry("B", strategy.long, alert_message="V71 SETUP05 NEXT BUY")
+
+if sellSignal
+    strategy.entry("S", strategy.short, alert_message="V71 SETUP05 NEXT SELL")
+
+strategy.exit("TP/SL B", from_entry="B", profit=takeTicks, loss=stopTicks)
+strategy.exit("TP/SL S", from_entry="S", profit=takeTicks, loss=stopTicks)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+plot(ema89, "EMA 89", color=color.gray, linewidth=1)
+plot(ema200, "EMA 200", color=color.silver, linewidth=1)
+
+plotshape(mostrarSinais and manha1152Base and (p1 or p6), title="M1152 base", style=shape.triangleup,
+     location=location.belowbar, color=color.lime, size=size.small, text="M")
+plotshape(mostrarSinais and manha1152Vwap and p2, title="M1152 vwap", style=shape.triangleup,
+     location=location.belowbar, color=color.green, size=size.small, text="M+")
+plotshape(mostrarSinais and noite2052SellA and (p3 or p6), title="N2052 A", style=shape.triangledown,
+     location=location.abovebar, color=color.red, size=size.small, text="N52")
+plotshape(mostrarSinais and noite2052SellB and (p4 or p6), title="N2052 B", style=shape.triangledown,
+     location=location.abovebar, color=color.maroon, size=size.small, text="N52B")
+plotshape(mostrarSinais and madrugada0348Buy and (p5 or p6), title="Madrugada 0348", style=shape.triangleup,
+     location=location.belowbar, color=color.aqua, size=size.small, text="0348")
+
+alertcondition(buySignal, title="V71 Setup05 Next BUY", message="V71 SETUP05 NEXT BUY")
+alertcondition(sellSignal, title="V71 Setup05 Next SELL", message="V71 SETUP05 NEXT SELL")

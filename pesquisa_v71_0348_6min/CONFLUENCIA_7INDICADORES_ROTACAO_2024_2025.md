@@ -154,4 +154,10 @@ Decisao:
 - aderir o perfil `05` como perna candidata de manha, porque o anual foi positivo, o PF ficou acima de 2 e a replicacao no TradingView foi a melhor desta familia ate agora;
 - nao aumentar a frequencia deste mesmo perfil por enquanto: as variantes locais com mais trades ja perdem acerto e pioram no holdout; se forem testadas, devem virar perfil separado `05+`, nao substituir o `05` base;
 - buscar frequencia somando pernas independentes de noite/madrugada e depois combinar com a manha;
-- perfil `04 Noite 2102 SELL combo leg` segue pendente para teste.
+- perfil `04 Noite 2102 SELL combo leg` e perfil `06 Combo Noite+Manha diagnostico` foram informados como ruins no TradingView e nao devem ser promovidos.
+
+Proxima bateria:
+
+- `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`;
+- default em `03 Noite 2052 WEEK SELL`;
+- perfis separados para manha base, manha vwap, noite 20:52, madrugada 03:48 e combo.
