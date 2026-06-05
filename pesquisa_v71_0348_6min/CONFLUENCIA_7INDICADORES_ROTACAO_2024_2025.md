@@ -163,3 +163,4 @@ Proxima bateria:
 - default movido para `06 Combo manha+madrugada` para testar a uniao manha base + madrugada;
 - combo `06` ajustado para manha base + madrugada, sem as pernas de noite 20:52.
 - adicionado `plot` transparente TV-safe para evitar erro de estrategia aparentemente vazia no compilador.
+- o combo pelo seletor nao gerou trades; foi criado `V71_COMBO_MANHA_MADRUGADA_TV_2MIN.pine`, dedicado, sem seletor e com tolerancia de um minuto nos horarios.

@@ -1,0 +1,85 @@
+//@version=6
+strategy("V71 Combo Manha Madrugada TV 2m",
+     overlay=true,
+     pyramiding=0,
+     default_qty_type=strategy.fixed,
+     default_qty_value=1)
+
+// Teste dedicado, sem seletor de perfil.
+// Combina somente madrugada 03:48 DMI3 e manha 11:52 base.
+// Pesquisa separada. NAO altera o V7.1 oficial.
+
+takePontos = input.float(50.5, "Take em pontos", step=0.25)
+stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
+toleranciaMin = input.int(1, "Tolerancia do horario", minval=0, maxval=2)
+mostrarSinais = input.bool(true, "Mostrar sinais")
+
+takeTicks = int(math.round(takePontos / syminfo.mintick))
+stopTicks = int(math.round(stopPontos / syminfo.mintick))
+
+hSP = hour(time, "America/Sao_Paulo")
+mSP = minute(time, "America/Sao_Paulo")
+minSP = hSP * 60 + mSP
+dowSP = dayofweek(time, "America/Sao_Paulo")
+
+emJanela(alvoMinuto) =>
+    math.abs(minSP - alvoMinuto) <= toleranciaMin
+
+seg = dowSP == dayofweek.monday
+ter = dowSP == dayofweek.tuesday
+
+ema17 = ta.ema(close, 17)
+ema34 = ta.ema(close, 34)
+ema89 = ta.ema(close, 89)
+
+[diPlus, diMinus, adx14] = ta.dmi(14, 14)
+dmiGap = math.abs(diPlus - diMinus)
+
+[macdLine, macdSignal, macdHist] = ta.macd(close, 12, 26, 9)
+roc5 = close - close[5]
+bbMid = ta.sma(close, 20)
+
+stochHi = ta.highest(high, 14)
+stochLo = ta.lowest(low, 14)
+stochDen = stochHi - stochLo
+stoch14 = stochDen != 0 ? 100 * (close - stochLo) / stochDen : na
+
+vBuyEma3489 = ema34 >= ema89 ? 1 : 0
+vBuyMacd = macdLine >= macdSignal ? 1 : 0
+vBuyRoc5 = roc5 >= 0 ? 1 : 0
+vBuyBbMid = close >= bbMid ? 1 : 0
+vBuyCandle = close >= open ? 1 : 0
+vBuyPrevCandle = close[1] >= open[1] ? 1 : 0
+vBuyStoch50 = stoch14 >= 50 ? 1 : 0
+
+regimeManha = adx14 >= 20 and dmiGap >= 4
+scoreManha = vBuyEma3489 + vBuyMacd + vBuyRoc5 + vBuyBbMid + vBuyCandle + vBuyPrevCandle + vBuyStoch50
+entraManha = emJanela(11 * 60 + 52) and regimeManha and scoreManha >= 5
+
+bodyVoto = close >= open ? 1 : -1
+macdVoto = macdLine >= macdSignal ? 1 : -1
+prevRoc5Contra = roc5[1] <= 0 ? 1 : -1
+scoreMadrugada = macdVoto + bodyVoto + prevRoc5Contra
+entraMadrugada = emJanela(3 * 60 + 48) and (seg or ter) and dmiGap >= 3 and scoreMadrugada >= 0
+
+flat = strategy.position_size == 0
+
+if flat and entraMadrugada
+    strategy.entry("B0348", strategy.long, alert_message="V71 COMBO BUY 0348")
+else if flat and entraManha
+    strategy.entry("B1152", strategy.long, alert_message="V71 COMBO BUY 1152")
+
+strategy.exit("X0348", from_entry="B0348", profit=takeTicks, loss=stopTicks)
+strategy.exit("X1152", from_entry="B1152", profit=takeTicks, loss=stopTicks)
+
+plot(ema17, "EMA 17", color=color.purple, linewidth=2)
+plot(ema34, "EMA 34", color=color.blue, linewidth=2)
+plot(ema89, "EMA 89", color=color.gray, linewidth=1)
+
+plotshape(mostrarSinais and flat and entraMadrugada, title="BUY 03:48",
+     style=shape.triangleup, location=location.belowbar, color=color.aqua, size=size.small, text="0348")
+plotshape(mostrarSinais and flat and entraManha, title="BUY 11:52",
+     style=shape.triangleup, location=location.belowbar, color=color.lime, size=size.small, text="1152")
+
+buySignal = flat and (entraMadrugada or entraManha)
+alertcondition(buySignal, title="V71 Combo BUY", message="V71 COMBO MANHA MADRUGADA BUY")

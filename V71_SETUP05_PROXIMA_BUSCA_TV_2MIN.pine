@@ -28,7 +28,11 @@ stopTicks = int(math.round(stopPontos / syminfo.mintick))
 
 hSP = hour(time, "America/Sao_Paulo")
 mSP = minute(time, "America/Sao_Paulo")
+minSP = hSP * 60 + mSP
 dowSP = dayofweek(time, "America/Sao_Paulo")
+
+emJanela(alvoMinuto) =>
+    math.abs(minSP - alvoMinuto) <= 1
 
 seg = dowSP == dayofweek.monday
 ter = dowSP == dayofweek.tuesday
@@ -87,35 +91,37 @@ vBuyStoch50 = stoch14 >= 50 ? 1 : 0
 
 // Perfil 01: mesmo bloco do perfil 05 que foi positivo no TV.
 scoreMBase = vBuyEma3489 + vBuyMacd + vBuyRoc5 + vBuyBbMid + vBuyCandle + vBuyPrevCandle + vBuyStoch50
-manha1152Base = hSP == 11 and mSP == 52 and regimeAdx20Dmi4 and scoreMBase >= 5
+manha1152Base = emJanela(11 * 60 + 52) and regimeAdx20Dmi4 and scoreMBase >= 5
 
 // Perfil 02: variante leve para medir se VWAP replica melhor no TV.
 scoreMVwap = vBuyMacd + vBuyRoc5 + vBuyVwap + vBuyBbMid + vBuyCandle + vBuyPrevCandle + vBuyStoch50
-manha1152Vwap = hSP == 11 and mSP == 52 and regimeAdx20Dmi4 and scoreMVwap >= 5
+manha1152Vwap = emJanela(11 * 60 + 52) and regimeAdx20Dmi4 and scoreMVwap >= 5
 
 // Perfil 03 local:
 // noite|20:52|SELL|v5|adx20|WEEK|ema34_89+macd+roc10+vwap+bb_mid+prev_candle+stoch50
 // Modelo 2024-2025: 76tr, 84.21%, +1828.0 pts. Holdout local 2026: 15tr, 80.00%.
 scoreN2052A = vSellEma3489 + vSellMacd + vSellRoc10 + vSellVwap + vSellBbMid + vSellPrevCandle + vSellStoch50
-noite2052SellA = hSP == 20 and mSP == 52 and week and regimeAdx20 and scoreN2052A >= 5
+noite2052SellA = emJanela(20 * 60 + 52) and week and regimeAdx20 and scoreN2052A >= 5
 
 // Perfil 04 local:
 // noite|20:52|SELL|v5|adx20|WEEK|ema8_21+ema34_89+macd+roc10+bb_mid+candle+stoch50
 // Modelo 2024-2025: 85tr, 83.53%, +1947.5 pts. Holdout local 2026: 21tr, 85.71%.
 scoreN2052B = vSellEma821 + vSellEma3489 + vSellMacd + vSellRoc10 + vSellBbMid + vSellCandle + vSellStoch50
-noite2052SellB = hSP == 20 and mSP == 52 and week and regimeAdx20 and scoreN2052B >= 5
+noite2052SellB = emJanela(20 * 60 + 52) and week and regimeAdx20 and scoreN2052B >= 5
 
 // Perfil 05: bloco simples de madrugada vindo da linha DMI3/V3B.
 // No teste manual inicial, foi o melhor entre os perfis 03/04/05 desta bateria.
 score0348 = (macdLine >= macdSignal ? 1 : -1) + (body >= 0 ? 1 : -1) + prevRoc5Contra
-madrugada0348Buy = hSP == 3 and mSP == 48 and (seg or ter) and regimeDmi3 and score0348 >= 0
+madrugada0348Buy = emJanela(3 * 60 + 48) and (seg or ter) and regimeDmi3 and score0348 >= 0
 
 p1 = perfil == "01 Manha 1152 base"
 p2 = perfil == "02 Manha 1152 vwap"
 p3 = perfil == "03 Noite 2052 WEEK SELL"
 p4 = perfil == "04 Noite 2052 ALT SELL"
 p5 = perfil == "05 Madrugada 0348 DMI3"
-p6 = perfil == "06 Combo manha+madrugada"
+p6Novo = perfil == "06 Combo manha+madrugada"
+p6Legado = perfil == "06 Combo base+noite+madrugada"
+p6 = p6Novo or p6Legado or not (p1 or p2 or p3 or p4 or p5)
 
 buySignal = strategy.position_size == 0 and (
      (p1 and manha1152Base) or

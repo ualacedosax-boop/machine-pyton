@@ -23,14 +23,16 @@ O objetivo e encontrar uma configuracao com:
 - Buscar frequencia por pernas independentes de noite e madrugada, mantendo a rotacao 2M/1M somente em 2024-2025 e deixando 2026 totalmente cego.
 - Resultado informado no TradingView: `04 Noite 2102 SELL combo leg` e `06 Combo Noite+Manha diagnostico` nao ficaram bons; tratar ambos como reprovados qualitativos ate receber numeros.
 - Resultado informado da nova bateria: o perfil `05 Madrugada 0348 DMI3` foi o melhor entre os perfis testados.
-- Proxima validacao pratica no TradingView: `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`, agora com default em `06 Combo manha+madrugada`.
-- Ajuste TV-safe: adicionado `plot` transparente no topo para evitar erro de estrategia aparentemente vazia no compilador.
+- O combo pelo seletor nao gerou trades no TradingView; a causa mais provavel foi valor antigo preservado no input e dependencia do minuto exato.
+- Proxima validacao pratica: usar o arquivo dedicado `V71_COMBO_MANHA_MADRUGADA_TV_2MIN.pine`, sem seletor de perfil e com tolerancia de um minuto nos horarios.
+- Checagem de sinais brutos do dedicado: 75 em 2024, 106 em 2025 e 30 em 2026; 2026 foi apenas contado depois, sem participar da escolha.
 
 ## Ranking pratico
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 0 | Setup05 proxima busca | 2m | `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine` | perfil 05 melhor qualitativo | pendente numeros | pendente numeros | pendente numeros | pendente numeros | Perfil 05 madrugada foi o melhor da leva; default movido para 06 combo manha+madrugada; combo sem noite 20:52 |
+| 0 | Combo dedicado manha+madrugada | 2m | `V71_COMBO_MANHA_MADRUGADA_TV_2MIN.pine` | pendente TV | pendente TV | pendente TV | pendente TV | pendente TV | Sem seletor; combina apenas 03:48 DMI3 e 11:52 base, com tolerancia de horario |
+| 1 | Setup05 proxima busca | 2m | `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine` | perfil 05 melhor qualitativo | pendente numeros | pendente numeros | pendente numeros | pendente numeros | Arquivo multiperfil mantido para diagnostico; combo pelo seletor apresentou zero trades |
 | 1 | Confluencia 7 indicadores 21:02 | 2m | `V71_CONFLUENCIA_7INDICADORES_ROTACAO_TV_2MIN.pine` | perfil 01: 53 TV; perfil 02: 53 TV; perfil 03: 52 TV; perfil 05: 67 TV | perfil 05 TV: 83.58% anual; 80.95% 90d; 80.00% 30d | perfil 05 TV: +2894 USD anual; +535 USD 90d; +340 USD 30d | -789.50 USD TV anual | 2.026 TV anual | Perfil 05 adotado como perna candidata de manha; perfis 04/06 reprovados qualitativamente |
 | 1 | Rotacao 2024-2025 Holdout2026 | 2m | `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine` | 197/92/146/114/104 TV | melhor: 80.20% anual perfil 01; 87.50% 30d perfil 04 | melhor anual +6596.50 USD perfil 01; perfil 05 -886.00 USD | melhor DD anual -747.00 USD perfil 02; perfil 05 -1773.00 USD | melhor PF anual 1.705 perfil 01; perfil 05 0.889 | Bateria 01-05 encerrada: nenhum perfil promove; 04 fica so como melhor recente |
 | 2 | Rotacao 2M/1M Manha Refino | 2m | `V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine` | 61 a 106 local | 81.97% a 84.51% local nos ultimos 365d | +1238 a +1846.5 pts local | n/d | n/d | Exploratorio; supersedido porque foi criado antes da regra 2026 somente holdout |
