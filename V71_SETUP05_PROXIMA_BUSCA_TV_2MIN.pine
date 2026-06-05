@@ -10,13 +10,13 @@ strategy("V71 Setup05 Proxima Busca TV 2m",
 // - perfil 01 preserva a perna de manha que melhor replicou no TV;
 // - perfis 03/04 procuram nova perna de noite fora do 21:02;
 // - perfil 05 mede madrugada simples/TV-safe;
-// - perfil 06 combina as pernas independentes.
+// - perfil 06 combina somente as pernas que sobreviveram melhor: manha base + madrugada.
 // Selecao feita sem usar 2026 no score/folds; 2026 fica somente para teste cego no TradingView.
 
-perfil = input.string("03 Noite 2052 WEEK SELL", "Perfil",
+perfil = input.string("05 Madrugada 0348 DMI3", "Perfil",
      options=["01 Manha 1152 base", "02 Manha 1152 vwap",
          "03 Noite 2052 WEEK SELL", "04 Noite 2052 ALT SELL",
-         "05 Madrugada 0348 DMI3", "06 Combo base+noite+madrugada"])
+         "05 Madrugada 0348 DMI3", "06 Combo manha+madrugada"])
 takePontos = input.float(50.5, "Take em pontos", step=0.25)
 stopPontos = input.float(117.0, "Stop em pontos", step=0.25)
 mostrarSinais = input.bool(true, "Mostrar sinais")
@@ -103,7 +103,8 @@ noite2052SellA = hSP == 20 and mSP == 52 and week and regimeAdx20 and scoreN2052
 scoreN2052B = vSellEma821 + vSellEma3489 + vSellMacd + vSellRoc10 + vSellBbMid + vSellCandle + vSellStoch50
 noite2052SellB = hSP == 20 and mSP == 52 and week and regimeAdx20 and scoreN2052B >= 5
 
-// Perfil 05: bloco simples de madrugada vindo da linha DMI3/V3B, mantido como diagnostico TV-safe.
+// Perfil 05: bloco simples de madrugada vindo da linha DMI3/V3B.
+// No teste manual inicial, foi o melhor entre os perfis 03/04/05 desta bateria.
 score0348 = (macdLine >= macdSignal ? 1 : -1) + (body >= 0 ? 1 : -1) + prevRoc5Contra
 madrugada0348Buy = hSP == 3 and mSP == 48 and (seg or ter) and regimeDmi3 and score0348 >= 0
 
@@ -112,7 +113,7 @@ p2 = perfil == "02 Manha 1152 vwap"
 p3 = perfil == "03 Noite 2052 WEEK SELL"
 p4 = perfil == "04 Noite 2052 ALT SELL"
 p5 = perfil == "05 Madrugada 0348 DMI3"
-p6 = perfil == "06 Combo base+noite+madrugada"
+p6 = perfil == "06 Combo manha+madrugada"
 
 buySignal = strategy.position_size == 0 and (
      (p1 and manha1152Base) or
@@ -122,8 +123,7 @@ buySignal = strategy.position_size == 0 and (
 
 sellSignal = strategy.position_size == 0 and (
      (p3 and noite2052SellA) or
-     (p4 and noite2052SellB) or
-     (p6 and (noite2052SellA or noite2052SellB)))
+     (p4 and noite2052SellB))
 
 if buySignal
     strategy.entry("B", strategy.long, alert_message="V71 SETUP05 NEXT BUY")
@@ -143,9 +143,9 @@ plotshape(mostrarSinais and manha1152Base and (p1 or p6), title="M1152 base", st
      location=location.belowbar, color=color.lime, size=size.small, text="M")
 plotshape(mostrarSinais and manha1152Vwap and p2, title="M1152 vwap", style=shape.triangleup,
      location=location.belowbar, color=color.green, size=size.small, text="M+")
-plotshape(mostrarSinais and noite2052SellA and (p3 or p6), title="N2052 A", style=shape.triangledown,
+plotshape(mostrarSinais and noite2052SellA and p3, title="N2052 A", style=shape.triangledown,
      location=location.abovebar, color=color.red, size=size.small, text="N52")
-plotshape(mostrarSinais and noite2052SellB and (p4 or p6), title="N2052 B", style=shape.triangledown,
+plotshape(mostrarSinais and noite2052SellB and p4, title="N2052 B", style=shape.triangledown,
      location=location.abovebar, color=color.maroon, size=size.small, text="N52B")
 plotshape(mostrarSinais and madrugada0348Buy and (p5 or p6), title="Madrugada 0348", style=shape.triangleup,
      location=location.belowbar, color=color.aqua, size=size.small, text="0348")

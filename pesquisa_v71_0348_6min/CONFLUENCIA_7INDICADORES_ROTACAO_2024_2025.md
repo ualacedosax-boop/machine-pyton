@@ -159,5 +159,6 @@ Decisao:
 Proxima bateria:
 
 - `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`;
-- default em `03 Noite 2052 WEEK SELL`;
-- perfis separados para manha base, manha vwap, noite 20:52, madrugada 03:48 e combo.
+- o perfil `05 Madrugada 0348 DMI3` foi informado como o melhor entre os perfis testados;
+- default movido para `05 Madrugada 0348 DMI3`;
+- combo `06` ajustado para manha base + madrugada, sem as pernas de noite 20:52.

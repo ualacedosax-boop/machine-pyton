@@ -22,13 +22,14 @@ O objetivo e encontrar uma configuracao com:
 - Manter o `05` base fechado; aumento de frequencia deve ser testado como perfil separado `05+`, porque as variantes locais com mais trades reduzem acerto e pioram o holdout.
 - Buscar frequencia por pernas independentes de noite e madrugada, mantendo a rotacao 2M/1M somente em 2024-2025 e deixando 2026 totalmente cego.
 - Resultado informado no TradingView: `04 Noite 2102 SELL combo leg` e `06 Combo Noite+Manha diagnostico` nao ficaram bons; tratar ambos como reprovados qualitativos ate receber numeros.
-- Proxima validacao pratica no TradingView: `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`, com default em `03 Noite 2052 WEEK SELL`.
+- Resultado informado da nova bateria: o perfil `05 Madrugada 0348 DMI3` foi o melhor entre os perfis testados.
+- Proxima validacao pratica no TradingView: `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`, agora com default em `05 Madrugada 0348 DMI3`; depois testar `06 Combo manha+madrugada`.
 
 ## Ranking pratico
 
 | Prioridade | Candidato | Timeframe | Arquivo Pine | Trades | Winrate | Pontos | DD | PF | Leitura |
 |---|---|---:|---|---:|---:|---:|---:|---:|---|
-| 0 | Setup05 proxima busca | 2m | `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine` | pendente TV | pendente TV | pendente TV | pendente TV | pendente TV | Nova bateria: 05 manha preservado, 20:52 noite, 03:48 madrugada, combo separado |
+| 0 | Setup05 proxima busca | 2m | `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine` | perfil 05 melhor qualitativo | pendente numeros | pendente numeros | pendente numeros | pendente numeros | Perfil 05 madrugada foi o melhor da leva; default movido para 05; combo 06 agora e manha+madrugada sem noite 20:52 |
 | 1 | Confluencia 7 indicadores 21:02 | 2m | `V71_CONFLUENCIA_7INDICADORES_ROTACAO_TV_2MIN.pine` | perfil 01: 53 TV; perfil 02: 53 TV; perfil 03: 52 TV; perfil 05: 67 TV | perfil 05 TV: 83.58% anual; 80.95% 90d; 80.00% 30d | perfil 05 TV: +2894 USD anual; +535 USD 90d; +340 USD 30d | -789.50 USD TV anual | 2.026 TV anual | Perfil 05 adotado como perna candidata de manha; perfis 04/06 reprovados qualitativamente |
 | 1 | Rotacao 2024-2025 Holdout2026 | 2m | `V71_ROTACAO_2024_2025_HOLDOUT2026_TV_2MIN.pine` | 197/92/146/114/104 TV | melhor: 80.20% anual perfil 01; 87.50% 30d perfil 04 | melhor anual +6596.50 USD perfil 01; perfil 05 -886.00 USD | melhor DD anual -747.00 USD perfil 02; perfil 05 -1773.00 USD | melhor PF anual 1.705 perfil 01; perfil 05 0.889 | Bateria 01-05 encerrada: nenhum perfil promove; 04 fica so como melhor recente |
 | 2 | Rotacao 2M/1M Manha Refino | 2m | `V71_ROTACAO_2M1M_MANHA_REFINO_TV_2MIN.pine` | 61 a 106 local | 81.97% a 84.51% local nos ultimos 365d | +1238 a +1846.5 pts local | n/d | n/d | Exploratorio; supersedido porque foi criado antes da regra 2026 somente holdout |
@@ -81,8 +82,15 @@ Decisao:
 - nao aumentar frequencia no proprio `05` por enquanto; testar qualquer relaxamento como `05+` separado;
 - nao promover o perfil `04 Noite 2102 SELL combo leg`, informado como ruim no TV;
 - nao promover o perfil `06 Combo Noite+Manha diagnostico`, informado como ruim no TV;
-- avancar para `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`, trocando a noite de 21:02 por candidatos de 20:52 e adicionando diagnostico de madrugada 03:48;
+- avancar com `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`, mantendo o perfil `05 Madrugada 0348 DMI3` como melhor qualitativo da leva;
+- retirar a noite 20:52 do combo ate aparecer uma perna noturna que replique melhor;
 - manter o V7.1 oficial sem alteracao.
+
+Teste TradingView da bateria `V71_SETUP05_PROXIMA_BUSCA_TV_2MIN.pine`:
+
+- resultado informado: o perfil `05 Madrugada 0348 DMI3` foi o melhor entre eles;
+- sem numeros detalhados ainda; registrar como melhor qualitativo;
+- proximo teste recomendado: perfil `06 Combo manha+madrugada`, sem incluir as noites 20:52.
 
 Teste TradingView dos perfis `04 Noite 2102 SELL combo leg` e `06 Combo Noite+Manha diagnostico`:
 
