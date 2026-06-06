@@ -2456,16 +2456,58 @@ def salvar_payload_sinal(payload):
 def _alertar_candle_travado(tick):
     agora = pd.Timestamp.now()
     dt_tick = pd.to_datetime(tick.get("DataHora_SP"), errors="coerce")
+
+    # Se nao conseguiu parsear a data, ja e um problema — avisa
     if pd.isna(dt_tick):
-        return
-    minutos_atrasado = (agora - dt_tick).total_seconds() / 60.0
-    if minutos_atrasado > 5:
         print(
+            f"\n*** AVISO: data do tick invalida ou ausente! "
+            f"Verifique se o exportador Excel esta rodando. ***\n"
+        )
+        # Injeta aviso no JSON para o monitor exibir
+        try:
+            json_path = ARQUIVO_ULTIMO_SINAL_JSON
+            if os.path.exists(json_path):
+                with open(json_path, "r", encoding="utf-8") as f:
+                    dados = json.load(f)
+                dados["aviso_candle_travado"] = "DATA INVALIDA - exportador pode estar parado"
+                salvar_json_seguro(dados, json_path)
+        except Exception:
+            pass
+        return
+
+    minutos_atrasado = (agora - dt_tick).total_seconds() / 60.0
+
+    # Threshold reduzido para 3 min (candle e 2 min, 3 min ja e atraso real)
+    if minutos_atrasado > 3:
+        msg = (
             f"\n*** AVISO: candle travado! Ultimo dado do BlackArrow tem "
             f"{minutos_atrasado:.0f} min de atraso "
             f"({dt_tick.strftime('%H:%M')} vs agora {agora.strftime('%H:%M')}). "
-            f"Verifique se a macro Excel esta rodando. ***\n"
+            f"Verifique se o exportador Excel esta rodando. ***\n"
         )
+        print(msg)
+        # Injeta aviso no JSON para o monitor exibir
+        try:
+            json_path = ARQUIVO_ULTIMO_SINAL_JSON
+            if os.path.exists(json_path):
+                with open(json_path, "r", encoding="utf-8") as f:
+                    dados = json.load(f)
+                dados["aviso_candle_travado"] = f"ATRASO {minutos_atrasado:.0f} MIN ({dt_tick.strftime('%H:%M')} vs {agora.strftime('%H:%M')})"
+                salvar_json_seguro(dados, json_path)
+        except Exception:
+            pass
+    else:
+        # Limpa aviso anterior se dado voltou a ser atual
+        try:
+            json_path = ARQUIVO_ULTIMO_SINAL_JSON
+            if os.path.exists(json_path):
+                with open(json_path, "r", encoding="utf-8") as f:
+                    dados = json.load(f)
+                if "aviso_candle_travado" in dados:
+                    del dados["aviso_candle_travado"]
+                    salvar_json_seguro(dados, json_path)
+        except Exception:
+            pass
 
 
 def executar_uma_vez(config_v4, modelo_v3, features_v3, modelo_v4, features_v4, modelo_v53=None, features_v53=None):

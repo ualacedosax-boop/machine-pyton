@@ -663,6 +663,14 @@ while ($true) {
         Write-Host "ALARME: monitorando... sem sinal oficial." -ForegroundColor Yellow
     }
 
+    # Aviso de candle travado (injetado pelo robo no JSON quando dado fica > 3 min parado)
+    $avisoCandleTravado = Get-Prop $json @("aviso_candle_travado")
+    if (-not [string]::IsNullOrWhiteSpace($avisoCandleTravado)) {
+        Write-Host ""
+        Write-Host "*** DADOS DESATUALIZADOS: $avisoCandleTravado ***" -ForegroundColor Red -BackgroundColor Black
+        Write-Host "*** Verifique o exportador Excel (exportar_blackarrow_excel_v71.ps1) ***" -ForegroundColor Red -BackgroundColor Black
+    }
+
     Write-Host "Para parar: CTRL + C" -ForegroundColor DarkGray
 
     Start-Sleep -Seconds 2
