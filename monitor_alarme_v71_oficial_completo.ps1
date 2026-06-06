@@ -15,8 +15,8 @@ $jsonPath1 = Join-Path $basePath "ultimo_sinal_v71_blackarrow.json"
 $jsonPath2 = Join-Path $basePath "operacional_v71_oficial\ultimo_sinal_v71_blackarrow.json"
 
 $csvPath = Join-Path $basePath "operacional_v71_oficial\log_sinal_v71_blackarrow.csv"
-$csvAprendizadoPath = Join-Path $basePath "operacional_v71_oficial\aprendizado_v71\eventos\eventos_v7_inteligente.csv"
-$resultadosAprendizadoPath = Join-Path $basePath "operacional_v71_oficial\aprendizado_v71\resultados\resultados_v7_inteligente.csv"
+$csvAprendizadoPath = Join-Path $basePath "operacional_v71_oficial\aprendizado_v71\eventos\eventos_v71_inteligente.csv"
+$resultadosAprendizadoPath = Join-Path $basePath "operacional_v71_oficial\aprendizado_v71\resultados\resultados_v71_inteligente.csv"
 
 # Usa o JSON que existir
 if (Test-Path $jsonPath1) {
@@ -59,6 +59,7 @@ catch {
 
 $ultimoSinalProcessadoCSV = ""
 $ultimoAlarmeEntradaId = ""
+$ultimasLinhasCSV = 0   # rastreia quantas linhas o CSV tinha na ultima verificacao
 
 $melhorBuy = -999
 $melhorSell = -999
@@ -260,36 +261,65 @@ function Verificar-Alarme-CSV {
         $voz
     )
 
-    $ultimoCsv = Read-LastCsvRowSafe $csvPath
-    if ($null -eq $ultimoCsv) {
+    if (!(Test-Path $csvPath)) {
         return
     }
 
-    $datahoraCsv = $ultimoCsv.datahora_execucao
-    $sinalCsv    = $ultimoCsv.sinal
-    $motivoCsv   = $ultimoCsv.motivo
-    $precoCsv    = $ultimoCsv.preco_close
-    $probCsv     = Get-Prop $ultimoCsv @("prob_v51", "prob_win_v4", "prob_v4")
-    $direcaoCsv  = $ultimoCsv.Direcao
-    $eventIdCsv  = Get-Prop $ultimoCsv @("event_id", "id_evento", "id")
-
-    if ([string]::IsNullOrWhiteSpace("$eventIdCsv")) {
-        $idCsv = "$datahoraCsv|$sinalCsv|$precoCsv|$direcaoCsv"
+    try {
+        $todosCsv = Import-Csv $csvPath
     }
-    else {
-        $idCsv = "$eventIdCsv"
-    }
-
-    if ($script:ultimoSinalProcessadoCSV -eq "") {
-        $script:ultimoSinalProcessadoCSV = $idCsv
+    catch {
         return
     }
 
-    if ($idCsv -ne $script:ultimoSinalProcessadoCSV) {
-        $script:ultimoSinalProcessadoCSV = $idCsv
+    if ($null -eq $todosCsv -or $todosCsv.Count -le 0) {
+        return
+    }
 
-        if (($motivoCsv -eq "sinal_valido") -and ($idCsv -ne $script:ultimoAlarmeEntradaId) -and ($sinalCsv -eq "buy")) {
-            $script:ultimoAlarmeEntradaId = $idCsv
+    $qtdAtual = $todosCsv.Count
+
+    # Inicializa rastreador sem disparar alarme nas linhas pre-existentes
+    if ($script:ultimasLinhasCSV -eq 0) {
+        $script:ultimasLinhasCSV = $qtdAtual
+        return
+    }
+
+    # Sem linhas novas
+    if ($qtdAtual -le $script:ultimasLinhasCSV) {
+        return
+    }
+
+    # Verifica TODAS as linhas novas desde a ultima checagem
+    $linhasNovas = $todosCsv | Select-Object -Skip $script:ultimasLinhasCSV
+    $script:ultimasLinhasCSV = $qtdAtual
+
+    foreach ($linha in $linhasNovas) {
+        $datahoraCsv = $linha.datahora_execucao
+        $sinalCsv    = $linha.sinal
+        $motivoCsv   = $linha.motivo
+        $precoCsv    = $linha.preco_close
+        $probCsv     = Get-Prop $linha @("prob_v51", "prob_win_v4", "prob_v4")
+        $direcaoCsv  = $linha.Direcao
+        $eventIdCsv  = Get-Prop $linha @("event_id", "id_evento", "id")
+
+        if ([string]::IsNullOrWhiteSpace("$eventIdCsv")) {
+            $idCsv = "$datahoraCsv|$sinalCsv|$precoCsv|$direcaoCsv"
+        }
+        else {
+            $idCsv = "$eventIdCsv"
+        }
+
+        if ($motivoCsv -ne "sinal_valido") {
+            continue
+        }
+
+        if ($idCsv -eq $script:ultimoAlarmeEntradaId) {
+            continue
+        }
+
+        $script:ultimoAlarmeEntradaId = $idCsv
+
+        if ($sinalCsv -eq "buy") {
             Clear-Host
             Write-Host "===============================================" -ForegroundColor Green
             Write-Host " ENTRADA REAL DETECTADA NO CSV - COMPRA" -ForegroundColor Green
@@ -303,8 +333,7 @@ function Verificar-Alarme-CSV {
             Tocar-AlarmeCompra $voz
             Start-Sleep -Seconds 2
         }
-        elseif (($motivoCsv -eq "sinal_valido") -and ($idCsv -ne $script:ultimoAlarmeEntradaId) -and ($sinalCsv -eq "sell")) {
-            $script:ultimoAlarmeEntradaId = $idCsv
+        elseif ($sinalCsv -eq "sell") {
             Clear-Host
             Write-Host "===============================================" -ForegroundColor Red
             Write-Host " ENTRADA REAL DETECTADA NO CSV - VENDA" -ForegroundColor Red
