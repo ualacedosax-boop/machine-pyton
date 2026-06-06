@@ -1,4 +1,5 @@
 ﻿import os
+os.environ["PYTHONWARNINGS"] = "ignore::UserWarning"  # suprime warnings dos workers joblib/sklearn
 import json
 import time
 import warnings
