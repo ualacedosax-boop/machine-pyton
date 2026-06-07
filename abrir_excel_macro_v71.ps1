@@ -1,6 +1,7 @@
 param(
     [string]$Planilha = "C:\Users\ualac\Documents\2025\Mercado\machine-pyton\blackarrow_rtd.xlsm",
-    [string]$Macro    = "IniciarExportacaoBlackArrow"
+    [string]$Macro    = "IniciarExportacaoBlackArrow",
+    [switch]$SomenteAbrir
 )
 
 $LogFile = "C:\Users\ualac\Documents\2025\Mercado\machine-pyton\log_abrir_excel.txt"
@@ -12,10 +13,12 @@ function Log($msg) {
 
 Log "=== INICIANDO abrir_excel_macro_v71.ps1 ==="
 
-# Se Excel ja estiver rodando, usa a instancia existente; senao cria nova.
+# Primeiro tenta conectar ao workbook exato. Isso evita usar uma instancia
+# qualquer do Excel quando outras planilhas estiverem abertas.
 try {
-    $xl = [System.Runtime.InteropServices.Marshal]::GetActiveObject("Excel.Application")
-    Log "Excel ja estava rodando - usando instancia existente"
+    $wb = [System.Runtime.InteropServices.Marshal]::BindToMoniker($Planilha)
+    $xl = $wb.Application
+    Log "Planilha ja estava aberta - usando instancia exata HWND=$($xl.Hwnd)"
 } catch {
     $xl = New-Object -ComObject Excel.Application
     # msoAutomationSecurityLow = 1: deve ser definido ANTES de abrir o workbook
@@ -28,7 +31,6 @@ $xl.DisplayAlerts = $false
 
 # Abre o workbook apenas se ainda nao estiver aberto
 $NomeArquivo = [System.IO.Path]::GetFileName($Planilha)
-$wb = $xl.Workbooks | Where-Object { $_.Name -eq $NomeArquivo }
 
 if ($wb) {
     Log "Planilha ja estava aberta - aguardando 5s"
@@ -39,6 +41,11 @@ if ($wb) {
     $wb = $xl.Workbooks.Open($Planilha)
     Log "Aguardando 25 segundos para RTD carregar..."
     Start-Sleep -Seconds 25
+}
+
+if ($SomenteAbrir) {
+    Log "Planilha pronta. Exportacao sera feita pelo processo externo V7.1."
+    exit 0
 }
 
 # 3 tentativas com 10s de espera entre elas (para o erro 0x800AC472 - Excel ocupado)

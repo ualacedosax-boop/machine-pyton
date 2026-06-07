@@ -11,11 +11,12 @@ echo.
 set BASE=C:\Users\ualac\Documents\2025\Mercado\machine-pyton
 
 :: ============================================================
-:: [1/6] Abre a planilha Excel e inicia a macro de exportacao
-::       Chama um .ps1 separado em processo oculto para nao travar o bat.
+:: [1/6] Abre a planilha e inicia o exportador externo com reconexao
+::       automatica. Ele nao depende do Application.OnTime do Excel.
 :: ============================================================
-echo [1/6] Abrindo planilha BlackArrow e iniciando macro...
-start "" powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File "%BASE%\abrir_excel_macro_v71.ps1"
+echo [1/6] Abrindo planilha BlackArrow e iniciando exportador...
+start "" powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File "%BASE%\abrir_excel_macro_v71.ps1" -SomenteAbrir
+start "" powershell -ExecutionPolicy Bypass -WindowStyle Hidden -File "%BASE%\exportar_blackarrow_excel_v71.ps1"
 echo       Aguardando planilha carregar (15 segundos)...
 timeout /t 15 /nobreak >NUL
 echo       Pronto.
@@ -41,7 +42,7 @@ echo [3/6] Verificando CSV do BlackArrow...
 python "%BASE%\checar_csv_v71.py"
 if %ERRORLEVEL% NEQ 0 (
     echo       AVISO: CSV pode estar desatualizado ou ausente.
-    echo       Verifique se a macro IniciarExportacaoBlackArrow iniciou.
+    echo       Verifique o log_exportador_excel_v71.txt.
     echo       Pressione qualquer tecla para continuar mesmo assim...
     pause >NUL
 ) else (
@@ -82,7 +83,7 @@ echo.
 echo ============================================================
 echo   TUDO INICIADO
 echo ============================================================
-echo   Planilha : blackarrow_rtd.xlsm (macro rodando em background)
+echo   Planilha : blackarrow_rtd.xlsm (exportador externo em background)
 echo   Robo     : janela "ROBO V7.1"
 echo   Monitor  : janela "MONITOR V7.1"
 echo   Take     : 50,5 pts   Stop: 117 pts   Max: 3 trades/dia
