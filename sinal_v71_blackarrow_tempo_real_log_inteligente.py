@@ -541,16 +541,44 @@ def append_log(payload):
         print(ARQUIVO_LOG_RESERVA)
 
 
+def _alinhar_colunas_com_cabecalho(df_linha, caminho, encoding):
+    """
+    Garante que df_linha tenha exatamente as mesmas colunas, na mesma ordem,
+    do cabecalho ja existente no CSV. Evita o bug de desalinhamento quando o
+    payload tem menos/mais campos do que o arquivo (ex.: mfe_atual/mae_atual
+    ausentes em operacoes resolvidas no primeiro candle).
+
+    Campos que existem no cabecalho mas nao no payload viram NaN.
+    Campos que existem no payload mas nao no cabecalho sao preservados ao final
+    (para nao perder dado novo) - mas isso so deve ocorrer em arquivos novos.
+    """
+    try:
+        cabecalho = pd.read_csv(caminho, nrows=0, encoding=encoding).columns.tolist()
+    except Exception:
+        return df_linha
+
+    extras = [c for c in df_linha.columns if c not in cabecalho]
+    colunas_finais = cabecalho + extras
+
+    return df_linha.reindex(columns=colunas_finais)
+
+
 def append_csv_generico(payload, caminho, encoding="utf-8-sig"):
     """
     Append seguro para CSV de aprendizado.
     Nao apaga arquivo existente e usa reserva se o arquivo estiver ocupado.
+    Sempre realinha as colunas com o cabecalho existente antes de gravar,
+    para nunca desalinhar valores quando o payload tiver campos
+    faltando/extras em relacao ao arquivo.
     """
 
     df_linha = pd.DataFrame([payload])
 
     try:
         arquivo_existe = os.path.exists(caminho) and not csv_vazio_ou_sem_cabecalho(caminho)
+
+        if arquivo_existe:
+            df_linha = _alinhar_colunas_com_cabecalho(df_linha, caminho, encoding)
 
         df_linha.to_csv(
             caminho,
@@ -563,6 +591,9 @@ def append_csv_generico(payload, caminho, encoding="utf-8-sig"):
     except PermissionError:
         reserva = caminho.replace(".csv", "_reserva.csv")
         arquivo_existe = os.path.exists(reserva) and not csv_vazio_ou_sem_cabecalho(reserva)
+
+        if arquivo_existe:
+            df_linha = _alinhar_colunas_com_cabecalho(df_linha, reserva, encoding)
 
         df_linha.to_csv(
             reserva,
