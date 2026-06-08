@@ -11,35 +11,28 @@ tela inteira do zero. Isso é o que causa o "piscar"/recarregar incômodo: o
 terminal apaga tudo e desenha tudo de novo, a cada ciclo, para sempre.
 
 Este programa resolve isso fazendo a mesma coisa de um jeito diferente: é uma
-janela gráfica de verdade que **atualiza só o texto/cor dos campos que
-mudaram**, sem apagar e redesenhar a tela. O resultado: os números mudam no
-lugar, sem nenhum piscar.
+janela gráfica de verdade (Tkinter — já vem com o Python, não precisa
+instalar nada a mais) que **atualiza só o texto/cor dos campos que mudaram**,
+sem apagar e redesenhar a tela. O resultado: os números mudam no lugar, sem
+nenhum piscar.
 
-Visual "moderno" (v3 — agora com customtkinter)
-------------------------------------------------
-A v2 já tinha trocado o visual "terminal" por um tema escuro tipo painel,
-construído 100% em Tkinter puro (na época o pacote `customtkinter` não
-instalava por causa de um bloqueio de certificado SSL no pip).
+Visual "moderno" (v2)
+---------------------
+A primeira versão usava um tema estilo "terminal escuro" (fonte Consolas,
+cinza/preto). Esta versão troca a casca visual por um estilo "painel/dashboard"
+mais contemporâneo, mas continua 100% Tkinter puro (sem depender de pacotes
+extras como customtkinter — que não pôde ser instalado aqui por causa de um
+bloqueio de certificado SSL no pip):
 
-Esta versão (v3) usa o pacote `customtkinter` — uma "casca" sobre o Tkinter
-que desenha os widgets com cantos arredondados de verdade, hover suave nos
-botões, barra de progresso em pílula nativa e área rolável pronta. O
-resultado é um visual ainda mais "estilo app moderno", com bem menos código
-manual de desenho (a v2 tinha que desenhar pílulas no Canvas à mão — agora o
-próprio `CTkProgressBar` já nasce arredondado).
-
-A paleta continua sendo a "Aurora Dark" (fundo quase-preto azulado, cartões
-com borda sutil, acentos em azul/verde/violeta/ciano), só que agora aplicada
-através das cores próprias do customtkinter (`fg_color`/`text_color` em vez
-de `bg`/`fg`):
-
-  - Cartões com cantos arredondados e uma faixa colorida no topo (acento por
-    seção), igual painéis de produtos tipo Notion/Linear/GitHub
-  - Selos coloridos tipo "chip/badge" com cantos arredondados para status
-    (PASSOU, BUY, SELL, etc.)
-  - Barras de progresso em pílula nativas do customtkinter
-  - Cartões organizados em **grade de 2 colunas** lado a lado + controle de
-    **zoom** ao vivo (ver `_ajustar_zoom`)
+  - Paleta escura tipo "GitHub Dark" / "Aurora" (fundo quase-preto azulado,
+    cartões com borda sutil, acentos em azul/verde/violeta)
+  - Tipografia "Segoe UI" (fonte nativa e moderna do Windows) para textos e
+    "Cascadia Mono" para números/dados tabulares — em vez do Consolas "de
+    terminal" usado antes
+  - Cada seção vira um "cartão" com cantos retos porém com borda fina e uma
+    faixa colorida no topo (igual painéis de produtos tipo Notion/Linear/GitHub)
+  - Selos coloridos tipo "chip/badge" para status (PASSOU, BUY, SELL, etc.)
+  - Barras de progresso em formato de "pílula" (pontas arredondadas)
 
 Ele lê exatamente os mesmos arquivos que o monitor em PowerShell
 (`ultimo_sinal_v71_blackarrow.json`, os CSVs de eventos/resultados, o CSV de
@@ -66,7 +59,8 @@ import winsound
 from datetime import datetime
 
 import tkinter as tk
-import customtkinter as ctk
+from tkinter import ttk
+from tkinter import font as tkfont
 
 # ============================================================
 # CAMINHOS — os mesmos do monitor em PowerShell
@@ -94,13 +88,12 @@ INTERVALO_ATUALIZACAO_MS = 1500  # a cada 1,5s — suave, sem sobrecarregar
 
 # ============================================================
 # PALETA "AURORA DARK" — tema escuro moderno (inspirado em painéis tipo
-# GitHub/Linear/Notion). No customtkinter as cores entram via fg_color
-# (fundo) e text_color (texto), em vez de bg/fg do Tkinter puro.
+# GitHub/Linear/Notion), bem diferente do visual "terminal" da v1
 # ============================================================
 
 COR_FUNDO = "#0d1117"          # fundo geral — quase preto, com leve tom azulado
 COR_CARTAO = "#161b22"         # fundo dos cartões/seções
-COR_CARTAO_CLARO = "#1c2330"   # variação um pouco mais clara (hover, linhas internas)
+COR_CARTAO_CLARO = "#1c2330"   # variação um pouco mais clara (linhas internas)
 COR_BORDA = "#30363d"          # borda sutil dos cartões
 COR_TEXTO = "#e6edf3"          # texto principal — quase branco
 COR_TEXTO_FRACO = "#8b949e"    # texto secundário/legendas
@@ -123,33 +116,31 @@ ACENTO_CHECKLIST = COR_VERDE
 ACENTO_LOG = COR_TEXTO_FRACO
 ACENTO_ALARME = COR_VERMELHO
 
-# Tipografia: "Segoe UI" é a fonte nativa e moderna do Windows; "Cascadia
-# Mono" é a fonte monoespaçada moderna da Microsoft — reservada para números
-# e dados tabulares, onde o alinhamento em colunas importa.
+# Tipografia: "Segoe UI" é a fonte nativa e moderna do Windows (usada no
+# próprio Windows 10/11); "Cascadia Mono" é a fonte monoespaçada moderna da
+# Microsoft (substitui o "Consolas" de visual mais antigo) — fica reservada
+# para números e dados tabulares, onde o alinhamento em colunas importa
 #
-# IMPORTANTE — por que isso vira CTkFont (e não tuplas simples):
+# IMPORTANTE — por que isso vira tkfont.Font (e não tuplas simples):
 # tuplas tipo ("Segoe UI", 10) criam uma fonte "anônima" nova toda vez que
 # são usadas, então não dá para mudar o tamanho de todo mundo de uma vez.
-# CTkFont é o equivalente do customtkinter ao tkfont.Font: um objeto NOMEADO
-# e compartilhado — todo widget que aponta para o mesmo objeto muda de
+# Usando objetos tkfont.Font NOMEADOS — criados uma única vez e reutilizados
+# em todos os widgets — qualquer texto que aponte para o mesmo objeto muda de
 # tamanho instantaneamente quando a gente reconfigura esse objeto. É assim
 # que o controle de "zoom" do cabeçalho funciona sem reconstruir a janela.
 # Os objetos de verdade só podem ser criados depois que existir uma janela
-# CTk (por isso ficam None aqui e são preenchidos em inicializar_fontes()).
+# Tk (por isso ficam None aqui e são preenchidos em _inicializar_fontes()).
 TAMANHOS_BASE_FONTE = {
-    "FONTE_BASE": ("Segoe UI", 13),
-    "FONTE_BASE_NEGRITO": ("Segoe UI Semibold", 13),
-    "FONTE_TITULO": ("Segoe UI Semibold", 15),
-    "FONTE_GRANDE": ("Segoe UI Semibold", 18),
-    "FONTE_PEQUENA": ("Segoe UI", 11),
-    "FONTE_MONO": ("Cascadia Mono", 13),
-    "FONTE_MONO_PEQUENA": ("Cascadia Mono", 11),
-    "FONTE_TITULO_APP": ("Segoe UI Semibold", 24),
-    "FONTE_SUBTITULO_APP": ("Segoe UI", 16),
+    "FONTE_BASE": ("Segoe UI", 10),
+    "FONTE_BASE_NEGRITO": ("Segoe UI Semibold", 10),
+    "FONTE_TITULO": ("Segoe UI Semibold", 12),
+    "FONTE_GRANDE": ("Segoe UI Semibold", 15),
+    "FONTE_PEQUENA": ("Segoe UI", 8),
+    "FONTE_MONO": ("Cascadia Mono", 10),
+    "FONTE_MONO_PEQUENA": ("Cascadia Mono", 8),
+    "FONTE_TITULO_APP": ("Segoe UI Semibold", 20),
+    "FONTE_SUBTITULO_APP": ("Segoe UI", 14),
 }
-# (os tamanhos-base aqui já são um pouco maiores que os da v2 em Tkinter
-# puro porque o customtkinter aplica um fator de escala de tela próprio —
-# isso é só o ponto de partida do "zoom 100%", ajustável pelo usuário)
 
 FONTE_BASE = None
 FONTE_BASE_NEGRITO = None
@@ -169,7 +160,7 @@ ZOOM_PASSO = 0.1
 
 def inicializar_fontes():
     """Cria os objetos de fonte nomeados (uma vez, após existir uma janela
-    CTk) e os publica como globais — assim 'cartao', 'CampoStatus', 'Selo'
+    Tk) e os publica como globais — assim 'cartao', 'CampoStatus', 'Selo'
     etc. (que referenciam FONTE_BASE etc.) passam a usar objetos
     compartilhados e ajustáveis em tempo real. Retorna o dicionário desses
     objetos, que o app guarda para poder mudar o tamanho (zoom)."""
@@ -178,7 +169,7 @@ def inicializar_fontes():
 
     fontes = {}
     for nome, (familia, tamanho) in TAMANHOS_BASE_FONTE.items():
-        fontes[nome] = ctk.CTkFont(family=familia, size=tamanho)
+        fontes[nome] = tkfont.Font(family=familia, size=tamanho)
 
     FONTE_BASE = fontes["FONTE_BASE"]
     FONTE_BASE_NEGRITO = fontes["FONTE_BASE_NEGRITO"]
@@ -193,8 +184,7 @@ def inicializar_fontes():
 
 
 # ============================================================
-# FUNÇÕES UTILITÁRIAS DE LEITURA (espelham a lógica do .ps1 — independem
-# de qual biblioteca gráfica está sendo usada, por isso ficam intactas)
+# FUNÇÕES UTILITÁRIAS DE LEITURA (espelham a lógica do .ps1)
 # ============================================================
 
 def localizar_json():
@@ -297,39 +287,70 @@ def ler_cabecalho_csv(caminho):
 
 
 # ============================================================
-# WIDGET: barra de progresso em "pílula" — agora é o CTkProgressBar nativo
-# do customtkinter (já nasce com pontas arredondadas; não precisamos mais
-# desenhar à mão no Canvas como na v2). Só envolvemos numa classinha para
-# manter a mesma assinatura `.atualizar(fracao, cor)` usada pelo resto do
-# código (e poder trocar a cor de preenchimento conforme passou/não passou).
+# WIDGET: barra de progresso em formato de "pílula" (pontas arredondadas)
+# — visual mais moderno que o retângulo reto da v1, e continua sem piscar
+# (só apaga/redesenha o preenchimento, nunca o widget inteiro)
 # ============================================================
 
-class BarraProgresso(ctk.CTkProgressBar):
-    def __init__(self, master, largura=230, altura=12):
+class BarraProgresso(tk.Canvas):
+    """Barra horizontal estilo 'pílula' (cantos arredondados nas duas pontas).
+    Redesenha apenas o preenchimento a cada atualização — o trilho de fundo
+    é fixo, então não há nenhum "flash" perceptível."""
+
+    def __init__(self, master, largura=240, altura=10, **kwargs):
         super().__init__(master, width=largura, height=altura,
-                         corner_radius=altura // 2,
-                         fg_color=COR_BARRA_FUNDO, progress_color=COR_VERDE)
-        self.set(0.0)
+                         bg=COR_CARTAO, highlightthickness=0, **kwargs)
+        self._largura = largura
+        self._altura = altura
+        self._raio = altura / 2
+        self._desenhar_pilula(0, largura, COR_BARRA_FUNDO, tag="trilho")
+        self._item_barra = []
+
+    def _desenhar_pilula(self, x_ini, x_fim, cor, tag):
+        """Desenha um retângulo com pontas arredondadas (duas semicircunferências
+        + um retângulo central) usando primitivas simples do Canvas."""
+        r = self._raio
+        largura_total = max(0, x_fim - x_ini)
+        if largura_total <= 0:
+            return []
+        itens = []
+        if largura_total <= self._altura:
+            # muito curta: desenha só um círculo (evita retângulo "negativo")
+            itens.append(self.create_oval(x_ini, 0, x_ini + self._altura, self._altura,
+                                           fill=cor, outline="", tags=tag))
+            return itens
+        itens.append(self.create_oval(x_ini, 0, x_ini + self._altura, self._altura,
+                                       fill=cor, outline="", tags=tag))
+        itens.append(self.create_rectangle(x_ini + r, 0, x_fim - r, self._altura,
+                                            fill=cor, outline="", tags=tag))
+        itens.append(self.create_oval(x_fim - self._altura, 0, x_fim, self._altura,
+                                       fill=cor, outline="", tags=tag))
+        return itens
 
     def atualizar(self, fracao, cor):
         fracao = max(0.0, min(1.0, fracao))
-        self.configure(progress_color=cor)
-        self.set(fracao)
+        largura_preenchida = int(self._largura * fracao)
+        self.delete("preenchimento")
+        if largura_preenchida > 0:
+            self._desenhar_pilula(0, largura_preenchida, cor, tag="preenchimento")
 
 
 # ============================================================
-# SELO ("chip"/"badge") — texto curto destacado com fundo colorido e
-# cantos arredondados de verdade (CTkLabel já suporta corner_radius nativo),
+# SELO ("chip"/"badge") — texto curto destacado com fundo colorido,
 # usado para status como PASSOU / NÃO PASSOU / BUY / SELL / sem dados
 # ============================================================
 
-class Selo(ctk.CTkLabel):
+class Selo(tk.Label):
+    """Rótulo estilo 'badge' moderno: bloco colorido com cantos retos mas
+    bastante respiro (padding) — o efeito visual de um 'chip' de status que
+    aparece em painéis modernos, sem precisar desenhar formas no Canvas."""
+
     def __init__(self, master, texto="-", **kwargs):
-        super().__init__(master, text=f"  {texto}  ", font=FONTE_BASE_NEGRITO,
-                         corner_radius=8, height=26, **kwargs)
+        super().__init__(master, text=texto, font=FONTE_BASE_NEGRITO,
+                         padx=10, pady=2, bd=0, **kwargs)
 
     def definir(self, texto, cor_fundo, cor_texto="#0d1117"):
-        self.configure(text=f"  {texto}  ", fg_color=cor_fundo, text_color=cor_texto)
+        self.config(text=f" {texto} ", bg=cor_fundo, fg=cor_texto)
 
 
 # ============================================================
@@ -339,55 +360,50 @@ class Selo(ctk.CTkLabel):
 class LinhaScore:
     """Uma linha 'Prob V5.1 : 0,613 / min 0,590 | melhor 0,724' com barra
     de progresso em pílula e selo PASSOU/NÃO PASSOU — tudo atualizável no
-    lugar, sem recriar widgets a cada ciclo. Usa grid local (dentro de cada
-    sub-frame) com `minsize` na 1ª coluna para alinhar os nomes em coluna,
-    já que CTkLabel não aceita `width` em "caracteres" como o tk.Label."""
-
-    LARGURA_NOME = 100  # px — aproxima a largura fixa que o tk.Label tinha (width=11)
+    lugar, sem recriar widgets a cada ciclo."""
 
     def __init__(self, master, nome):
-        self.frame = ctk.CTkFrame(master, fg_color=COR_CARTAO)
-        self.frame.pack(fill="x", pady=(4, 12))
+        self.frame = tk.Frame(master, bg=COR_CARTAO)
+        self.frame.pack(fill="x", pady=(4, 10))
 
-        linha_topo = ctk.CTkFrame(self.frame, fg_color=COR_CARTAO)
+        linha_topo = tk.Frame(self.frame, bg=COR_CARTAO)
         linha_topo.pack(fill="x")
-        linha_topo.grid_columnconfigure(0, minsize=self.LARGURA_NOME)
 
-        self.lbl_nome = ctk.CTkLabel(linha_topo, text=nome, font=FONTE_BASE_NEGRITO,
-                                     text_color=COR_TEXTO, anchor="w")
-        self.lbl_nome.grid(row=0, column=0, sticky="w")
+        self.lbl_nome = tk.Label(linha_topo, text=nome, font=FONTE_BASE_NEGRITO,
+                                 fg=COR_TEXTO, bg=COR_CARTAO, width=11, anchor="w")
+        self.lbl_nome.pack(side="left")
 
-        self.lbl_valores = ctk.CTkLabel(linha_topo, text="-", font=FONTE_MONO,
-                                        text_color=COR_TEXTO_FRACO, anchor="w")
-        self.lbl_valores.grid(row=0, column=1, sticky="w", padx=(8, 0))
+        self.lbl_valores = tk.Label(linha_topo, text="-", font=FONTE_MONO,
+                                    fg=COR_TEXTO_FRACO, bg=COR_CARTAO, anchor="w")
+        self.lbl_valores.pack(side="left", padx=(8, 0))
 
-        linha_barra = ctk.CTkFrame(self.frame, fg_color=COR_CARTAO)
-        linha_barra.pack(fill="x", pady=(8, 0))
-        linha_barra.grid_columnconfigure(0, minsize=self.LARGURA_NOME)
+        linha_barra = tk.Frame(self.frame, bg=COR_CARTAO)
+        linha_barra.pack(fill="x", pady=(6, 0))
 
+        tk.Label(linha_barra, text="", width=11, bg=COR_CARTAO).pack(side="left")
         self.barra = BarraProgresso(linha_barra)
-        self.barra.grid(row=0, column=1, sticky="w", padx=(0, 12))
+        self.barra.pack(side="left", padx=(8, 12))
 
-        self.selo_status = Selo(linha_barra, "-", fg_color=COR_BARRA_FUNDO, text_color=COR_TEXTO_FRACO)
-        self.selo_status.grid(row=0, column=2, sticky="w")
+        self.selo_status = Selo(linha_barra, "-", bg=COR_BARRA_FUNDO, fg=COR_TEXTO_FRACO)
+        self.selo_status.pack(side="left")
 
-        self.lbl_falta = ctk.CTkLabel(linha_barra, text="", font=FONTE_PEQUENA,
-                                      text_color=COR_TEXTO_FRACO, anchor="w")
-        self.lbl_falta.grid(row=0, column=3, sticky="w", padx=(10, 0))
+        self.lbl_falta = tk.Label(linha_barra, text="", font=FONTE_PEQUENA,
+                                  fg=COR_TEXTO_FRACO, bg=COR_CARTAO, anchor="w")
+        self.lbl_falta.pack(side="left", padx=(10, 0))
 
     def atualizar(self, valor, minimo, melhor):
         valor_f = to_float(valor)
         minimo_f = to_float(minimo)
         melhor_f = to_float(melhor)
 
-        self.lbl_valores.configure(
+        self.lbl_valores.config(
             text=f"{fmt_num(valor_f, 6)}   ·   mínimo {fmt_num(minimo_f, 3)}   ·   melhor {fmt_num(melhor_f, 6)}"
         )
 
         if math.isnan(valor_f) or math.isnan(minimo_f) or minimo_f <= 0:
             self.barra.atualizar(0.0, COR_BARRA_FUNDO)
             self.selo_status.definir("SEM DADOS", COR_BARRA_FUNDO, COR_TEXTO_FRACO)
-            self.lbl_falta.configure(text="")
+            self.lbl_falta.config(text="")
             return
 
         passou = valor_f >= minimo_f
@@ -398,66 +414,60 @@ class LinhaScore:
         falta = max(0.0, minimo_f - valor_f)
         if passou:
             self.selo_status.definir("PASSOU", COR_VERDE, "#0d1117")
-            self.lbl_falta.configure(text="dentro do mínimo ✓", text_color=COR_VERDE)
+            self.lbl_falta.config(text="dentro do mínimo ✓", fg=COR_VERDE)
         else:
             self.selo_status.definir("NÃO PASSOU", COR_VERMELHO, "#0d1117")
-            self.lbl_falta.configure(text=f"falta {fmt_num(falta, 6)}", text_color=COR_TEXTO_FRACO)
+            self.lbl_falta.config(text=f"falta {fmt_num(falta, 6)}", fg=COR_TEXTO_FRACO)
 
 
 # ============================================================
-# CAMPO SIMPLES "rótulo : valor" reutilizável, atualizável no lugar.
-# Também usa grid+minsize para simular o alinhamento em coluna que o
-# parâmetro `width` (em caracteres) dava no tk.Label clássico.
+# CAMPO SIMPLES "rótulo : valor" reutilizável, atualizável no lugar
 # ============================================================
 
 class CampoStatus:
     def __init__(self, master, rotulo, largura_rotulo=14, fonte_valor=None):
-        self.frame = ctk.CTkFrame(master, fg_color=COR_CARTAO)
-        self.frame.pack(fill="x", pady=3)
-
-        largura_px = max(96, largura_rotulo * 9)  # ~9px por caractere em Segoe UI 13pt
-        self.frame.grid_columnconfigure(0, minsize=largura_px)
-
-        ctk.CTkLabel(self.frame, text=rotulo, font=FONTE_BASE, text_color=COR_TEXTO_FRACO,
-                     anchor="w").grid(row=0, column=0, sticky="w")
-        self.valor_lbl = ctk.CTkLabel(self.frame, text="-", font=(fonte_valor or FONTE_BASE_NEGRITO),
-                                      text_color=COR_TEXTO, anchor="w")
-        self.valor_lbl.grid(row=0, column=1, sticky="w", padx=(6, 0))
+        self.frame = tk.Frame(master, bg=COR_CARTAO)
+        self.frame.pack(fill="x", pady=2)
+        tk.Label(self.frame, text=rotulo, font=FONTE_BASE, fg=COR_TEXTO_FRACO,
+                 bg=COR_CARTAO, width=largura_rotulo, anchor="w").pack(side="left")
+        self.valor_lbl = tk.Label(self.frame, text="-", font=(fonte_valor or FONTE_BASE_NEGRITO),
+                                  fg=COR_TEXTO, bg=COR_CARTAO, anchor="w")
+        self.valor_lbl.pack(side="left", padx=(4, 0))
 
     def set(self, texto, cor=None):
-        self.valor_lbl.configure(text=str(texto), text_color=(cor or COR_TEXTO))
+        self.valor_lbl.config(text=str(texto), fg=(cor or COR_TEXTO))
 
 
 # ============================================================
-# CARTÃO DE SEÇÃO — bloco estilo "painel moderno": cantos arredondados de
-# verdade (corner_radius nativo do CTkFrame), borda fina e uma faixa
-# colorida no topo. Substitui o "cartão" desenhado à mão na v2 com
-# tk.Frame + highlightthickness (que só conseguia cantos retos).
+# CARTÃO DE SEÇÃO — bloco estilo "painel moderno": fundo levemente mais
+# claro que o fundo geral, borda fina e uma faixa colorida no topo. É o
+# equivalente visual aos "cards" usados em dashboards contemporâneos
+# (GitHub, Linear, Notion etc.), e substitui o bloco "chapado" da v1.
 # ============================================================
 
 def cartao(master, titulo, icone="", cor_acento=None):
-    """Monta um 'cartão' (moldura arredondada + faixa colorida + título) mas
-    DELIBERADAMENTE não se posiciona sozinho — quem chama decide se ele fica
-    empilhado (.pack) ou lado a lado (.grid), o que é o que permite organizar
-    os cartões em colunas. Devolve (moldura, corpo): "moldura" é o que vai
-    para o gerenciador de geometria do chamador, "corpo" é onde o conteúdo
-    da seção deve ser montado."""
+    """Monta um 'cartão' (moldura com borda + faixa colorida + título) mas
+    DELIBERADAMENTE não se posiciona sozinho — quem chama decide se ele
+    fica empilhado (.pack) ou lado a lado (.grid), o que é o que permite
+    organizar os cartões em colunas. Devolve (moldura, corpo): "moldura" é
+    o que vai para o gerenciador de geometria do chamador, "corpo" é onde
+    o conteúdo da seção deve ser montado."""
     cor_acento = cor_acento or COR_TITULO
 
-    moldura = ctk.CTkFrame(master, fg_color=COR_CARTAO, corner_radius=14,
-                           border_width=1, border_color=COR_BORDA)
+    moldura = tk.Frame(master, bg=COR_CARTAO, highlightbackground=COR_BORDA,
+                       highlightcolor=COR_BORDA, highlightthickness=1, bd=0)
 
-    faixa = ctk.CTkFrame(moldura, fg_color=cor_acento, height=4, corner_radius=10)
-    faixa.pack(fill="x", side="top", padx=16, pady=(16, 0))
+    faixa = tk.Frame(moldura, bg=cor_acento, height=3)
+    faixa.pack(fill="x", side="top")
 
-    corpo = ctk.CTkFrame(moldura, fg_color=COR_CARTAO, corner_radius=0)
-    corpo.pack(fill="both", expand=True, padx=22, pady=(14, 20))
+    corpo = tk.Frame(moldura, bg=COR_CARTAO, padx=20, pady=16)
+    corpo.pack(fill="both", expand=True)
 
-    cabecalho = ctk.CTkFrame(corpo, fg_color=COR_CARTAO)
-    cabecalho.pack(fill="x", pady=(0, 14))
+    cabecalho = tk.Frame(corpo, bg=COR_CARTAO)
+    cabecalho.pack(fill="x", pady=(0, 12))
     texto_titulo = f"{icone}   {titulo}" if icone else titulo
-    ctk.CTkLabel(cabecalho, text=texto_titulo, font=FONTE_TITULO, text_color=COR_TEXTO,
-                 anchor="w").pack(side="left")
+    tk.Label(cabecalho, text=texto_titulo, font=FONTE_TITULO, fg=COR_TEXTO,
+             bg=COR_CARTAO, anchor="w").pack(side="left")
 
     return moldura, corpo
 
@@ -470,16 +480,17 @@ class MonitorV71App:
     def __init__(self, root):
         self.root = root
         self.root.title("Monitor V7.1 — BlackArrow")
-        self.root.configure(fg_color=COR_FUNDO)
-        # janela "wide": os cartões ficam lado a lado em duas colunas
-        self.root.geometry("1220x880")
-        self.root.minsize(800, 580)
+        self.root.configure(bg=COR_FUNDO)
+        # janela mais larga que a v2: agora os cartões ficam lado a lado em
+        # duas colunas, então o layout aproveita melhor um formato "wide"
+        self.root.geometry("1180x860")
+        self.root.minsize(760, 560)
 
         # ---- zoom: fator aplicado sobre o tamanho-base de todas as fontes.
-        # Criar as fontes como objetos CTkFont nomeados (ver inicializar_fontes)
-        # é o que torna isso possível sem reconstruir a interface inteira — só
-        # mudamos o tamanho desses poucos objetos e cada texto que os usa se
-        # redesenha sozinho, na hora.
+        # Criar as fontes como objetos nomeados (ver inicializar_fontes) é o
+        # que torna isso possível sem reconstruir a interface inteira — só
+        # mudamos o tamanho desses poucos objetos e cada texto que os usa
+        # se redesenha sozinho, na hora.
         self._fator_zoom = 1.0
         self._fontes = inicializar_fontes()
 
@@ -504,52 +515,55 @@ class MonitorV71App:
     # MONTAGEM DA INTERFACE (uma vez só — depois só atualizamos texto/cor)
     # --------------------------------------------------------
     def _montar_interface(self):
-        LARGURA_TEXTO_LARGO = 940     # quebra de linha p/ textos que ocupam as 2 colunas
-        LARGURA_TEXTO_ESTREITO = 440  # quebra de linha p/ textos de cartão de 1 coluna
+        LARGURA_TEXTO_LARGO = 920    # quebra de linha p/ textos que ocupam as 2 colunas
+        LARGURA_TEXTO_ESTREITO = 430  # quebra de linha p/ textos de cartão de 1 coluna
 
         # --- cabeçalho estilo "topo de painel" ---
-        cab = ctk.CTkFrame(self.root, fg_color=COR_FUNDO)
-        cab.pack(fill="x", padx=22, pady=(18, 12))
+        cab = tk.Frame(self.root, bg=COR_FUNDO, padx=22, pady=16)
+        cab.pack(fill="x")
 
-        linha_titulo = ctk.CTkFrame(cab, fg_color=COR_FUNDO)
+        linha_titulo = tk.Frame(cab, bg=COR_FUNDO)
         linha_titulo.pack(fill="x", anchor="w")
 
-        # "ponto" indicador de saúde do monitor — agora é um CTkLabel circular
-        # (corner_radius = metade da largura/altura = círculo perfeito),
-        # bem mais simples que desenhar um círculo no Canvas como na v2
-        self.indicador = ctk.CTkLabel(linha_titulo, text="", width=14, height=14,
-                                      corner_radius=7, fg_color=COR_VERDE)
-        self.indicador.pack(side="left", padx=(2, 12))
+        # "ponto" indicador estilo status — dá um toque de painel de monitoramento moderno
+        self.indicador = tk.Canvas(linha_titulo, width=14, height=14, bg=COR_FUNDO, highlightthickness=0)
+        self.indicador.pack(side="left", padx=(0, 10))
+        self._ponto_indicador = self.indicador.create_oval(2, 2, 12, 12, fill=COR_VERDE, outline="")
 
-        ctk.CTkLabel(linha_titulo, text="Monitor V7.1", font=FONTE_TITULO_APP,
-                     text_color=COR_TEXTO).pack(side="left")
-        ctk.CTkLabel(linha_titulo, text="  ·  BlackArrow Oficial", font=FONTE_SUBTITULO_APP,
-                     text_color=COR_TEXTO_FRACO).pack(side="left")
+        tk.Label(linha_titulo, text="Monitor V7.1", font=FONTE_TITULO_APP,
+                 fg=COR_TEXTO, bg=COR_FUNDO).pack(side="left")
+        tk.Label(linha_titulo, text="  ·  BlackArrow Oficial", font=FONTE_SUBTITULO_APP,
+                 fg=COR_TEXTO_FRACO, bg=COR_FUNDO).pack(side="left")
 
         # ---- controle de ZOOM (deixa tudo menor/maior para caber mais na tela) ----
-        zoom_box = ctk.CTkFrame(linha_titulo, fg_color=COR_FUNDO)
+        zoom_box = tk.Frame(linha_titulo, bg=COR_FUNDO)
         zoom_box.pack(side="right")
 
-        ctk.CTkLabel(zoom_box, text="Zoom", font=FONTE_PEQUENA,
-                     text_color=COR_TEXTO_FRACO).pack(side="left", padx=(0, 8))
+        tk.Label(zoom_box, text="Zoom", font=FONTE_PEQUENA, fg=COR_TEXTO_FRACO,
+                 bg=COR_FUNDO).pack(side="left", padx=(0, 6))
 
         def _botao_zoom(texto, comando):
-            return ctk.CTkButton(zoom_box, text=texto, width=36, height=30, corner_radius=8,
-                                 fg_color=COR_CARTAO, hover_color=COR_CARTAO_CLARO,
-                                 text_color=COR_TEXTO, border_width=1, border_color=COR_BORDA,
-                                 font=FONTE_BASE_NEGRITO, command=comando)
+            return tk.Label(zoom_box, text=texto, font=FONTE_BASE_NEGRITO, fg=COR_TEXTO,
+                            bg=COR_CARTAO, padx=10, pady=3, cursor="hand2",
+                            highlightbackground=COR_BORDA, highlightthickness=1)
 
         btn_zoom_menos = _botao_zoom("－", lambda: self._ajustar_zoom(-ZOOM_PASSO))
-        btn_zoom_menos.pack(side="left", padx=(0, 6))
-        btn_zoom_menos.bind("<Double-Button-1>", lambda e: self._ajustar_zoom(reset=True))
+        btn_zoom_menos.pack(side="left", padx=(0, 4))
+        btn_zoom_menos.bind("<Button-1>", lambda e: self._ajustar_zoom(-ZOOM_PASSO))
 
-        self.lbl_zoom = ctk.CTkLabel(zoom_box, text="100%", font=FONTE_BASE_NEGRITO,
-                                     text_color=COR_TEXTO_FRACO, width=48, anchor="center")
+        self.lbl_zoom = tk.Label(zoom_box, text="100%", font=FONTE_BASE_NEGRITO, fg=COR_TEXTO_FRACO,
+                                 bg=COR_FUNDO, width=5, anchor="center")
         self.lbl_zoom.pack(side="left")
 
         btn_zoom_mais = _botao_zoom("＋", lambda: self._ajustar_zoom(ZOOM_PASSO))
-        btn_zoom_mais.pack(side="left", padx=(6, 0))
+        btn_zoom_mais.pack(side="left", padx=(4, 0))
+        btn_zoom_mais.bind("<Button-1>", lambda e: self._ajustar_zoom(ZOOM_PASSO))
+
+        btn_zoom_resetar = tk.Label(zoom_box, text="100%", font=FONTE_PEQUENA, fg=COR_TEXTO_FRACO,
+                                    bg=COR_FUNDO, padx=8, cursor="hand2", underline=0)
+        # (rótulo de reset reaproveita o clique-duplo — ver bind abaixo)
         btn_zoom_mais.bind("<Double-Button-1>", lambda e: self._ajustar_zoom(reset=True))
+        btn_zoom_menos.bind("<Double-Button-1>", lambda e: self._ajustar_zoom(reset=True))
 
         # atalhos de teclado: Ctrl + roda do mouse, Ctrl +/-/0 (como em navegadores)
         self.root.bind_all("<Control-MouseWheel>", self._zoom_pelo_mouse)
@@ -558,46 +572,56 @@ class MonitorV71App:
         self.root.bind_all("<Control-minus>", lambda e: self._ajustar_zoom(-ZOOM_PASSO))
         self.root.bind_all("<Control-Key-0>", lambda e: self._ajustar_zoom(reset=True))
 
-        self.lbl_atualizacao = ctk.CTkLabel(cab, text="Atualização: -", font=FONTE_BASE,
-                                            text_color=COR_TEXTO_FRACO, anchor="w")
-        self.lbl_atualizacao.pack(anchor="w", pady=(8, 0))
+        self.lbl_atualizacao = tk.Label(cab, text="Atualização: -", font=FONTE_BASE,
+                                        fg=COR_TEXTO_FRACO, bg=COR_FUNDO)
+        self.lbl_atualizacao.pack(anchor="w", pady=(6, 0))
 
         # detalhes técnicos (caminhos) — escondidos por padrão, expansível
         self._fontes_visiveis = tk.BooleanVar(value=False)
-        self.btn_fontes = ctk.CTkLabel(cab, text="▸ mostrar fontes de dados  ·  dica: Ctrl + roda do mouse para dar zoom",
-                                       font=FONTE_PEQUENA, text_color=COR_TEXTO_FRACO,
-                                       anchor="w", cursor="hand2")
-        self.btn_fontes.pack(anchor="w", pady=(10, 0))
+        self.btn_fontes = tk.Label(cab, text="▸ mostrar fontes de dados  ·  dica: Ctrl + roda do mouse para dar zoom",
+                                   font=FONTE_PEQUENA, fg=COR_TEXTO_FRACO, bg=COR_FUNDO, cursor="hand2")
+        self.btn_fontes.pack(anchor="w", pady=(8, 0))
         self.btn_fontes.bind("<Button-1>", self._alternar_fontes)
-        self.lbl_fontes = ctk.CTkLabel(cab, text="", font=FONTE_MONO_PEQUENA,
-                                       text_color=COR_TEXTO_FRACO, justify="left", anchor="w")
+        self.lbl_fontes = tk.Label(cab, text="", font=FONTE_MONO_PEQUENA, fg=COR_TEXTO_FRACO,
+                                   bg=COR_FUNDO, justify="left")
         # só é exibido quando o usuário clicar em "mostrar fontes de dados"
 
         # linha divisória sutil sob o cabeçalho
-        ctk.CTkFrame(self.root, fg_color=COR_BORDA, height=1, corner_radius=0).pack(fill="x")
+        tk.Frame(self.root, bg=COR_BORDA, height=1).pack(fill="x")
 
         # ---- BANNER DE ALARME — fica FIXO logo abaixo do cabeçalho (fora da
         # área rolável), assim continua visível mesmo se o usuário rolar a
-        # tela para baixo para ver outros cartões. CTkLabel não tem padx/pady
-        # internos, então usamos um CTkFrame por fora para dar "respiro" ao
-        # texto e manter os cantos arredondados. ----
-        self.banner_moldura = ctk.CTkFrame(self.root, fg_color=COR_CARTAO, corner_radius=12)
-        self.banner = ctk.CTkLabel(self.banner_moldura, text="", font=FONTE_GRANDE,
-                                   text_color="#0d1117", fg_color=COR_CARTAO,
-                                   anchor="w", justify="left", wraplength=LARGURA_TEXTO_LARGO)
-        self.banner.pack(fill="both", expand=True, padx=20, pady=16)
-        # só faz .pack() na MOLDURA quando houver algo a mostrar (ver
-        # _atualizar_alarme/_mostrar_alarme_entrada/_mostrar_banner)
+        # tela para baixo para ver outros cartões ----
+        self.banner = tk.Label(self.root, text="", font=FONTE_GRANDE, fg="#0d1117",
+                               bg=COR_CARTAO, padx=18, pady=14, anchor="w", justify="left",
+                               wraplength=LARGURA_TEXTO_LARGO)
+        # só faz .pack() quando houver algo a mostrar (ver _atualizar_alarme/_mostrar_alarme_entrada)
 
-        # --- área rolável: CTkScrollableFrame já cuida do canvas + scrollbar +
-        # rolagem pelo mouse internamente — bem mais simples que montar isso
-        # manualmente como na v2. Os cartões ficam em GRADE DE 2 COLUNAS lado
-        # a lado, para aproveitar telas largas e mostrar mais coisa de uma vez
-        # (em vez da pilha vertical única que obrigava a rolar muito) ---
-        self.area = ctk.CTkScrollableFrame(self.root, fg_color=COR_FUNDO,
-                                            scrollbar_button_color=COR_BORDA,
-                                            scrollbar_button_hover_color=COR_TITULO)
-        self.area.pack(fill="both", expand=True, padx=4)
+        # --- área rolável: os cartões ficam em uma GRADE DE 2 COLUNAS lado a
+        # lado, para aproveitar telas largas e mostrar mais coisa de uma vez
+        # (em vez da pilha vertical única da v2, que obrigava a rolar muito) ---
+        canvas = tk.Canvas(self.root, bg=COR_FUNDO, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(self.root, orient="vertical", command=canvas.yview)
+        self.area = tk.Frame(canvas, bg=COR_FUNDO)
+        self._canvas_area = canvas
+
+        self.area.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
+
+        def _ajustar_largura_area(event):
+            # faz o conteúdo da grade acompanhar a largura do canvas (senão
+            # os cartões ficariam com largura "natural" e não esticariam)
+            canvas.itemconfig(janela_area, width=event.width)
+        janela_area = canvas.create_window((0, 0), window=self.area, anchor="nw")
+        canvas.bind("<Configure>", _ajustar_largura_area)
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+
+        # roda do mouse (sem Ctrl = rolar; com Ctrl = zoom, tratado à parte)
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
 
         # duas colunas de largura igual — "uniform" garante que elas encolhem/
         # crescem juntas quando a janela é redimensionada
@@ -612,11 +636,11 @@ class MonitorV71App:
         moldura.grid(row=linha_grade, column=0, columnspan=2, sticky="nsew", **PAD)
         linha_grade += 1
 
-        grade = ctk.CTkFrame(bloco, fg_color=COR_CARTAO)
+        grade = tk.Frame(bloco, bg=COR_CARTAO)
         grade.pack(fill="x")
-        col_esq = ctk.CTkFrame(grade, fg_color=COR_CARTAO)
+        col_esq = tk.Frame(grade, bg=COR_CARTAO)
         col_esq.pack(side="left", fill="both", expand=True, anchor="n")
-        col_dir = ctk.CTkFrame(grade, fg_color=COR_CARTAO)
+        col_dir = tk.Frame(grade, bg=COR_CARTAO)
         col_dir.pack(side="left", fill="both", expand=True, anchor="n")
 
         self.campo_versao = CampoStatus(col_esq, "Versão")
@@ -637,12 +661,10 @@ class MonitorV71App:
         self.campo_bloq0430 = CampoStatus(col_dir, "Bloq 04:30")
 
         # ---- AVISO DE CANDLE TRAVADO (dentro do status, destaca quando existe) ----
-        self.aviso_moldura = ctk.CTkFrame(bloco, fg_color=COR_AMARELO, corner_radius=10)
-        self.aviso_candle = ctk.CTkLabel(self.aviso_moldura, text="", font=FONTE_BASE_NEGRITO,
-                                         text_color="#0d1117", fg_color=COR_AMARELO,
-                                         anchor="w", justify="left", wraplength=LARGURA_TEXTO_LARGO)
-        self.aviso_candle.pack(fill="both", expand=True, padx=14, pady=12)
-        # só faz .pack (na moldura) quando houver aviso
+        self.aviso_candle = tk.Label(bloco, text="", font=FONTE_BASE_NEGRITO, fg="#0d1117",
+                                     bg=COR_AMARELO, padx=12, pady=10, anchor="w",
+                                     justify="left", wraplength=LARGURA_TEXTO_LARGO)
+        # só faz .pack quando houver aviso
 
         # ---- linha 2: Probabilidades (col. esquerda) | Direção/Scores (col. direita) ----
         moldura, bloco = cartao(self.area, "Probabilidades V7.1", "▲", ACENTO_PROBABILIDADES)
@@ -677,15 +699,15 @@ class MonitorV71App:
         self.check_dir_buy = CampoStatus(bloco, "Direção BUY", largura_rotulo=20)
         self.check_dir_sell = CampoStatus(bloco, "Direção SELL", largura_rotulo=20)
 
-        ctk.CTkFrame(bloco, fg_color=COR_BORDA, height=1, corner_radius=0).pack(fill="x", pady=12)
-        self.lbl_regra_buy = ctk.CTkLabel(bloco, text="Regra BUY  ·  V5.1 ≥ 0,590 + V5.5 ≥ 0,425 + BUY ≥ 0,74 + Direção BUY + horário/gestão",
-                                          font=FONTE_PEQUENA, text_color=COR_TEXTO_FRACO,
-                                          anchor="w", justify="left", wraplength=LARGURA_TEXTO_ESTREITO)
+        tk.Frame(bloco, bg=COR_BORDA, height=1).pack(fill="x", pady=10)
+        self.lbl_regra_buy = tk.Label(bloco, text="Regra BUY  ·  V5.1 ≥ 0,590 + V5.5 ≥ 0,425 + BUY ≥ 0,74 + Direção BUY + horário/gestão",
+                                      font=FONTE_PEQUENA, fg=COR_TEXTO_FRACO, bg=COR_CARTAO,
+                                      anchor="w", justify="left", wraplength=LARGURA_TEXTO_ESTREITO)
         self.lbl_regra_buy.pack(fill="x")
-        self.lbl_regra_sell = ctk.CTkLabel(bloco, text="Regra SELL  ·  V5.1 ≥ 0,590 + V5.5 ≥ 0,425 + SELL ≥ 0,50 + Direção SELL + horário/gestão",
-                                           font=FONTE_PEQUENA, text_color=COR_TEXTO_FRACO,
-                                           anchor="w", justify="left", wraplength=LARGURA_TEXTO_ESTREITO)
-        self.lbl_regra_sell.pack(fill="x", pady=(4, 0))
+        self.lbl_regra_sell = tk.Label(bloco, text="Regra SELL  ·  V5.1 ≥ 0,590 + V5.5 ≥ 0,425 + SELL ≥ 0,50 + Direção SELL + horário/gestão",
+                                       font=FONTE_PEQUENA, fg=COR_TEXTO_FRACO, bg=COR_CARTAO,
+                                       anchor="w", justify="left", wraplength=LARGURA_TEXTO_ESTREITO)
+        self.lbl_regra_sell.pack(fill="x", pady=(3, 0))
         linha_grade += 1
 
         # ---- linha 4: Log inteligente (col. esquerda) | Status do alarme (col. direita) ----
@@ -697,28 +719,28 @@ class MonitorV71App:
 
         moldura, bloco = cartao(self.area, "Status do alarme", "⚑", ACENTO_ALARME)
         moldura.grid(row=linha_grade, column=1, sticky="nsew", **PAD)
-        self.lbl_check_principal = ctk.CTkLabel(bloco, text="-", font=FONTE_BASE, text_color=COR_AMARELO,
-                                                 anchor="w", justify="left", wraplength=LARGURA_TEXTO_ESTREITO)
-        self.lbl_check_principal.pack(fill="x", pady=4)
-        self.lbl_alarme = ctk.CTkLabel(bloco, text="-", font=FONTE_BASE, text_color=COR_AMARELO,
-                                       anchor="w", justify="left", wraplength=LARGURA_TEXTO_ESTREITO)
-        self.lbl_alarme.pack(fill="x", pady=4)
+        self.lbl_check_principal = tk.Label(bloco, text="-", font=FONTE_BASE, fg=COR_AMARELO,
+                                            bg=COR_CARTAO, anchor="w", justify="left", wraplength=LARGURA_TEXTO_ESTREITO)
+        self.lbl_check_principal.pack(fill="x", pady=3)
+        self.lbl_alarme = tk.Label(bloco, text="-", font=FONTE_BASE, fg=COR_AMARELO,
+                                   bg=COR_CARTAO, anchor="w", justify="left", wraplength=LARGURA_TEXTO_ESTREITO)
+        self.lbl_alarme.pack(fill="x", pady=3)
         linha_grade += 1
 
         # espaço extra no fim da área rolável
-        ctk.CTkFrame(self.area, fg_color=COR_FUNDO, height=14).grid(row=linha_grade, column=0, columnspan=2)
+        tk.Frame(self.area, bg=COR_FUNDO, height=14).grid(row=linha_grade, column=0, columnspan=2)
 
         # ---- rodapé ----
-        ctk.CTkFrame(self.root, fg_color=COR_BORDA, height=1, corner_radius=0).pack(fill="x")
-        rodape = ctk.CTkFrame(self.root, fg_color=COR_FUNDO)
-        rodape.pack(fill="x", padx=22, pady=12)
-        self.lbl_status_geral = ctk.CTkLabel(rodape, text="iniciando…", font=FONTE_PEQUENA,
-                                             text_color=COR_TEXTO_FRACO, anchor="w")
+        tk.Frame(self.root, bg=COR_BORDA, height=1).pack(fill="x")
+        rodape = tk.Frame(self.root, bg=COR_FUNDO, padx=22, pady=10)
+        rodape.pack(fill="x")
+        self.lbl_status_geral = tk.Label(rodape, text="iniciando…", font=FONTE_PEQUENA,
+                                         fg=COR_TEXTO_FRACO, bg=COR_FUNDO, anchor="w")
         self.lbl_status_geral.pack(side="left")
 
     # --------------------------------------------------------
     # ZOOM — muda o tamanho de TODAS as fontes de uma vez (ver inicializar_fontes:
-    # como os widgets compartilham os mesmos objetos CTkFont, não é preciso
+    # como os widgets compartilham os mesmos objetos tkfont.Font, não é preciso
     # reconstruir nada — eles se redesenham sozinhos no novo tamanho)
     # --------------------------------------------------------
     def _ajustar_zoom(self, delta=0.0, reset=False):
@@ -732,7 +754,7 @@ class MonitorV71App:
             novo_tamanho = max(6, round(tamanho_base * self._fator_zoom))
             self._fontes[nome].configure(size=novo_tamanho)
 
-        self.lbl_zoom.configure(text=f"{round(self._fator_zoom * 100)}%")
+        self.lbl_zoom.config(text=f"{round(self._fator_zoom * 100)}%")
 
     def _zoom_pelo_mouse(self, evento):
         """Ctrl + roda do mouse = zoom (igual navegadores e editores modernos)."""
@@ -749,26 +771,11 @@ class MonitorV71App:
         mostrar = not self._fontes_visiveis.get()
         self._fontes_visiveis.set(mostrar)
         if mostrar:
-            self.btn_fontes.configure(text="▾ ocultar fontes de dados")
-            self.lbl_fontes.pack(anchor="w", pady=(6, 0))
+            self.btn_fontes.config(text="▾ ocultar fontes de dados")
+            self.lbl_fontes.pack(anchor="w", pady=(4, 0))
         else:
-            self.btn_fontes.configure(text="▸ mostrar fontes de dados  ·  dica: Ctrl + roda do mouse para dar zoom")
+            self.btn_fontes.config(text="▸ mostrar fontes de dados")
             self.lbl_fontes.pack_forget()
-
-    # --------------------------------------------------------
-    # BANNER DE ALARME — mostra/oculta a moldura arredondada fixa logo
-    # abaixo do cabeçalho (ver _montar_interface). Centralizar aqui evita
-    # repetir a lógica de "antes de qual widget" em dois lugares.
-    # --------------------------------------------------------
-    def _mostrar_banner(self, texto, cor_fundo, cor_texto="#0d1117"):
-        self.banner_moldura.configure(fg_color=cor_fundo)
-        self.banner.configure(text=texto, fg_color=cor_fundo, text_color=cor_texto)
-        if not self.banner_moldura.winfo_ismapped():
-            self.banner_moldura.pack(fill="x", padx=18, pady=(12, 6), before=self.area)
-
-    def _ocultar_banner(self):
-        if self.banner_moldura.winfo_ismapped():
-            self.banner_moldura.pack_forget()
 
     # --------------------------------------------------------
     # CICLO DE ATUALIZAÇÃO (agendado via root.after — não bloqueia a janela)
@@ -782,35 +789,35 @@ class MonitorV71App:
     def _ciclo(self):
         try:
             self._atualizar_tudo()
-            self.indicador.configure(fg_color=COR_VERDE)
-            self.lbl_status_geral.configure(
+            self.indicador.itemconfig(self._ponto_indicador, fill=COR_VERDE)
+            self.lbl_status_geral.config(
                 text=f"Última leitura OK às {datetime.now().strftime('%H:%M:%S')}  ·  atualizando a cada {INTERVALO_ATUALIZACAO_MS/1000:.1f}s",
-                text_color=COR_TEXTO_FRACO)
+                fg=COR_TEXTO_FRACO)
         except Exception as exc:  # nunca deixa o loop morrer por um erro pontual de leitura
-            self.indicador.configure(fg_color=COR_AMARELO)
-            self.lbl_status_geral.configure(text=f"Aviso: erro ao atualizar ({exc})", text_color=COR_AMARELO)
+            self.indicador.itemconfig(self._ponto_indicador, fill=COR_AMARELO)
+            self.lbl_status_geral.config(text=f"Aviso: erro ao atualizar ({exc})", fg=COR_AMARELO)
         finally:
             self._agendar_atualizacao()
 
     def _atualizar_tudo(self):
         caminho_json = localizar_json()
-        self.lbl_fontes.configure(
+        self.lbl_fontes.config(
             text=(f"JSON do robô :  {caminho_json}\n"
                   f"CSV de sinal :  {CSV_LOG_SINAL}\n"
                   f"Eventos      :  {CSV_EVENTOS}\n"
                   f"Resultados   :  {CSV_RESULTADOS}")
         )
-        self.lbl_atualizacao.configure(text=f"Última atualização: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        self.lbl_atualizacao.config(text=f"Última atualização: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
         if not os.path.exists(caminho_json):
-            self.indicador.configure(fg_color=COR_VERMELHO)
-            self.lbl_check_principal.configure(text="ERRO: JSON não encontrado — verifique se o robô está rodando.", text_color=COR_VERMELHO)
+            self.indicador.itemconfig(self._ponto_indicador, fill=COR_VERMELHO)
+            self.lbl_check_principal.config(text="ERRO: JSON não encontrado — verifique se o robô está rodando.", fg=COR_VERMELHO)
             return
 
         dados = ler_json_seguro(caminho_json)
         if dados is None:
-            self.indicador.configure(fg_color=COR_VERMELHO)
-            self.lbl_check_principal.configure(text="ERRO: não foi possível ler o JSON (tente de novo no próximo ciclo).", text_color=COR_VERMELHO)
+            self.indicador.itemconfig(self._ponto_indicador, fill=COR_VERMELHO)
+            self.lbl_check_principal.config(text="ERRO: não foi possível ler o JSON (tente de novo no próximo ciclo).", fg=COR_VERMELHO)
             return
 
         self._atualizar_status(dados)
@@ -857,12 +864,12 @@ class MonitorV71App:
         # aviso de candle travado — só aparece quando existe
         aviso = str(d.get("aviso_candle_travado") or "").strip()
         if aviso:
-            self.aviso_candle.configure(text=f"⚠  DADOS DESATUALIZADOS — {aviso}\n     Verifique o exportador Excel (exportar_blackarrow_excel_v71.ps1)")
-            if not self.aviso_moldura.winfo_ismapped():
-                self.aviso_moldura.pack(fill="x", pady=(14, 0))
+            self.aviso_candle.config(text=f"⚠  DADOS DESATUALIZADOS — {aviso}\n     Verifique o exportador Excel (exportar_blackarrow_excel_v71.ps1)")
+            if not self.aviso_candle.winfo_ismapped():
+                self.aviso_candle.pack(fill="x", pady=(12, 0))
         else:
-            if self.aviso_moldura.winfo_ismapped():
-                self.aviso_moldura.pack_forget()
+            if self.aviso_candle.winfo_ismapped():
+                self.aviso_candle.pack_forget()
 
     def _atualizar_probabilidades(self, d):
         prob_v51 = d.get("prob_v51", d.get("prob_win_v4"))
@@ -971,29 +978,32 @@ class MonitorV71App:
         sinal = str(d.get("sinal", "none")).lower()
 
         if getattr(self, "_regra_buy", False):
-            self.lbl_check_principal.configure(
+            self.lbl_check_principal.config(
                 text="CHECK PRINCIPAL — BUY passou nas probabilidades e direção. Aguardando horário/gestão/sinal oficial.",
-                text_color=COR_VERDE)
+                fg=COR_VERDE)
         elif getattr(self, "_regra_sell", False):
-            self.lbl_check_principal.configure(
+            self.lbl_check_principal.config(
                 text="CHECK PRINCIPAL — SELL passou nas probabilidades e direção. Aguardando horário/gestão/sinal oficial.",
-                text_color=COR_VERMELHO)
+                fg=COR_VERMELHO)
         else:
-            self.lbl_check_principal.configure(text="CHECK PRINCIPAL — ainda sem setup completo V7.1.", text_color=COR_AMARELO)
+            self.lbl_check_principal.config(text="CHECK PRINCIPAL — ainda sem setup completo V7.1.", fg=COR_AMARELO)
 
         if sinal == "buy":
-            self.lbl_alarme.configure(text="ALARME — sinal oficial de COMPRA no JSON. Entrada real será confirmada pelo CSV.", text_color=COR_VERDE)
+            self.lbl_alarme.config(text="ALARME — sinal oficial de COMPRA no JSON. Entrada real será confirmada pelo CSV.", fg=COR_VERDE)
         elif sinal == "sell":
-            self.lbl_alarme.configure(text="ALARME — sinal oficial de VENDA no JSON. Entrada real será confirmada pelo CSV.", text_color=COR_VERMELHO)
+            self.lbl_alarme.config(text="ALARME — sinal oficial de VENDA no JSON. Entrada real será confirmada pelo CSV.", fg=COR_VERMELHO)
         else:
-            self.lbl_alarme.configure(text="ALARME — monitorando… sem sinal oficial.", text_color=COR_AMARELO)
+            self.lbl_alarme.config(text="ALARME — monitorando… sem sinal oficial.", fg=COR_AMARELO)
 
         # banner geral grande no topo (junta candle travado + sinal oficial em destaque)
         aviso = str(d.get("aviso_candle_travado") or "").strip()
         if aviso:
-            self._mostrar_banner(f"⚠  DADOS DESATUALIZADOS  —  {aviso}", COR_AMARELO, "#0d1117")
+            self.banner.config(text=f"⚠  DADOS DESATUALIZADOS  —  {aviso}", bg=COR_AMARELO, fg="#0d1117")
+            if not self.banner.winfo_ismapped():
+                self.banner.pack(fill="x", padx=16, pady=(10, 6), before=self._canvas_area)
         else:
-            self._ocultar_banner()
+            if self.banner.winfo_ismapped():
+                self.banner.pack_forget()
 
     def _verificar_entrada_real_csv(self):
         """Espelha 'Verificar-Alarme-CSV' do .ps1: detecta linhas novas com
@@ -1081,7 +1091,9 @@ class MonitorV71App:
             f"Direção: {linha.get('Direcao', '-')}\n"
             f"Prob V5.1: {linha.get('prob_v51', linha.get('prob_win_v4', '-'))}"
         )
-        self._mostrar_banner(texto, cor, "#0d1117")
+        self.banner.config(text=texto, bg=cor, fg="#0d1117")
+        if not self.banner.winfo_ismapped():
+            self.banner.pack(fill="x", padx=16, pady=(10, 6), before=self._canvas_area)
         # o banner permanece até o próximo ciclo recalcular o estado (candle travado / sinal oficial)
 
     def _tocar_som(self, comprar):
@@ -1106,9 +1118,7 @@ class MonitorV71App:
 
 
 def main():
-    ctk.set_appearance_mode("dark")
-    ctk.set_default_color_theme("dark-blue")
-    root = ctk.CTk()
+    root = tk.Tk()
     app = MonitorV71App(root)
     root.mainloop()
 
