@@ -239,6 +239,16 @@ def fmt_valor_bruto(valor):
     return str(valor)
 
 
+# NOTA SOBRE O DELIMITADOR: todos os CSVs que o robô grava (eventos,
+# resultados e log de sinal) usam VÍRGULA como separador de campo — não
+# ponto-e-vírgula. (Isso foi confirmado inspecionando os bytes brutos dos
+# arquivos: o cabeçalho de "eventos"/"resultados" tem ~37/~51 vírgulas e
+# nenhum ponto-e-vírgula, e o mesmo vale para as linhas de dados do log de
+# sinal.) Usamos "utf-8-sig" para já descartar de cara o BOM (﻿) que o
+# robô grava no início dos arquivos de eventos/resultados — sem isso, o nome
+# da primeira coluna viria com um caractere invisível grudado na frente
+# (ex.: "﻿event_id" em vez de "event_id"), quebrando os `.get(...)`.
+#
 # NOTA SOBRE CODIFICAÇÃO: alguns desses CSVs (em especial o de log de sinal,
 # que cresce sem parar) acumularam ao longo do tempo trechos gravados em uma
 # codificação diferente de UTF-8 (ex.: "Último"/"Máximo" em Latin-1/cp1252).
@@ -251,8 +261,8 @@ def contar_linhas_csv(caminho):
     if not os.path.exists(caminho):
         return 0
     try:
-        with open(caminho, "r", encoding="utf-8", errors="replace", newline="") as f:
-            return max(0, sum(1 for _ in csv.reader(f, delimiter=";")) - 1)
+        with open(caminho, "r", encoding="utf-8-sig", errors="replace", newline="") as f:
+            return max(0, sum(1 for _ in csv.reader(f, delimiter=",")) - 1)
     except OSError:
         return 0
 
@@ -261,8 +271,8 @@ def ler_ultima_linha_csv(caminho):
     if not os.path.exists(caminho):
         return None
     try:
-        with open(caminho, "r", encoding="utf-8", errors="replace", newline="") as f:
-            leitor = csv.DictReader(f, delimiter=";")
+        with open(caminho, "r", encoding="utf-8-sig", errors="replace", newline="") as f:
+            leitor = csv.DictReader(f, delimiter=",")
             ultima = None
             for linha in leitor:
                 ultima = linha
@@ -275,25 +285,11 @@ def ler_todas_linhas_csv(caminho):
     if not os.path.exists(caminho):
         return []
     try:
-        with open(caminho, "r", encoding="utf-8", errors="replace", newline="") as f:
-            leitor = csv.DictReader(f, delimiter=";")
+        with open(caminho, "r", encoding="utf-8-sig", errors="replace", newline="") as f:
+            leitor = csv.DictReader(f, delimiter=",")
             return list(leitor)
     except OSError:
         return []
-
-
-def ler_cabecalho_csv(caminho):
-    """Lê só a primeira linha (cabeçalho) do CSV — usado para montar o
-    DictReader manualmente ao processar apenas o trecho novo de um arquivo
-    grande, sem precisar reler tudo."""
-    try:
-        with open(caminho, "rb") as f:
-            primeira_linha = f.readline()
-        texto = primeira_linha.decode("utf-8", errors="replace")
-        linhas = list(csv.reader([texto], delimiter=";"))
-        return linhas[0] if linhas else None
-    except OSError:
-        return None
 
 
 # ============================================================
@@ -496,8 +492,7 @@ class MonitorV71App:
         # estado para a leitura incremental ("tail") do CSV de log de sinal —
         # ver _verificar_entrada_real_csv para o porquê de não reler tudo
         self._posicao_csv_sinal = None       # posição em bytes de onde paramos de ler
-        self._cabecalho_csv_sinal = None     # nomes das colunas (lidos uma vez só)
-        self._ultimo_alarme_id = None        # evita repetir o mesmo alarme
+        self._ultimo_alarme_id = None        # evita repetir o mesmo alarme (sinal/hora/preço)
 
         self._montar_interface()
         self._agendar_atualizacao(imediata=True)
@@ -1002,14 +997,34 @@ class MonitorV71App:
         motivo == sinal_valido no CSV de log de sinal e toca um alarme sonoro.
 
         IMPORTANTE — por que isso lê só o "rabo" do arquivo:
-        O CSV de log de sinal cresce sem parar e já passa de 100 MB. A versão
-        original desta função relia o arquivo INTEIRO a cada 1,5s (pesado, e
-        ainda quebrava com UnicodeDecodeError nos trechos antigos gravados em
-        outra codificação — ver Bug #9 da skill v71-blackarrow-troubleshooting).
-        Em vez disso, guardamos a posição (em bytes) de onde paramos e, a cada
-        ciclo, lemos só os bytes adicionados desde então — exatamente como um
-        `tail -f`. Isso é rápido (não importa o tamanho do arquivo) e tolera
-        bytes inválidos com `errors='replace'`."""
+        O CSV de log de sinal cresce sem parar e já passa de 100 MB. Reler o
+        arquivo INTEIRO a cada 1,5s seria pesado. Em vez disso, guardamos a
+        posição (em bytes) de onde paramos e, a cada ciclo, lemos só os bytes
+        adicionados desde então — exatamente como um `tail -f`. Isso é rápido
+        (não importa o tamanho do arquivo) e tolera bytes inválidos com
+        `errors='replace'`.
+
+        IMPORTANTE — por que isto NÃO usa csv.DictReader com o cabeçalho do
+        arquivo (como uma primeira versão desta função tentava fazer):
+        o cabeçalho gravado na 1ª linha deste CSV (`sinal,motivo,
+        candles_disponiveis,candles_minimos,datahora_execucao` — só 5 colunas)
+        é de uma versão ANTIGA do formato e não bate mais com as ~70 colunas
+        que o robô grava hoje em cada linha (o robô foi evoluindo e passou a
+        gravar muito mais campos, sem atualizar a linha de cabeçalho lá no
+        topo do arquivo). Tentar casar 5 nomes de coluna com 70 valores faz o
+        DictReader devolver tudo errado — e foi exatamente por isso que o
+        alarme nunca disparava: o campo "motivo" lido nunca era igual a
+        "sinal_valido" (vinha vazio/None).
+        Por isso aqui a checagem é feita de um jeito mais simples e à prova
+        desse desalinhamento: procuramos o texto literal ",sinal_valido," em
+        cada linha nova (o robô sempre grava esse motivo entre vírgulas) e,
+        quando bate, pegamos os poucos campos de que precisamos pela posição
+        — que são os primeiros da linha e continuam estáveis há anos:
+            índice 2 = sinal ("buy"/"sell")
+            índice 3 = motivo
+            índice 5 = datahora_execucao
+            índice 8 = preco_close
+        """
         if not os.path.exists(CSV_LOG_SINAL):
             return
 
@@ -1023,19 +1038,13 @@ class MonitorV71App:
 
         if primeira_vez or arquivo_recriado:
             # primeira leitura OU o arquivo encolheu (foi truncado/recriado):
-            # só guarda o cabeçalho e a posição atual — não dispara alarme
-            # com base no histórico já existente (evita alarme falso ao abrir)
-            self._cabecalho_csv_sinal = ler_cabecalho_csv(CSV_LOG_SINAL)
+            # só guarda a posição atual — não dispara alarme com base no
+            # histórico já existente (evita alarme falso ao abrir o monitor)
             self._posicao_csv_sinal = tamanho_atual
             return
 
         if tamanho_atual == self._posicao_csv_sinal:
             return  # nada novo desde o último ciclo
-
-        if not self._cabecalho_csv_sinal:
-            # sem cabeçalho conhecido (arquivo apareceu depois de o monitor
-            # já estar de pé) — tenta capturar agora e seguir a partir daqui
-            self._cabecalho_csv_sinal = ler_cabecalho_csv(CSV_LOG_SINAL)
 
         try:
             with open(CSV_LOG_SINAL, "rb") as f:
@@ -1046,33 +1055,40 @@ class MonitorV71App:
 
         self._posicao_csv_sinal = tamanho_atual
 
-        if not self._cabecalho_csv_sinal:
-            return  # sem cabeçalho não dá para montar o DictReader corretamente
-
         texto_novo = trecho_novo.decode("utf-8", errors="replace")
-        linhas_texto = [l for l in texto_novo.splitlines() if l.strip()]
-        if not linhas_texto:
-            return
-
-        leitor = csv.DictReader(linhas_texto, fieldnames=self._cabecalho_csv_sinal, delimiter=";")
-
-        for linha in leitor:
-            motivo = linha.get("motivo", "")
-            if motivo != "sinal_valido":
+        for linha_bruta in texto_novo.splitlines():
+            linha_bruta = linha_bruta.strip()
+            if not linha_bruta or ",sinal_valido," not in linha_bruta:
                 continue
 
-            sinal = str(linha.get("sinal", "")).lower()
-            event_id = linha.get("event_id") or f"{linha.get('datahora_execucao')}|{sinal}|{linha.get('preco_close')}"
+            campos = linha_bruta.split(",")
+            if len(campos) < 9:
+                continue  # linha incompleta/cortada no meio — ignora com segurança
+
+            sinal = campos[2].strip().lower()
+            motivo = campos[3].strip()
+            if motivo != "sinal_valido" or sinal not in ("buy", "sell"):
+                continue  # confirma de verdade (a busca acima é só uma pré-filtragem rápida)
+
+            datahora_execucao = campos[5].strip()
+            preco_close = campos[8].strip()
+            event_id = f"{datahora_execucao}|{sinal}|{preco_close}"
 
             if event_id == self._ultimo_alarme_id:
-                continue
+                continue  # já mostramos esse mesmo sinal — não repete o alarme
             self._ultimo_alarme_id = event_id
 
+            registro = {
+                "datahora_execucao": datahora_execucao,
+                "preco_close": preco_close,
+                "Direcao": sinal.upper(),
+            }
+
             if sinal == "buy":
-                self._mostrar_alarme_entrada("COMPRA", linha, COR_VERDE)
+                self._mostrar_alarme_entrada("COMPRA", registro, COR_VERDE)
                 self._tocar_som(comprar=True)
-            elif sinal == "sell":
-                self._mostrar_alarme_entrada("VENDA", linha, COR_VERMELHO)
+            else:
+                self._mostrar_alarme_entrada("VENDA", registro, COR_VERMELHO)
                 self._tocar_som(comprar=False)
 
     def _mostrar_alarme_entrada(self, tipo, linha, cor):
@@ -1080,8 +1096,7 @@ class MonitorV71App:
             f"●  ENTRADA REAL DETECTADA — {tipo}\n"
             f"Data/Hora: {linha.get('datahora_execucao', '-')}      "
             f"Preço: {linha.get('preco_close', '-')}      "
-            f"Direção: {linha.get('Direcao', '-')}\n"
-            f"Prob V5.1: {linha.get('prob_v51', linha.get('prob_win_v4', '-'))}"
+            f"Direção: {linha.get('Direcao', '-')}"
         )
         self._mostrar_banner(texto, cor, "#0d1117")
         # o banner permanece até o próximo ciclo recalcular o estado (candle travado / sinal oficial)
