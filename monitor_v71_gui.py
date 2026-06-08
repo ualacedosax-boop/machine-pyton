@@ -475,11 +475,13 @@ class MonitorV71App:
         self.root.geometry("1220x880")
         self.root.minsize(800, 580)
 
-        # ---- zoom: fator aplicado sobre o tamanho-base de todas as fontes.
-        # Criar as fontes como objetos CTkFont nomeados (ver inicializar_fontes)
-        # é o que torna isso possível sem reconstruir a interface inteira — só
-        # mudamos o tamanho desses poucos objetos e cada texto que os usa se
-        # redesenha sozinho, na hora.
+        # ---- zoom: usamos a ESCALA NATIVA do customtkinter (set_widget_scaling),
+        # não apenas o tamanho da fonte. Ela redimensiona, de uma vez e ao vivo,
+        # TUDO que compõe a "proporção" de cada widget — largura, altura, cantos
+        # arredondados, espessura de borda e até os espaçamentos padx/pady de
+        # quem usa .pack()/.grid() — além do tamanho das fontes CTkFont. Por
+        # isso, ao dar zoom out, os cartões/barras/selos encolhem junto com o
+        # texto (em vez de só o texto encolher e sobrar espaço vazio em volta).
         self._fator_zoom = 1.0
         self._fontes = inicializar_fontes()
 
@@ -717,9 +719,11 @@ class MonitorV71App:
         self.lbl_status_geral.pack(side="left")
 
     # --------------------------------------------------------
-    # ZOOM — muda o tamanho de TODAS as fontes de uma vez (ver inicializar_fontes:
-    # como os widgets compartilham os mesmos objetos CTkFont, não é preciso
-    # reconstruir nada — eles se redesenham sozinhos no novo tamanho)
+    # ZOOM — usa a ESCALA NATIVA do customtkinter (set_widget_scaling) em vez
+    # de só mudar o tamanho das fontes. Isso é o que faz o zoom out encolher
+    # a PROPORÇÃO dos cartões/barras/selos junto com o texto, e não deixar
+    # espaço vazio sobrando ao redor de um texto menor (ver explicação maior
+    # junto da definição de self._fator_zoom, no __init__).
     # --------------------------------------------------------
     def _ajustar_zoom(self, delta=0.0, reset=False):
         novo_fator = 1.0 if reset else round(self._fator_zoom + delta, 2)
@@ -728,9 +732,7 @@ class MonitorV71App:
             return
         self._fator_zoom = novo_fator
 
-        for nome, (_familia, tamanho_base) in TAMANHOS_BASE_FONTE.items():
-            novo_tamanho = max(6, round(tamanho_base * self._fator_zoom))
-            self._fontes[nome].configure(size=novo_tamanho)
+        ctk.set_widget_scaling(self._fator_zoom)
 
         self.lbl_zoom.configure(text=f"{round(self._fator_zoom * 100)}%")
 
