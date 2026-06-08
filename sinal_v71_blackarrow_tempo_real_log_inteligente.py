@@ -2485,6 +2485,18 @@ def salvar_payload_sinal(payload):
 # =====================================================
 
 def _alertar_candle_travado(tick):
+    """Detecta candle travado/atrasado e retorna a mensagem de aviso (ou None se OK).
+
+    IMPORTANTE: esta funcao NAO grava mais diretamente no JSON. Antigamente ela
+    fazia um read-modify-write em ARQUIVO_ULTIMO_SINAL_JSON injetando a chave
+    "aviso_candle_travado" — porem logo em seguida, dentro do mesmo ciclo,
+    salvar_payload_sinal() sobrescrevia o arquivo inteiro com um novo dict
+    `payload` que nao continha essa chave, apagando o aviso silenciosamente
+    (bug detectado em 2026-06-07: monitor nunca exibia o aviso apesar do
+    candle estar ha 84 minutos parado). A correcao e o chamador
+    (executar_uma_vez) mesclar o retorno desta funcao em `payload` ANTES de
+    chamar salvar_payload_sinal(), garantindo que o aviso sobreviva ao write.
+    """
     agora = pd.Timestamp.now()
     dt_tick = pd.to_datetime(tick.get("DataHora_SP"), errors="coerce")
 
@@ -2494,17 +2506,7 @@ def _alertar_candle_travado(tick):
             f"\n*** AVISO: data do tick invalida ou ausente! "
             f"Verifique se o exportador Excel esta rodando. ***\n"
         )
-        # Injeta aviso no JSON para o monitor exibir
-        try:
-            json_path = ARQUIVO_ULTIMO_SINAL_JSON
-            if os.path.exists(json_path):
-                with open(json_path, "r", encoding="utf-8") as f:
-                    dados = json.load(f)
-                dados["aviso_candle_travado"] = "DATA INVALIDA - exportador pode estar parado"
-                salvar_json_seguro(dados, json_path)
-        except Exception:
-            pass
-        return
+        return "DATA INVALIDA - exportador pode estar parado"
 
     minutos_atrasado = (agora - dt_tick).total_seconds() / 60.0
 
@@ -2517,34 +2519,16 @@ def _alertar_candle_travado(tick):
             f"Verifique se o exportador Excel esta rodando. ***\n"
         )
         print(msg)
-        # Injeta aviso no JSON para o monitor exibir
-        try:
-            json_path = ARQUIVO_ULTIMO_SINAL_JSON
-            if os.path.exists(json_path):
-                with open(json_path, "r", encoding="utf-8") as f:
-                    dados = json.load(f)
-                dados["aviso_candle_travado"] = f"ATRASO {minutos_atrasado:.0f} MIN ({dt_tick.strftime('%H:%M')} vs {agora.strftime('%H:%M')})"
-                salvar_json_seguro(dados, json_path)
-        except Exception:
-            pass
-    else:
-        # Limpa aviso anterior se dado voltou a ser atual
-        try:
-            json_path = ARQUIVO_ULTIMO_SINAL_JSON
-            if os.path.exists(json_path):
-                with open(json_path, "r", encoding="utf-8") as f:
-                    dados = json.load(f)
-                if "aviso_candle_travado" in dados:
-                    del dados["aviso_candle_travado"]
-                    salvar_json_seguro(dados, json_path)
-        except Exception:
-            pass
+        return f"ATRASO {minutos_atrasado:.0f} MIN ({dt_tick.strftime('%H:%M')} vs {agora.strftime('%H:%M')})"
+
+    # Dado em dia — sem aviso (chamador deve remover a chave do payload, se houver)
+    return None
 
 
 def executar_uma_vez(config_v4, modelo_v3, features_v3, modelo_v4, features_v4, modelo_v53=None, features_v53=None):
     tick = ler_blackarrow_rtd()
 
-    _alertar_candle_travado(tick)
+    aviso_candle_travado = _alertar_candle_travado(tick)
 
     ticks = atualizar_ticks(tick)
 
@@ -2562,6 +2546,13 @@ def executar_uma_vez(config_v4, modelo_v3, features_v3, modelo_v4, features_v4, 
         modelo_v53,
         features_v53
     )
+
+    # Mescla o aviso de candle travado no payload ANTES de salvar, para que
+    # salvar_payload_sinal() (que sobrescreve o JSON inteiro) nao apague o aviso.
+    if aviso_candle_travado:
+        payload["aviso_candle_travado"] = aviso_candle_travado
+    else:
+        payload.pop("aviso_candle_travado", None)
 
     salvar_payload_sinal(payload)
 
