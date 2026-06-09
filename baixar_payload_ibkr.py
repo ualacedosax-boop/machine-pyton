@@ -125,13 +125,39 @@ def remover_timezone(serie: pd.Series) -> pd.Series:
 # ============================================================
 
 def conectar(host: str, port: int, client_id: int) -> "IB":
-    print(f"Conectando ao IBKR/TWS em {host}:{port} (clientId={client_id})...")
-    ib = IB()
-    ib.connect(host, port, clientId=client_id, timeout=20)
-    if not ib.isConnected():
-        raise RuntimeError("Nao conectou ao IBKR/TWS.")
-    print("[OK] Conectado.")
-    return ib
+    """
+    Conecta ao TWS/IB Gateway.
+    Se a porta especificada falhar, tenta automaticamente a outra porta
+    (7496 real <-> 7497 paper).
+    """
+    portas_tentar = [port]
+    outra = 7497 if port == 7496 else 7496
+    if outra not in portas_tentar:
+        portas_tentar.append(outra)
+
+    for p in portas_tentar:
+        print(f"Conectando ao IBKR/TWS em {host}:{p} (clientId={client_id})...")
+        ib = IB()
+        try:
+            ib.connect(host, p, clientId=client_id, timeout=8)
+            if ib.isConnected():
+                label = "real" if p == 7496 else "paper"
+                print(f"[OK] Conectado na porta {p} ({label}).")
+                return ib
+        except Exception as e:
+            print(f"  porta {p}: falhou — {e}")
+        finally:
+            if not ib.isConnected():
+                try:
+                    ib.disconnect()
+                except Exception:
+                    pass
+
+    raise RuntimeError(
+        f"Nao foi possivel conectar ao TWS/IB Gateway em nenhuma porta "
+        f"(tentadas: {portas_tentar}). "
+        "Verifique se o TWS esta aberto e com API habilitada."
+    )
 
 
 def qualificar_contrato(ib: "IB") -> "Future":
