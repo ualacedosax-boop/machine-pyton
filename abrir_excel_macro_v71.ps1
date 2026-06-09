@@ -11,23 +11,48 @@ function Log($msg) {
     "$ts  $msg" | Out-File -FilePath $LogFile -Append -Encoding utf8
 }
 
+# Chama uma propriedade COM com retry automatico para RPC_E_CALL_REJECTED (0x80010001)
+# O Excel rejeita chamadas enquanto esta ocupado inicializando — espera ate aceitar.
+function Set-ComProp($obj, [string]$prop, $valor, [int]$tentativas = 10) {
+    for ($i = 1; $i -le $tentativas; $i++) {
+        try {
+            $obj.$prop = $valor
+            return
+        } catch {
+            $hr = $_.Exception.HResult
+            if ($hr -eq [int]0x80010001 -or $hr -eq [int]0x800AC472) {
+                # RPC_E_CALL_REJECTED ou VBA_E_IGNORE: Excel ocupado, tenta de novo
+                Start-Sleep -Milliseconds 800
+            } else {
+                Log "Set-ComProp $prop falhou (nao recuperavel): $_"
+                return
+            }
+        }
+    }
+    Log "Set-ComProp $prop: Excel nao aceitou apos $tentativas tentativas."
+}
+
 Log "=== INICIANDO abrir_excel_macro_v71.ps1 ==="
 
 # Primeiro tenta conectar ao workbook exato. Isso evita usar uma instancia
 # qualquer do Excel quando outras planilhas estiverem abertas.
+$wb = $null
 try {
     $wb = [System.Runtime.InteropServices.Marshal]::BindToMoniker($Planilha)
     $xl = $wb.Application
     Log "Planilha ja estava aberta - usando instancia exata HWND=$($xl.Hwnd)"
 } catch {
     $xl = New-Object -ComObject Excel.Application
-    # msoAutomationSecurityLow = 1: deve ser definido ANTES de abrir o workbook
-    $xl.AutomationSecurity = 1
-    Log "Nova instancia Excel criada"
+    Log "Nova instancia Excel criada — aguardando Excel inicializar..."
+    # Aguarda o processo do Excel estar pronto antes de qualquer chamada COM
+    Start-Sleep -Seconds 2
 }
 
-$xl.Visible       = $true
-$xl.DisplayAlerts = $false
+# AutomationSecurity = 1 (msoAutomationSecurityLow): desativa alertas de macro
+# Deve ser definido ANTES de abrir o workbook para suprimir o dialogo de seguranca.
+Set-ComProp $xl "AutomationSecurity" 1
+Set-ComProp $xl "Visible"            $true
+Set-ComProp $xl "DisplayAlerts"      $false
 
 # Abre o workbook apenas se ainda nao estiver aberto
 $NomeArquivo = [System.IO.Path]::GetFileName($Planilha)
@@ -36,11 +61,15 @@ if ($wb) {
     Log "Planilha ja estava aberta - aguardando 5s"
     Start-Sleep -Seconds 5
 } else {
-    $xl.AutomationSecurity = 1
     Log "Abrindo planilha..."
-    $wb = $xl.Workbooks.Open($Planilha)
-    Log "Aguardando 25 segundos para RTD carregar..."
-    Start-Sleep -Seconds 25
+    try {
+        $wb = $xl.Workbooks.Open($Planilha)
+        Log "Planilha aberta. Aguardando 25 segundos para RTD carregar..."
+        Start-Sleep -Seconds 25
+    } catch {
+        Log "Erro ao abrir planilha: $_"
+        exit 1
+    }
 }
 
 if ($SomenteAbrir) {
