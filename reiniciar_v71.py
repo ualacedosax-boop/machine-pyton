@@ -35,6 +35,7 @@ from datetime import datetime
 # ================================================================
 BASE          = r"C:\Users\ualac\Documents\2025\Mercado\machine-pyton"
 VENV_PYTHON   = os.path.join(BASE, ".venv", "Scripts", "python.exe")
+VENV_PYTHONW  = os.path.join(BASE, ".venv", "Scripts", "pythonw.exe")  # sem console (apps GUI)
 SCRIPT_ROBO   = os.path.join(BASE, "sinal_v71_blackarrow_tempo_real_log_inteligente.py")
 SCRIPT_PAYLOAD= os.path.join(BASE, "payload_candles_ibkr.py")
 
@@ -199,12 +200,12 @@ def iniciar_robo():
 
 
 def iniciar_monitor():
-    """Sobe o monitor GUI (monitor_v71_gui.py) em nova janela."""
+    """Sobe o monitor GUI (monitor_v71_gui.py) usando pythonw — sem console, janela GUI direta."""
     log("Iniciando Monitor GUI...")
+    exe = VENV_PYTHONW if os.path.exists(VENV_PYTHONW) else VENV_PYTHON
     subprocess.Popen(
-        [VENV_PYTHON, SCRIPT_MONITOR],
-        cwd=BASE,
-        creationflags=subprocess.CREATE_NEW_CONSOLE
+        [exe, SCRIPT_MONITOR],
+        cwd=BASE
     )
 
 
