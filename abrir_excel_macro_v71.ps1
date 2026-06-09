@@ -19,17 +19,18 @@ function Set-ComProp($obj, [string]$prop, $valor, [int]$tentativas = 10) {
             $obj.$prop = $valor
             return
         } catch {
-            $hr = $_.Exception.HResult
-            if ($hr -eq [int]0x80010001 -or $hr -eq [int]0x800AC472) {
+            # HResult como string hex para evitar overflow de [int]
+            $hrHex = $_.Exception.HResult.ToString("X8")
+            if ($hrHex -eq "80010001" -or $hrHex -eq "800AC472") {
                 # RPC_E_CALL_REJECTED ou VBA_E_IGNORE: Excel ocupado, tenta de novo
                 Start-Sleep -Milliseconds 800
             } else {
-                Log "Set-ComProp $prop falhou (nao recuperavel): $_"
+                Log "Set-ComProp ${prop} falhou (nao recuperavel): $_"
                 return
             }
         }
     }
-    Log "Set-ComProp $prop: Excel nao aceitou apos $tentativas tentativas."
+    Log "Set-ComProp ${prop}: Excel nao aceitou apos $tentativas tentativas."
 }
 
 Log "=== INICIANDO abrir_excel_macro_v71.ps1 ==="
@@ -43,7 +44,7 @@ try {
     Log "Planilha ja estava aberta - usando instancia exata HWND=$($xl.Hwnd)"
 } catch {
     $xl = New-Object -ComObject Excel.Application
-    Log "Nova instancia Excel criada — aguardando Excel inicializar..."
+    Log "Nova instancia Excel criada - aguardando Excel inicializar..."
     # Aguarda o processo do Excel estar pronto antes de qualquer chamada COM
     Start-Sleep -Seconds 2
 }
