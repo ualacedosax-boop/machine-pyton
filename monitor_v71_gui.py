@@ -493,6 +493,9 @@ class MonitorV71App:
         # ver _verificar_entrada_real_csv para o porquê de não reler tudo
         self._posicao_csv_sinal = None       # posição em bytes de onde paramos de ler
         self._ultimo_alarme_id = None        # evita repetir o mesmo alarme (sinal/hora/preço)
+        self._alarme_ts = None               # timestamp (time.time()) do último alarme disparado
+        self._alarme_banner_duracao = 300    # segundos que o banner de alarme permanece visível (5 min)
+        self._ultimo_alarme_json_id = None   # deduplicação do alarme baseado no JSON
 
         self._montar_interface()
         self._agendar_atualizacao(imediata=True)
@@ -964,8 +967,16 @@ class MonitorV71App:
         else:
             self.campo_ultimo_resultado.set("nenhum ainda", COR_TEXTO_FRACO)
 
+    def _alarme_recente(self):
+        """Retorna True se um alarme de entrada foi disparado nos últimos _alarme_banner_duracao segundos."""
+        if self._alarme_ts is None:
+            return False
+        return (time.time() - self._alarme_ts) < self._alarme_banner_duracao
+
     def _atualizar_alarme(self, d):
+        import time as _time
         sinal = str(d.get("sinal", "none")).lower()
+        motivo = str(d.get("motivo", "")).strip()
 
         if getattr(self, "_regra_buy", False):
             self.lbl_check_principal.configure(
@@ -985,11 +996,33 @@ class MonitorV71App:
         else:
             self.lbl_alarme.configure(text="ALARME — monitorando… sem sinal oficial.", text_color=COR_AMARELO)
 
-        # banner geral grande no topo (junta candle travado + sinal oficial em destaque)
+        # --- Alarme sonoro baseado no JSON (igual ao monitor PS1 antigo) ---
+        # Dispara som + banner quando motivo == "sinal_valido" no JSON,
+        # sem esperar a linha aparecer no CSV (resposta mais rápida).
+        if motivo == "sinal_valido" and sinal in ("buy", "sell"):
+            event_id_json = str(d.get("event_id", "")) or (
+                f"{d.get('datahora_execucao','')}|{sinal}|{d.get('preco_close','')}"
+            )
+            if event_id_json != self._ultimo_alarme_json_id:
+                self._ultimo_alarme_json_id = event_id_json
+                self._alarme_ts = _time.time()
+                registro = {
+                    "datahora_execucao": str(d.get("datahora_execucao", "-")),
+                    "preco_close":       str(d.get("preco_close", "-")),
+                    "Direcao":           sinal.upper(),
+                }
+                tipo = "COMPRA" if sinal == "buy" else "VENDA"
+                cor  = COR_VERDE if sinal == "buy" else COR_VERMELHO
+                self._mostrar_alarme_entrada(tipo, registro, cor)
+                self._tocar_som(comprar=(sinal == "buy"))
+
+        # --- Banner de dados desatualizados (candle travado) ---
+        # Só oculta o banner se NÃO houver alarme de entrada ativo.
         aviso = str(d.get("aviso_candle_travado") or "").strip()
         if aviso:
             self._mostrar_banner(f"⚠  DADOS DESATUALIZADOS  —  {aviso}", COR_AMARELO, "#0d1117")
-        else:
+        elif not self._alarme_recente():
+            # sem alarme ativo e sem dados desatualizados → oculta banner
             self._ocultar_banner()
 
     def _verificar_entrada_real_csv(self):
@@ -1092,14 +1125,15 @@ class MonitorV71App:
                 self._tocar_som(comprar=False)
 
     def _mostrar_alarme_entrada(self, tipo, linha, cor):
+        import time as _time
         texto = (
             f"●  ENTRADA REAL DETECTADA — {tipo}\n"
             f"Data/Hora: {linha.get('datahora_execucao', '-')}      "
             f"Preço: {linha.get('preco_close', '-')}      "
             f"Direção: {linha.get('Direcao', '-')}"
         )
+        self._alarme_ts = _time.time()   # registra quando disparou para manter o banner visível
         self._mostrar_banner(texto, cor, "#0d1117")
-        # o banner permanece até o próximo ciclo recalcular o estado (candle travado / sinal oficial)
 
     def _tocar_som(self, comprar):
         """Toca um alarme sonoro simples e não-bloqueante (thread separada),
