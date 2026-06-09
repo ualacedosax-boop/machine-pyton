@@ -93,68 +93,61 @@ def rtd_tem_data_hoje():
         return False
 
 # ================================================================
-# PARAR PROCESSOS
+# PARAR PROCESSOS  (usa wmic como metodo principal — sem depender de psutil)
 # ================================================================
-def matar_robo():
-    """Para processos python.exe que estejam rodando o script do robo."""
+
+def _wmic_matar(filtro_cmd, nomes_processo=("powershell.exe", "python.exe")):
+    """
+    Mata processos cujo CommandLine contenha filtro_cmd E cujo nome
+    seja um dos nomes_processo (evita matar bash/wmic/o proprio script).
+    Usa wmic — sem depender de bibliotecas externas.
+    Retorna quantidade de processos mortos.
+    """
     try:
-        import psutil
-        mortos = 0
-        for p in psutil.process_iter(["pid", "name", "cmdline"]):
-            try:
-                if "python" not in p.info["name"].lower():
-                    continue
-                cmd = " ".join(p.info["cmdline"] or [])
-                if "sinal_v71_blackarrow" in cmd:
-                    p.kill()
-                    mortos += 1
-            except Exception:
-                pass
-        return mortos
-    except ImportError:
-        # sem psutil: tenta via taskkill com filtro por linha de comando
-        try:
-            subprocess.run(
-                ["wmic", "process", "where",
-                 "name='python.exe'", "get", "processid,commandline"],
-                capture_output=True, text=True
-            )
-        except Exception:
-            pass
+        nomes_cond = " or ".join(f"name='{n}'" for n in nomes_processo)
+        query = f"(commandline like '%{filtro_cmd}%') and ({nomes_cond})"
+        r = subprocess.run(
+            ["wmic", "process", "where", query, "get", "processid"],
+            capture_output=True, text=True, timeout=10
+        )
+        meu_pid = os.getpid()
+        pids = []
+        for linha in r.stdout.splitlines():
+            linha = linha.strip()
+            if linha.isdigit() and int(linha) != meu_pid:
+                pids.append(int(linha))
+        for pid in pids:
+            subprocess.run(["taskkill", "/PID", str(pid), "/F"],
+                           capture_output=True, timeout=5)
+        return len(pids)
+    except Exception:
         return 0
+
+
+def matar_robo():
+    """Para python.exe rodando o script do robo."""
+    return _wmic_matar("sinal_v71_blackarrow")
 
 
 def matar_powershells_v71():
     """
-    Para TODOS os processos PowerShell relacionados ao V7.1:
-      - exportar_blackarrow_excel_v71  (exportador)
-      - abrir_excel_macro_v71          (abridor do Excel — pode reabrir Excel se ficar rodando)
+    Para TODOS os processos PowerShell do V7.1:
+      - exportar_blackarrow_excel_v71  (exportador — reabria Excel via BindToMoniker)
+      - abrir_excel_macro_v71          (abridor do Excel)
       - monitor_alarme_v71             (monitor antigo PS1)
     """
-    try:
-        import psutil
-        mortos = 0
-        palavras = [
-            "exportar_blackarrow_excel_v71",
-            "abrir_excel_macro_v71",
-            "monitor_alarme_v71",
-        ]
-        for p in psutil.process_iter(["pid", "name", "cmdline"]):
-            try:
-                if "powershell" not in p.info["name"].lower():
-                    continue
-                cmd = " ".join(p.info["cmdline"] or [])
-                if any(w in cmd for w in palavras):
-                    p.kill()
-                    mortos += 1
-            except Exception:
-                pass
-        return mortos
-    except ImportError:
-        return 0
+    palavras = [
+        "exportar_blackarrow_excel_v71",
+        "abrir_excel_macro_v71",
+        "monitor_alarme_v71",
+    ]
+    total = 0
+    for p in palavras:
+        total += _wmic_matar(p)
+    return total
 
 
-# mantém nome antigo como alias para compatibilidade
+# alias para compatibilidade
 def matar_exportador():
     return matar_powershells_v71()
 
