@@ -124,17 +124,27 @@ def matar_robo():
         return 0
 
 
-def matar_exportador():
-    """Para processos PowerShell que estejam rodando o exportador."""
+def matar_powershells_v71():
+    """
+    Para TODOS os processos PowerShell relacionados ao V7.1:
+      - exportar_blackarrow_excel_v71  (exportador)
+      - abrir_excel_macro_v71          (abridor do Excel — pode reabrir Excel se ficar rodando)
+      - monitor_alarme_v71             (monitor antigo PS1)
+    """
     try:
         import psutil
         mortos = 0
+        palavras = [
+            "exportar_blackarrow_excel_v71",
+            "abrir_excel_macro_v71",
+            "monitor_alarme_v71",
+        ]
         for p in psutil.process_iter(["pid", "name", "cmdline"]):
             try:
                 if "powershell" not in p.info["name"].lower():
                     continue
                 cmd = " ".join(p.info["cmdline"] or [])
-                if "exportar_blackarrow_excel_v71" in cmd:
+                if any(w in cmd for w in palavras):
                     p.kill()
                     mortos += 1
             except Exception:
@@ -142,6 +152,11 @@ def matar_exportador():
         return mortos
     except ImportError:
         return 0
+
+
+# mantém nome antigo como alias para compatibilidade
+def matar_exportador():
+    return matar_powershells_v71()
 
 
 def matar_excel():
@@ -250,8 +265,8 @@ def reiniciar_completo(pular_monitor=False):
     n = matar_robo()
     log(f"Robo parado ({n} processo(s))", ok=(n >= 0))
 
-    n = matar_exportador()
-    log(f"Exportador parado ({n} processo(s))", ok=(n >= 0))
+    n = matar_powershells_v71()
+    log(f"PowerShells V7.1 parados ({n} processo(s))", ok=(n >= 0))
 
     matar_excel()
     log("Excel fechado", ok=True)
