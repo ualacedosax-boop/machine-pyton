@@ -75,9 +75,9 @@ echo       Robo iniciado.
 :: [6/6] Inicia o Monitor
 :: ============================================================
 echo.
-echo [6/6] Iniciando Monitor...
-start "MONITOR V7.1" powershell -ExecutionPolicy Bypass -NoExit -File "%BASE%\monitor_alarme_v71_oficial_completo.ps1"
-echo       Monitor iniciado.
+echo [6/6] Iniciando Monitor GUI V7.1...
+start "MONITOR V7.1 GUI" cmd /c "cd /d %BASE% && call .venv\Scripts\activate.bat && python monitor_v71_gui.py"
+echo       Monitor GUI iniciado.
 
 echo.
 echo ============================================================
@@ -85,7 +85,7 @@ echo   TUDO INICIADO
 echo ============================================================
 echo   Planilha : blackarrow_rtd.xlsm (exportador externo em background)
 echo   Robo     : janela "ROBO V7.1"
-echo   Monitor  : janela "MONITOR V7.1"
+echo   Monitor  : janela "MONITOR V7.1 GUI" (monitor_v71_gui.py)
 echo   Take     : 50,5 pts   Stop: 117 pts   Max: 3 trades/dia
 echo   Regra    : novo sinal liberado somente apos 5 minutos
 echo   Alarme   : monitor atualizado por JSON + CSV

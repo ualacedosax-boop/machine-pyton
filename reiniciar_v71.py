@@ -40,7 +40,7 @@ SCRIPT_PAYLOAD= os.path.join(BASE, "payload_candles_ibkr.py")
 
 PS_EXPORTADOR = os.path.join(BASE, "exportar_blackarrow_excel_v71.ps1")
 PS_EXCEL      = os.path.join(BASE, "abrir_excel_macro_v71.ps1")
-PS_MONITOR    = os.path.join(BASE, "monitor_alarme_v71_oficial_completo.ps1")
+SCRIPT_MONITOR = os.path.join(BASE, "monitor_v71_gui.py")
 
 ARQ_TICKS     = os.path.join(BASE, "operacional_v71_oficial", "blackarrow_ticks.csv")
 ARQ_RTD_CSV   = os.path.join(BASE, "blackarrow_rtd.csv")
@@ -191,12 +191,10 @@ def iniciar_robo():
 
 
 def iniciar_monitor():
-    """Sobe o monitor em nova janela PowerShell."""
-    log("Iniciando Monitor...")
+    """Sobe o monitor GUI (monitor_v71_gui.py) em nova janela."""
+    log("Iniciando Monitor GUI...")
     subprocess.Popen(
-        ["powershell", "-ExecutionPolicy", "Bypass",
-         "-NoExit",
-         "-File", PS_MONITOR],
+        [VENV_PYTHON, SCRIPT_MONITOR],
         cwd=BASE,
         creationflags=subprocess.CREATE_NEW_CONSOLE
     )
