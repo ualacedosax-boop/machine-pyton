@@ -102,25 +102,34 @@ if (-not $mutex.WaitOne(0, $false)) {
 }
 
 Write-Log "=== EXPORTADOR EXTERNO V7.1 INICIADO ==="
-$ultimoConteudo = $null
+$ultimoConteudo    = $null
 $errosConsecutivos = 0
+$tsUltimaMudanca   = Get-Date         # quando o conteudo RTD mudou pela ultima vez
+$maxMinsSemMudanca = 5                # minutos sem mudanca = RTD provavelmente congelado
 
 try {
     while ($true) {
         try {
             $conteudo = Read-ExcelRow
 
-            # Se o RTD congelar, nao renova artificialmente o timestamp do CSV.
-            # Assim o monitor continua detectando dado realmente desatualizado.
             if ($conteudo -ne $ultimoConteudo) {
                 Write-CsvAtomic $conteudo
-                $ultimoConteudo = $conteudo
+                $ultimoConteudo  = $conteudo
+                $tsUltimaMudanca = Get-Date
+            } else {
+                # Conteudo igual: verifica se o RTD congelou
+                $minsSemMudanca = ((Get-Date) - $tsUltimaMudanca).TotalMinutes
+                if ($minsSemMudanca -ge $maxMinsSemMudanca) {
+                    Write-Log ("RTD sem atualizacao ha {0:N0} min. Forcando reconexao para descongelar..." -f $minsSemMudanca)
+                    $tsUltimaMudanca = Get-Date   # reseta antes do throw para nao disparar de novo imediatamente
+                    throw "RTD congelado - reconexao automatica"
+                }
             }
 
             if ($errosConsecutivos -gt 0) {
                 Write-Log "Exportacao recuperada."
+                $errosConsecutivos = 0
             }
-            $errosConsecutivos = 0
             Start-Sleep -Milliseconds $IntervaloMs
         } catch {
             $errosConsecutivos++
