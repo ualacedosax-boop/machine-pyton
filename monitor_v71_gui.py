@@ -1046,95 +1046,75 @@ class MonitorV71App:
             self._ocultar_banner()
 
     def _verificar_entrada_real_csv(self):
-        """Espelha 'Verificar-Alarme-CSV' do .ps1: detecta linhas novas com
-        motivo == sinal_valido no CSV de log de sinal e toca um alarme sonoro.
+        """Lê os últimos 200 KB do CSV de log de sinal a cada ciclo e dispara
+        alarme para qualquer linha sinal_valido com timestamp nos últimos 5 min.
 
-        IMPORTANTE — por que isso lê só o "rabo" do arquivo:
-        O CSV de log de sinal cresce sem parar e já passa de 100 MB. Reler o
-        arquivo INTEIRO a cada 1,5s seria pesado. Em vez disso, guardamos a
-        posição (em bytes) de onde paramos e, a cada ciclo, lemos só os bytes
-        adicionados desde então — exatamente como um `tail -f`. Isso é rápido
-        (não importa o tamanho do arquivo) e tolera bytes inválidos com
-        `errors='replace'`.
+        Leitura pelo rabo do arquivo (seek para tamanho-200KB): o log passa de
+        100 MB e não faz sentido reler tudo. 200 KB cobre folga os ~5 minutos
+        mesmo na pior taxa de escrita (~500 bytes/linha × 2 linhas/s = 600 KB/min).
 
-        IMPORTANTE — por que isto NÃO usa csv.DictReader com o cabeçalho do
-        arquivo (como uma primeira versão desta função tentava fazer):
-        o cabeçalho gravado na 1ª linha deste CSV (`sinal,motivo,
-        candles_disponiveis,candles_minimos,datahora_execucao` — só 5 colunas)
-        é de uma versão ANTIGA do formato e não bate mais com as ~70 colunas
-        que o robô grava hoje em cada linha (o robô foi evoluindo e passou a
-        gravar muito mais campos, sem atualizar a linha de cabeçalho lá no
-        topo do arquivo). Tentar casar 5 nomes de coluna com 70 valores faz o
-        DictReader devolver tudo errado — e foi exatamente por isso que o
-        alarme nunca disparava: o campo "motivo" lido nunca era igual a
-        "sinal_valido" (vinha vazio/None).
-        Por isso aqui a checagem é feita de um jeito mais simples e à prova
-        desse desalinhamento: procuramos o texto literal ",sinal_valido," em
-        cada linha nova (o robô sempre grava esse motivo entre vírgulas) e,
-        quando bate, pegamos os poucos campos de que precisamos pela posição
-        — que são os primeiros da linha e continuam estáveis há anos:
+        A janela de 5 minutos garante que o alarme dispara mesmo se o monitor
+        foi reiniciado ou perdeu um ciclo — sem depender de controle de posição.
+
+        Campos por posição (o cabeçalho do arquivo está defasado em relação às
+        ~70 colunas gravadas hoje, então não usamos DictReader):
             índice 2 = sinal ("buy"/"sell")
             índice 3 = motivo
-            índice 5 = datahora_execucao
+            índice 5 = datahora_execucao  ("YYYY-MM-DD HH:MM:SS")
             índice 8 = preco_close
         """
         if not os.path.exists(CSV_LOG_SINAL):
             return
 
-        try:
-            tamanho_atual = os.path.getsize(CSV_LOG_SINAL)
-        except OSError:
-            return
-
-        primeira_vez = self._posicao_csv_sinal is None
-        arquivo_recriado = (not primeira_vez) and tamanho_atual < self._posicao_csv_sinal
-
-        if primeira_vez or arquivo_recriado:
-            # primeira leitura OU o arquivo encolheu (foi truncado/recriado):
-            # só guarda a posição atual — não dispara alarme com base no
-            # histórico já existente (evita alarme falso ao abrir o monitor)
-            self._posicao_csv_sinal = tamanho_atual
-            return
-
-        if tamanho_atual == self._posicao_csv_sinal:
-            return  # nada novo desde o último ciclo
+        JANELA_BYTES   = 200 * 1024   # 200 KB — cobre ~5 min de linhas
+        JANELA_SEGUNDOS = 5 * 60      # ignora linhas com mais de 5 min
 
         try:
+            tamanho = os.path.getsize(CSV_LOG_SINAL)
+            inicio  = max(0, tamanho - JANELA_BYTES)
             with open(CSV_LOG_SINAL, "rb") as f:
-                f.seek(self._posicao_csv_sinal)
-                trecho_novo = f.read()
+                f.seek(inicio)
+                trecho = f.read()
         except OSError:
             return
 
-        self._posicao_csv_sinal = tamanho_atual
+        agora = datetime.now()
+        texto = trecho.decode("utf-8", errors="replace")
 
-        texto_novo = trecho_novo.decode("utf-8", errors="replace")
-        for linha_bruta in texto_novo.splitlines():
+        for linha_bruta in texto.splitlines():
             linha_bruta = linha_bruta.strip()
             if not linha_bruta or ",sinal_valido," not in linha_bruta:
                 continue
 
             campos = linha_bruta.split(",")
             if len(campos) < 9:
-                continue  # linha incompleta/cortada no meio — ignora com segurança
+                continue
 
-            sinal = campos[2].strip().lower()
+            sinal  = campos[2].strip().lower()
             motivo = campos[3].strip()
             if motivo != "sinal_valido" or sinal not in ("buy", "sell"):
-                continue  # confirma de verdade (a busca acima é só uma pré-filtragem rápida)
+                continue
 
             datahora_execucao = campos[5].strip()
-            preco_close = campos[8].strip()
-            event_id = f"{datahora_execucao}|{sinal}|{preco_close}"
+            preco_close       = campos[8].strip()
 
+            # Descarta linhas fora da janela de 5 minutos
+            try:
+                ts = datetime.strptime(datahora_execucao, "%Y-%m-%d %H:%M:%S")
+                if (agora - ts).total_seconds() > JANELA_SEGUNDOS:
+                    continue
+            except (ValueError, TypeError):
+                continue
+
+            event_id = f"{datahora_execucao}|{sinal}|{preco_close}"
             if event_id == self._ultimo_alarme_id:
-                continue  # já mostramos esse mesmo sinal — não repete o alarme
+                continue
             self._ultimo_alarme_id = event_id
 
             registro = {
                 "datahora_execucao": datahora_execucao,
-                "preco_close": preco_close,
-                "Direcao": sinal.upper(),
+                "preco_close":       preco_close,
+                "Direcao":           sinal.upper(),
             }
 
             if sinal == "buy":
