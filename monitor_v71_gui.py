@@ -996,9 +996,10 @@ class MonitorV71App:
         else:
             self.lbl_alarme.configure(text="ALARME — monitorando… sem sinal oficial.", text_color=COR_AMARELO)
 
-        # --- Alarme sonoro baseado no JSON (igual ao monitor PS1 antigo) ---
-        # Dispara som + banner quando motivo == "sinal_valido" no JSON,
-        # sem esperar a linha aparecer no CSV (resposta mais rápida).
+        # --- Alarme sonoro baseado no JSON ---
+        # Caminho 1: motivo == "sinal_valido" — janela curta (1-2s), pode ser perdida pelo poll.
+        # Caminho 2: motivo == "sinal_ja_enviado_neste_candle" — persiste o candle inteiro,
+        #            100% confiavel. Usa candle_sp + direcao como chave de deduplicacao.
         if motivo == "sinal_valido" and sinal in ("buy", "sell"):
             event_id_json = str(d.get("event_id", "")) or (
                 f"{d.get('datahora_execucao','')}|{sinal}|{d.get('preco_close','')}"
@@ -1015,6 +1016,25 @@ class MonitorV71App:
                 cor  = COR_VERDE if sinal == "buy" else COR_VERMELHO
                 self._mostrar_alarme_entrada(tipo, registro, cor)
                 self._tocar_som(comprar=(sinal == "buy"))
+
+        elif motivo == "sinal_ja_enviado_neste_candle":
+            # Backup: captura o alarme mesmo que sinal_valido tenha sido perdido pelo poll.
+            direcao = str(d.get("Direcao", "")).strip().lower()
+            candle_sp = str(d.get("datahora_ultimo_candle_sp", "")).strip()
+            if direcao in ("buy", "sell") and candle_sp:
+                event_id_backup = f"enviado|{candle_sp}|{direcao}"
+                if event_id_backup != self._ultimo_alarme_json_id:
+                    self._ultimo_alarme_json_id = event_id_backup
+                    self._alarme_ts = _time.time()
+                    registro = {
+                        "datahora_execucao": str(d.get("datahora_execucao", "-")),
+                        "preco_close":       str(d.get("preco_close", "-")),
+                        "Direcao":           direcao.upper(),
+                    }
+                    tipo = "COMPRA" if direcao == "buy" else "VENDA"
+                    cor  = COR_VERDE if direcao == "buy" else COR_VERMELHO
+                    self._mostrar_alarme_entrada(tipo, registro, cor)
+                    self._tocar_som(comprar=(direcao == "buy"))
 
         # --- Banner de dados desatualizados (candle travado) ---
         # Só oculta o banner se NÃO houver alarme de entrada ativo.
