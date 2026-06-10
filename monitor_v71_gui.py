@@ -763,12 +763,18 @@ class MonitorV71App:
     def _mostrar_banner(self, texto, cor_fundo, cor_texto="#0d1117"):
         self.banner_moldura.configure(fg_color=cor_fundo)
         self.banner.configure(text=texto, fg_color=cor_fundo, text_color=cor_texto)
-        if not self.banner_moldura.winfo_ismapped():
-            self.banner_moldura.pack(fill="x", padx=18, pady=(12, 6), before=self.area)
+        try:
+            if not self.banner_moldura.winfo_ismapped():
+                self.banner_moldura.pack(fill="x", padx=18, pady=(12, 6), before=self.area)
+        except Exception:
+            pass
 
     def _ocultar_banner(self):
-        if self.banner_moldura.winfo_ismapped():
-            self.banner_moldura.pack_forget()
+        try:
+            if self.banner_moldura.winfo_ismapped():
+                self.banner_moldura.pack_forget()
+        except Exception:
+            pass
 
     # --------------------------------------------------------
     # CICLO DE ATUALIZAÇÃO (agendado via root.after — não bloqueia a janela)
@@ -856,13 +862,16 @@ class MonitorV71App:
 
         # aviso de candle travado — só aparece quando existe
         aviso = str(d.get("aviso_candle_travado") or "").strip()
-        if aviso:
-            self.aviso_candle.configure(text=f"⚠  DADOS DESATUALIZADOS — {aviso}\n     Verifique o exportador Excel (exportar_blackarrow_excel_v71.ps1)")
-            if not self.aviso_moldura.winfo_ismapped():
-                self.aviso_moldura.pack(fill="x", pady=(14, 0))
-        else:
-            if self.aviso_moldura.winfo_ismapped():
-                self.aviso_moldura.pack_forget()
+        try:
+            if aviso:
+                self.aviso_candle.configure(text=f"⚠  DADOS DESATUALIZADOS — {aviso}\n     Verifique o exportador Excel (exportar_blackarrow_excel_v71.ps1)")
+                if not self.aviso_moldura.winfo_ismapped():
+                    self.aviso_moldura.pack(fill="x", pady=(14, 0))
+            else:
+                if self.aviso_moldura.winfo_ismapped():
+                    self.aviso_moldura.pack_forget()
+        except Exception:
+            pass
 
     def _atualizar_probabilidades(self, d):
         prob_v51 = d.get("prob_v51", d.get("prob_win_v4"))
