@@ -1162,6 +1162,17 @@ def ler_blackarrow_rtd():
 
 
 def atualizar_ticks(tick):
+    # Rejeita tick com preco zero ou timestamp mais de 10 min no futuro
+    preco = tick.get("ultimo", 0)
+    dt_tick = tick.get("DataHora_SP")
+    try:
+        if float(preco) == 0.0:
+            return pd.read_csv(ARQUIVO_TICKS, low_memory=False) if os.path.exists(ARQUIVO_TICKS) else pd.DataFrame()
+        if pd.Timestamp.now() - pd.Timestamp(dt_tick) < pd.Timedelta(minutes=-10):
+            return pd.read_csv(ARQUIVO_TICKS, low_memory=False) if os.path.exists(ARQUIVO_TICKS) else pd.DataFrame()
+    except Exception:
+        pass
+
     df_tick = pd.DataFrame([tick])
 
     if os.path.exists(ARQUIVO_TICKS):
@@ -2499,6 +2510,13 @@ def _alertar_candle_travado(tick):
     """
     agora = pd.Timestamp.now()
     dt_tick = pd.to_datetime(tick.get("DataHora_SP"), errors="coerce")
+
+    # Fora da janela operacional (02:00–06:00 SP) nao ha trading em andamento,
+    # entao RTD parado e esperado — suprimir aviso para nao gerar alarme falso.
+    hora_sp = agora.hour + agora.minute / 60.0
+    dentro_janela = 2.0 <= hora_sp < 6.0
+    if not dentro_janela:
+        return None
 
     # Se nao conseguiu parsear a data, ja e um problema — avisa
     if pd.isna(dt_tick):
