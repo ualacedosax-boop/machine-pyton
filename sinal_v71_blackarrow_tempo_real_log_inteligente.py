@@ -2511,13 +2511,6 @@ def _alertar_candle_travado(tick):
     agora = pd.Timestamp.now()
     dt_tick = pd.to_datetime(tick.get("DataHora_SP"), errors="coerce")
 
-    # Fora da janela operacional (02:00–06:00 SP) nao ha trading em andamento,
-    # entao RTD parado e esperado — suprimir aviso para nao gerar alarme falso.
-    hora_sp = agora.hour + agora.minute / 60.0
-    dentro_janela = 2.0 <= hora_sp < 6.0
-    if not dentro_janela:
-        return None
-
     # Se nao conseguiu parsear a data, ja e um problema — avisa
     if pd.isna(dt_tick):
         print(
