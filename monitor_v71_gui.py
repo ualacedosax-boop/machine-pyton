@@ -65,6 +65,15 @@ import time
 import winsound
 from datetime import datetime
 
+# Fix: janela transparente no Windows 11 com customtkinter + GPU NVIDIA
+# SetProcessDpiAwareness(2) = PROCESS_PER_MONITOR_DPI_AWARE, necessario
+# antes de criar qualquer janela tkinter para evitar rendering transparente.
+import ctypes as _ctypes
+try:
+    _ctypes.windll.shcore.SetProcessDpiAwareness(2)
+except Exception:
+    pass
+
 import tkinter as tk
 import customtkinter as ctk
 
