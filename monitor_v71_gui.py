@@ -1154,8 +1154,7 @@ class MonitorV71App:
         self._mostrar_banner(texto, cor, "#0d1117")
 
     def _tocar_som(self, comprar):
-        """Toca um alarme sonoro simples e não-bloqueante (thread separada),
-        para não travar a interface enquanto o som toca."""
+        """Toca bipes + voz (SAPI) em thread separada para não travar a interface."""
         def _alarme():
             try:
                 if comprar:
@@ -1169,7 +1168,15 @@ class MonitorV71App:
                         winsound.Beep(500, 250)
                         time.sleep(0.25)
             except RuntimeError:
-                pass  # ambiente sem suporte a som — ignora silenciosamente
+                pass
+            try:
+                import win32com.client
+                voz = win32com.client.Dispatch("SAPI.SpVoice")
+                voz.Volume = 100
+                voz.Rate = 2
+                voz.Speak("Compra detectada" if comprar else "Venda detectada")
+            except Exception:
+                pass
 
         threading.Thread(target=_alarme, daemon=True).start()
 
